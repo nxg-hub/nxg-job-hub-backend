@@ -12,7 +12,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import java.util.Collections;
-import java.util.Collection;
 
 
 
@@ -36,11 +35,8 @@ public abstract class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "first_name", nullable = false, length = 20)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 20)
-    private String lastName;
+    @Column(name = "username", nullable = false, length = 20)
+    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -48,16 +44,19 @@ public abstract class User implements UserDetails {
     @Column(nullable = false, length = 64)
     private String password;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role userType;
     
-    public User(String firstName,
-                   String lastName,
-                   String email,
-                   String password,
-                   Role userType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    private Role userType;
+
+
+    
+    public User(String profilePicture,
+                    String username,
+                    String email,
+                    String password,
+                    Role userType) {
+        
         this.email = email;
         this.password = password;
         this.userType = userType;
@@ -70,11 +69,13 @@ public abstract class User implements UserDetails {
         return Collections.singletonList(authority);
     }
 
+    
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")
     )
-    private List<Role> roles = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 }
