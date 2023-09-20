@@ -6,12 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.GrantedAuthority;
-import java.util.Collections;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.core.GrantedAuthority;
 
 
 
@@ -28,7 +26,7 @@ import java.util.Collections;
 @Entity
 @EqualsAndHashCode
 @Table(name = "users")
-public abstract class User implements UserDetails {
+public abstract class User  {
 
 
     @Id
@@ -67,13 +65,7 @@ public abstract class User implements UserDetails {
         this.userType = userType;
                    }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(userType.name());
-        return Collections.singletonList(authority);
-    }
-
+  
     
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
