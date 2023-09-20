@@ -1,7 +1,9 @@
 package core.nxg.entity;
 
+import jakarta.persistence.Column;
 /// import core.nxg.entity.Role;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 //import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +22,15 @@ public class TechTalent extends User{
     private String State;
     private String residentialAddress;
     private String zipCode;
+    private String location;
     private String phoneNumber;
     private String highestQualification, professionalCert, currentJob;
     private String yearsOfExperience;
     private String skills, jobType, workMode;
-    private String resume;
+    
+    @Lob
+    @Column(name = "resume", columnDefinition = "BLOB")
+    private byte[] resume;
 
     
 ;   ///public TechTalent() {

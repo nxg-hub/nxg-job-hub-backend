@@ -34,12 +34,17 @@ public abstract class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    @Column(name = "profile_picture")
+    private String profilePicture;
+    
     @Column(name = "username", nullable = false, length = 20)
     private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    
 
     @Column(nullable = false, length = 64)
     private String password;

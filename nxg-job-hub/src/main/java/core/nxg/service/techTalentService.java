@@ -1,11 +1,9 @@
 package core.nxg.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import core.nxg.entity.Role;
-
+import core.nxg.dto.fileUploadDTO;
 import core.nxg.entity.TechTalent;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.entity.User;
@@ -16,22 +14,20 @@ import java.util.List;
 public class techTalentService {
     
     private final UserRepository userRepository;
+
    
+    @Autowired
     private final TechTalentRepository techTalentRepository;
     
-    @Autowired
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    
-    public String encodePassword(String password) {
-        return passwordEncoder.encode(password);
-        
-    }
+   
 
     public techTalentService(TechTalentRepository   techTalentRepository,
                          
                                 UserRepository userRepository, 
+
+                                fileUploadDTO fileUploadDTO
                          
-                                PasswordEncoder passwordEncoder) {
+                                 ) {
                 this.userRepository = userRepository;
                 this.techTalentRepository = techTalentRepository;
     }
@@ -48,11 +44,10 @@ public class techTalentService {
         if (techTalentRepository.findByEmail(user.getEmail()) != null) {
             throw new Exception ("Email already in use");
         }
+        // unhashed password is set.
+        user.setPassword(user.getPassword());
 
-        // Hash the password before saving it to the database
-        user.setPassword(encodePassword(user.getPassword()));
-
-        user.setUserType(Role.TECHTALENT); // You can set this as needed
+        user.setUserType(Role.TECHTALENT); 
         return userRepository.save(user);
 
     }
