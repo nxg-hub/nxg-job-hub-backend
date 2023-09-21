@@ -1,21 +1,17 @@
 package core.nxg.entity;
 
-import jakarta.persistence.Column;
-/// import core.nxg.entity.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-//import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-@Getter
-@Setter
-@AllArgsConstructor
+import jakarta.persistence.*;
+import lombok.*;
 
+@Data
+@RequiredArgsConstructor
 @Entity
 (name = "tech_talent")
-public class TechTalentUser extends User{
+public class TechTalentUser{
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long tech_id;
     private String Nationality;
     private String CountryCode;
     private String City;
@@ -27,26 +23,13 @@ public class TechTalentUser extends User{
     private String highestQualification, professionalCert, currentJob;
     private String yearsOfExperience;
     private String skills, jobType, workMode;
-    
+
+    @OneToOne
+    @MapsId
+    private User user;
+
     @Lob
-    @Column(name = "resume", columnDefinition = "BLOB")
     private byte[] resume;
-
-    
-;   ///public TechTalent() {
-        ///super();
-       /// this.setUserType(Role.TECHTALENT);
-    ///}
- 
-    
-    
-    
-
-    
-
-
-
-
 
     
 }

@@ -1,6 +1,6 @@
-package core.nxg.entity;
+package core.nxg.enums;
 
-public enum Role {
+public enum UserType {
     TECHTALENT,
     AGENT,
     EMPLOYER,
