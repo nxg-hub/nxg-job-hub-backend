@@ -33,7 +33,6 @@ public class TechTalentServiceImpl implements TechTalentService {
         user.setJobType(TechTalenDto.getJobType());
         user.setDateOfBirth(TechTalenDto.getDateOfBirth());
         user.setGender(TechTalenDto.getGender());
-        user.setMaritalStatus(TechTalenDto.getMaritalStatus());
         user.setHighestQualification(TechTalenDto.getHighestQualification());
         user.setExperienceLevel(TechTalenDto.getExperienceLevel());
         user.setYearsOfExperience(TechTalenDto.getYearsOfExperience());

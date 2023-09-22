@@ -12,7 +12,6 @@ import core.nxg.enums.generic.JobType;
 import core.nxg.enums.generic.WorkMode;
 import core.nxg.enums.generic.professionalCert;
 import core.nxg.enums.generic.Gender;
-import core.nxg.enums.generic.MaritalStaus;
 import java.util.List;
 
 @Data
@@ -39,9 +38,6 @@ public class TechTalentDto {
 
     @Enumerated(EnumType.STRING)
     private WorkMode workMode;
-
-    @Enumerated(EnumType.STRING)
-    private MaritalStaus maritalStatus;
 
     private CountryCode countryCode;
 

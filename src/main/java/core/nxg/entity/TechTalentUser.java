@@ -11,7 +11,6 @@ import core.nxg.enums.generic.JobType;
 import core.nxg.enums.generic.Qualification;
 import core.nxg.enums.generic.WorkMode;
 import core.nxg.enums.generic.professionalCert;
-import core.nxg.enums.generic.MaritalStaus;
 import java.util.List;
 
 import com.neovisionaries.i18n.CountryCode;
@@ -30,7 +29,6 @@ public class TechTalentUser extends User{
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
-    private MaritalStaus maritalStatus;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
