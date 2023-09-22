@@ -1,36 +1,29 @@
-package core.nxg.entity;
+package core.nxg.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import java.util.Date;
-import core.nxg.enums.generic.Experience;
+import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import core.nxg.enums.generic.Gender;
-import core.nxg.enums.generic.JobType;
+import com.neovisionaries.i18n.CountryCode;
+import core.nxg.enums.generic.Experience;
 import core.nxg.enums.generic.Qualification;
+import core.nxg.enums.generic.JobType;
 import core.nxg.enums.generic.WorkMode;
 import core.nxg.enums.generic.professionalCert;
+import core.nxg.enums.generic.Gender;
 import core.nxg.enums.generic.MaritalStaus;
 import java.util.List;
 
-import com.neovisionaries.i18n.CountryCode;
-@Setter
-@Getter
+@Data
 @RequiredArgsConstructor
-@Entity
-(name = "tech_talent")
-public class TechTalentUser extends User{
+public class TechTalentDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long tech_id;
 
     @JsonFormat(pattern = "yyyy-MM-dd") 
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
-
-    private MaritalStaus maritalStatus;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -47,9 +40,10 @@ public class TechTalentUser extends User{
     @Enumerated(EnumType.STRING)
     private WorkMode workMode;
 
-    @OneToOne
-    @MapsId
-    private User user;
+    @Enumerated(EnumType.STRING)
+    private MaritalStaus maritalStatus;
+
+    private CountryCode countryCode;
 
     @Lob
     private byte[] resume;
@@ -60,13 +54,12 @@ public class TechTalentUser extends User{
     @Enumerated(EnumType.STRING)
     private professionalCert professionalCert;
 
-
+    private String password;
+    private String email;
+    private String firstName;
+    private String lastName;
     private String linkedInUrl;
-    
-    private CountryCode countryCode;
-
     private String Nationality;
-    
     private String city;
     private String state;
     private String residentialAddress;
@@ -76,9 +69,6 @@ public class TechTalentUser extends User{
     private String currentJob;
     private int yearsOfExperience;
     private List<String> skills;
-
-
-    
 
     
 }
