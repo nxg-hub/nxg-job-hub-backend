@@ -3,35 +3,31 @@ package core.nxg.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-import core.nxg.enums.generic.Experience;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import core.nxg.enums.generic.Gender;
-import core.nxg.enums.generic.JobType;
-import core.nxg.enums.generic.Qualification;
-import core.nxg.enums.generic.WorkMode;
-import core.nxg.enums.generic.professionalCert;
-import java.util.List;
 
-import com.neovisionaries.i18n.CountryCode;
+
+
+import java.util.Locale.IsoCountryCode;
+import core.nxg.enums.Experience;
+import core.nxg.enums.JobType;
+import core.nxg.enums.ProfessionalCert;
+import core.nxg.enums.Qualification;
+import core.nxg.enums.WorkMode;
+import core.nxg.entity.Skill;
+
 @Setter
 @Getter
 @RequiredArgsConstructor
 @Entity
 (name = "tech_talent")
-public class TechTalentUser extends User{
+public class TechTalentUser{
+
+ /**
+     * A tech talent type of User.
+     */
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long tech_id;
-
-    @JsonFormat(pattern = "yyyy-MM-dd") 
-    @Temporal(TemporalType.DATE)
-    private Date dateOfBirth;
-
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
 
     @Enumerated(EnumType.STRING)
     private Qualification highestQualification;
@@ -45,35 +41,29 @@ public class TechTalentUser extends User{
     @Enumerated(EnumType.STRING)
     private WorkMode workMode;
 
+    @Enumerated(EnumType.STRING)
+    private ProfessionalCert professionalCert;
+
+    @OneToMany
+    private Skill skills ;
+
+
     @OneToOne
     @MapsId
     private User user;
 
-    @Lob
-    private byte[] resume;
-
-    @Lob
-    private byte coverletter;
-
-    @Enumerated(EnumType.STRING)
-    private professionalCert professionalCert;
-
-
+    private String resume;
+    private String coverletter;
     private String linkedInUrl;
-    
-    private CountryCode countryCode;
-
+    private IsoCountryCode countryCode;
     private String Nationality;
-    
     private String city;
     private String state;
     private String residentialAddress;
     private String zipCode;
     private String location;
-    private String phoneNumber;
     private String currentJob;
     private int yearsOfExperience;
-    private List<String> skills;
 
 
     

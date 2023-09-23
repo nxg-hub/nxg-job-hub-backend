@@ -1,4 +1,4 @@
-package core.nxg.enums.generic;
+package core.nxg.enums;
 
 public enum Gender {
     FEMALE,

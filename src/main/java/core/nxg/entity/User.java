@@ -1,10 +1,11 @@
 package core.nxg.entity;
+import core.nxg.enums.Gender;
 import core.nxg.enums.UserType;
 import lombok.*;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import java.util.Date;
 import java.util.Collection;
 
 @Data
@@ -23,6 +24,17 @@ public class User implements UserDetails {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
+    private String username;
+
+    private String profilePicture; 
+
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -35,6 +47,23 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private TechTalentUser techTalent;
+
+
+///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private TechTalentAgent techTalentAgent;
+
+     @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    ///private Employer employer;
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+
+    @Column(name = "date_of_birth")    
+    private Date dateOfBirth;
+
 
 
 
