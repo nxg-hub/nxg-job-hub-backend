@@ -5,17 +5,21 @@ import lombok.RequiredArgsConstructor;
 
 
 import lombok.*;
+import core.nxg.enums.UserType;
+import core.nxg.enums.Gender;
 
 @Data
 @RequiredArgsConstructor
 @EqualsAndHashCode
-public class UserDto {
+public class UserDTO {
     
     private String username;
     private String firstName;
     private String lastName;
     private String profilePicture;
     private String email;
+    private Gender gender;
+    private UserType userType;
     private String password;
     private String phoneNumber;
     private String dateOfBirth;

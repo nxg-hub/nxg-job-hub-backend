@@ -13,9 +13,9 @@ import java.util.Locale;
 
 @Data
 @RequiredArgsConstructor
-public class TechTalentDto {
+public class TechTalentDTO {
 
-    
+    private String email;
     private Skill skills;
     private Qualification highestQualification;
     private Experience experienceLevel;

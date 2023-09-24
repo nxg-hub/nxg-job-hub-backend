@@ -5,7 +5,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.Date;
 import java.util.Collection;
 
 @Data
@@ -24,8 +23,7 @@ public class User implements UserDetails {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
-    private String username;
-
+    
     private String profilePicture; 
 
 
@@ -62,7 +60,7 @@ public class User implements UserDetails {
 //////////////////////////////////////////////
 
     @Column(name = "date_of_birth")    
-    private Date dateOfBirth;
+    private String dateOfBirth;
 
 
 

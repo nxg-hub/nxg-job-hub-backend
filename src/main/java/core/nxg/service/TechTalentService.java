@@ -1,12 +1,13 @@
 package core.nxg.service;
 
-import core.nxg.dto.TechTalentDto;
+import java.util.List;
+import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.TechTalentUser;
 
 
 public interface TechTalentService {
-    TechTalentUser createTechTalent(TechTalentDto techTalentDto);
-
+    TechTalentUser createTechTalent(TechTalentDTO techTalentDto) throws Exception;
+    List<TechTalentUser> getAllTechTalent() throws Exception;
    
         
 }

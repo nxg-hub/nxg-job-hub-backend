@@ -29,9 +29,9 @@ public class Application {
     @JoinColumn(name = "applicant_id", referencedColumnName = "id")
     private TechTalentUser applicant;
 
-
+////////////////////////////////////////////////////////////////////
     //@ManyToOne
-    //@JoinColumn(name = "job_id", referencedColumnName = "id")
-    //private Job job;
-    
+    //@JPrimaryKeyJoinColumn
+    //private Job job;\
+///////////////////////////////////////////////////////////////// 
 }
