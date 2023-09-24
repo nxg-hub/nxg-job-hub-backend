@@ -2,6 +2,7 @@ package core.nxg.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.Date;
 
 
 @Data
@@ -12,11 +13,11 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long notificationId;
 
     private String message;
 
-    private String timestamp;
+    private Date timestamp;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

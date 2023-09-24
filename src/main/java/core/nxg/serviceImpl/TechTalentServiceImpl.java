@@ -33,7 +33,6 @@ public class TechTalentServiceImpl implements TechTalentService {
         TechTalentUser techTalentUser = new TechTalentUser();
 
 
-
        
         techTalentUser.setNationality(TechTalentDto.getNationality());
         techTalentUser.setSkills(TechTalentDto.getSkills());

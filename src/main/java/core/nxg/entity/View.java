@@ -9,12 +9,15 @@ public class View {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long viewId;
+
+    private int viewCount;
+
 
 ////////////////////////////////////////////////
  //   @ManyToOne
-    //  @PrimaryKeyJoinColumn
-   // private Job job;
+    //@PrimaryKeyJoinColumn
+   // private JobPosting jobPosting;
 //////////////////////////////////////////////////
     
 }

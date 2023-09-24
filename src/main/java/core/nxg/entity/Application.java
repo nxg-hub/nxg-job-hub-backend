@@ -14,15 +14,15 @@ public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long applicationId;
 
     @Column(name = "application_date")
-    private Date date;
+    private Date timestamp;
 
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private ApplicationStatus status;
+    private ApplicationStatus applicationStatus;
 
 
     @ManyToOne
@@ -32,6 +32,6 @@ public class Application {
 ////////////////////////////////////////////////////////////////////
     //@ManyToOne
     //@JPrimaryKeyJoinColumn
-    //private Job job;\
+    //private JobPosting jobPosting;
 ///////////////////////////////////////////////////////////////// 
 }
