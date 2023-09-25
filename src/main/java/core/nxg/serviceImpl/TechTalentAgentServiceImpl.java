@@ -16,13 +16,18 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
     @Override
     public TechTalentAgent createAgents(TechTalentAgentDto agentDto) {
         TechTalentAgent techTalentAgent = new TechTalentAgent();
-        techTalentAgent.setUsername(agentDto.getUsername());
-        techTalentAgent.setEmail(agentDto.getEmail());
-        techTalentAgent.setPhone(agentDto.getPhone());
-        techTalentAgent.setPassword(agentDto.getPassword());
+        techTalentAgent.setAgentID(agentDto.getAgentID());
+        //Userid does not currently exist in the user class as at the time of pushing this code.
+        //techTalentAgent.setUserID(agentDto.getUserID());
+        techTalentAgent.setGender(agentDto.getGender());
+        techTalentAgent.setJobType(agentDto.getJobType());
+        techTalentAgent.setIndustryType(agentDto.getIndustryType());
+        techTalentAgent.setAddress(agentDto.getAddress());
+        techTalentAgent.setZipCode(agentDto.getZipCode());
         return techTalentAgentRepository.save(techTalentAgent);
     }
 
 }
+
 
 
