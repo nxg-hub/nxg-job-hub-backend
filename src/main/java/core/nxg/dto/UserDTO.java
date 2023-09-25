@@ -8,9 +8,8 @@ import lombok.*;
 import core.nxg.enums.UserType;
 import core.nxg.enums.Gender;
 
-@Data
-@RequiredArgsConstructor
-@EqualsAndHashCode
+@Getter
+@Setter
 public class UserDTO {
     
     private String username;

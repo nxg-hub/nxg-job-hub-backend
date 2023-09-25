@@ -1,24 +1,29 @@
 package core.nxg.entity;
 
+import core.nxg.enums.ReactionType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
+
 @Data
 @Entity
 @Table(name = "reaction")
 @RequiredArgsConstructor
-public class Reactions extends JobPosting{
+public class Reactions{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reactionID;
-    private String reactionType;
+    @Enumerated(EnumType.ORDINAL)
+    private ReactionType reactionType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private JobPosting jobPosting;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<JobPosting> jobPosting;
+
+    @ManyToMany
+    private List<Comments> comments;
 }

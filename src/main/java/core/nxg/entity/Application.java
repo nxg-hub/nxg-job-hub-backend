@@ -4,6 +4,8 @@ package core.nxg.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import core.nxg.enums.ApplicationStatus;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -17,16 +19,13 @@ public class Application {
     private Long applicationId;
 
     @Column(name = "application_date")
-    private Date timestamp;
-
+    private LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
     private ApplicationStatus applicationStatus;
 
-
-    @ManyToOne
-    @JoinColumn(name = "applicant_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "applicantid", referencedColumnName = "tech_id")
     private TechTalentUser applicant;
 
 ////////////////////////////////////////////////////////////////////

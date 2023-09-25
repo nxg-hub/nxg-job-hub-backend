@@ -2,16 +2,18 @@ package core.nxg.serviceImpl;
 
 import core.nxg.service.UserService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import core.nxg.dto.UserDTO;    
 import core.nxg.entity.User;
 import core.nxg.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
 
     @Autowired
     private UserRepository userRepository;
@@ -22,8 +24,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
 
-        User existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (existingUser != null) {
+        Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
+        if (existingUser.isPresent()) {
             throw new Exception("User already exists.");
         }
         User user = new User();
@@ -35,9 +37,8 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
         user.setPassword(userDTO.getPassword());
-        userRepository.save(user);
-     
-       return user;
+        return userRepository.saveAndFlush(user);
+
 
     }
 

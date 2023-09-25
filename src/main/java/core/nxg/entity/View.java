@@ -5,6 +5,7 @@ import lombok.*;
 
 @Data
 @RequiredArgsConstructor
+@Entity
 public class View {
 
     @Id
@@ -13,11 +14,9 @@ public class View {
 
     private int viewCount;
 
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private JobPosting jobPosting;
 
-////////////////////////////////////////////////
- //   @ManyToOne
-    //@PrimaryKeyJoinColumn
-   // private JobPosting jobPosting;
-//////////////////////////////////////////////////
     
 }

@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @RequiredArgsConstructor
 @Table(name = "agents")
-public class TechTalentAgent extends User {
+public class TechTalentAgent{
     @Id
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String agentID;
@@ -20,5 +18,7 @@ public class TechTalentAgent extends User {
     private String industryType;
     private String address;
     private String zipCode;
+    @OneToOne
+    private User user;
 
 }

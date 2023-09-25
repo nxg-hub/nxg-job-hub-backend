@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Service
-public interface UserService  {
-    User createUser(UserDTO userDto) throws Exception;
-    List<User> getAllUsers();
+public interface UserService {
+    User createUser(UserDTO userDto) throws Exception; //Should return UserDto instead of user
+    List<User> getAllUsers(); //Should be a pageable and also return Pageable of userdto
 }

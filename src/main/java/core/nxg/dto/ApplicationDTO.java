@@ -1,12 +1,15 @@
 package core.nxg.dto;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import core.nxg.entity.TechTalentUser;
+import lombok.Setter;
+
 import java.util.Date;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Setter
 public class ApplicationDTO {
 
    private Long applicationId;
