@@ -8,8 +8,10 @@ import core.nxg.entity.TechTalentUser;
 import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.User;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 
@@ -25,15 +27,12 @@ public class TechTalentServiceImpl implements TechTalentService {
    
     @Override
     public TechTalentUser createTechTalent(TechTalentDTO TechTalentDto) throws Exception {
-        User user = userRepository.findByEmail(TechTalentDto.getEmail());
-
-            if (user != null) {
+        Optional<User> user = userRepository.findByEmail(TechTalentDto.getEmail());
+            if (user.isPresent()) {
                     throw new Exception("User already exist.");
             }
         TechTalentUser techTalentUser = new TechTalentUser();
 
-
-       
         techTalentUser.setNationality(TechTalentDto.getNationality());
         techTalentUser.setSkills(TechTalentDto.getSkills());
         techTalentUser.setResidentialAddress(TechTalentDto.getResidentialAddress());
@@ -44,14 +43,15 @@ public class TechTalentServiceImpl implements TechTalentService {
         techTalentUser.setCountryCode(TechTalentDto.getCountryCode());
         techTalentUser.setWorkMode(TechTalentDto.getWorkMode());
         techTalentUser.setProfessionalCert(TechTalentDto.getProfessionalCert());
-        //techTalentUser.setUser(user);     
+
         return techTalentRepository.save(techTalentUser);
     }       
     
     @Override
-    public List<TechTalentUser> getAllTechTalent() throws Exception{
-
-        List<TechTalentUser> users = techTalentRepository.findAll();
-        return users;
+    public Page<TechTalentUser> getAllTechTalent() throws Exception{
+//
+//        List<TechTalentUser> users = techTalentRepository.findAll();
+//        return users;
+        return null;
     }
 }

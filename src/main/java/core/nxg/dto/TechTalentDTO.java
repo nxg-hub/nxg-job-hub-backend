@@ -11,8 +11,8 @@ import core.nxg.entity.Skill;
 //import java.util.List;
 import java.util.Locale;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Setter
 public class TechTalentDTO {
 
     private String email;

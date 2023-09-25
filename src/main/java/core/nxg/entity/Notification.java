@@ -2,6 +2,8 @@ package core.nxg.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -17,7 +19,7 @@ public class Notification {
 
     private String message;
 
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

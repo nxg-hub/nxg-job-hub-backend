@@ -21,10 +21,6 @@ import core.nxg.entity.Skill;
 (name = "tech_talent")
 public class TechTalentUser{
 
- /**
-     * A tech talent type of User.
-     */
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long tech_id;

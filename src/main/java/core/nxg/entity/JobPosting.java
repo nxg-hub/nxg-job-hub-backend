@@ -12,10 +12,8 @@ import java.util.List;
 @Table(name = "jobPosting")
 public class JobPosting {
     @Id
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String jobID;
     private String employerID;
     private String title;
     private String description;
@@ -24,12 +22,14 @@ public class JobPosting {
     private String deadline;
     private String location;
     private String tags;
-    private String comment;
     private String reaction;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Reactions> reactions;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Comments> comments;
+
+    @OneToOne
+    private View view;
 }

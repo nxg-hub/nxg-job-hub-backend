@@ -8,6 +8,7 @@ import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import core.nxg.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,8 +23,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
 
-        User existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (existingUser != null) {
+        Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
+        if (existingUser.isPresent()) {
             throw new Exception("User already exists.");
         }
         User user = new User();
@@ -35,9 +36,8 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
         user.setPassword(userDTO.getPassword());
-        userRepository.save(user);
-     
-       return user;
+        return userRepository.saveAndFlush(user);
+
 
     }
 

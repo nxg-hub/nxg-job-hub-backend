@@ -9,13 +9,11 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Table(name = "skills")
 public class Skill {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-
-    private String skillName;
+    private String skillName; //if skill ! in available skill add skill to available skill
 
     @ManyToOne
     @JoinColumn(name = "tech_id")

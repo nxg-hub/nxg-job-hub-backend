@@ -2,8 +2,8 @@ package core.nxg.dto;
 
 import lombok.*;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Setter
 public class TechTalentAgentDto {
     private String agentID;
     private String userID;

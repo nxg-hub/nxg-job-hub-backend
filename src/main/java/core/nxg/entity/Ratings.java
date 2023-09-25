@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import core.nxg.enums.Rating;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,11 @@ public class Ratings {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String ratingsID;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    private Rating rating;
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Employer employer;
 
 }

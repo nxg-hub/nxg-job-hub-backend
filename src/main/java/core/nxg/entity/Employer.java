@@ -6,15 +6,13 @@ import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "employer")
-public class Employer extends User {
+public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String employerID;
     private String companyName;
     private String companyDescription;
     private String position;
@@ -22,9 +20,8 @@ public class Employer extends User {
     private String country;
     private String industryType;
     private String companySize;
-    private String rating;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Ratings> ratings;
 
 }
