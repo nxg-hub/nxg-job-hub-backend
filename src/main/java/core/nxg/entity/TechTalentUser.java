@@ -12,7 +12,7 @@ import core.nxg.enums.JobType;
 import core.nxg.enums.ProfessionalCert;
 import core.nxg.enums.Qualification;
 import core.nxg.enums.WorkMode;
-import core.nxg.entity.Skill;
+import java.util.List;
 
 @Setter
 @Getter
@@ -22,14 +22,15 @@ import core.nxg.entity.Skill;
 public class TechTalentUser{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long tech_id;
+    @Column(name = "techId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long techId;
 
     @Enumerated(EnumType.STRING)
     private Qualification highestQualification;
 
     @Enumerated(EnumType.STRING)
-    private Experience experienceLevel;
+    private Experience experienceLevel; 
     
     @Enumerated(EnumType.STRING)
     private JobType jobType;
@@ -41,7 +42,7 @@ public class TechTalentUser{
     private ProfessionalCert professionalCert;
 
     @OneToMany
-    private Skill skills ;
+    private List<Skill<String>> skills ;
 
 
     @OneToOne

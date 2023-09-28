@@ -7,6 +7,7 @@ import core.nxg.enums.ProfessionalCert;
 import core.nxg.enums.Qualification;
 import core.nxg.enums.WorkMode;
 import core.nxg.entity.Skill;
+import java.util.List;
 
 //import java.util.List;
 import java.util.Locale;
@@ -16,7 +17,7 @@ import java.util.Locale;
 public class TechTalentDTO {
 
     private String email;
-    private Skill skills;
+    private List<Skill<String>> skills;
     private Qualification highestQualification;
     private Experience experienceLevel;
     private JobType jobType;

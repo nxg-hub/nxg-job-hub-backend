@@ -1,7 +1,5 @@
 package core.nxg.dto;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 
 import lombok.*;
