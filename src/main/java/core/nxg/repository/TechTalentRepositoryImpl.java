@@ -1,14 +1,20 @@
 package core.nxg.repository;
 import core.nxg.entity.TechTalentUser;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.Collections;
+
 import core.nxg.entity.User;
 
 public class TechTalentRepositoryImpl implements TechTalentRepository {
@@ -131,12 +137,30 @@ public void deleteAll() {
 
 @Override
 public List<TechTalentUser> findAll(Sort sort) {
-    throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    String sql = "SELECT * FROM tech_talent_users ORDER BY " + sort.toString();
+    JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    List<TechTalentUser> users = jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(TechTalentUser.class) );
+
+    if (users.isEmpty()) {
+        return Collections.emptyList();
+    }
+
+    return users;
 }
+
 
 @Override
 public Page<TechTalentUser> findAll(Pageable pageable) {
-    throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    String sql = "SELECT * FROM tech_talent_users ORDER BY " + pageable.toString();
+    PageImpl<TechTalentUser> page = new PageImpl<>(null, pageable, 0);
+    JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    List<TechTalentUser> users = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(TechTalentUser.class));
+
+    if (users.isEmpty()) {
+        return page.getPageable().isPaged() ? page : new PageImpl<>(users);
+    }
+
+    return new PageImpl<>(users, pageable, users.size());
 }
 
 @Override

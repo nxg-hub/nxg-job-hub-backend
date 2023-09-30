@@ -22,7 +22,7 @@ public class TechTalentDTO {
     private Experience experienceLevel;
     private JobType jobType;
     private WorkMode workMode;
-    private Locale.IsoCountryCode countryCode;
+    private Locale countryCode;
     private String resume;
     private String nationality;
     private byte coverletter;

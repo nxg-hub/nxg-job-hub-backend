@@ -8,10 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/tech-talent")
 public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @Autowired
@@ -21,7 +22,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         this.techTalentService = techTalentService;
     }
 
-    @PostMapping("/register/tech-talent")
+    @PostMapping("/register/")
     public ResponseEntity<TechTalentDTO> createTechTalentUser(@RequestBody T techTalentDTO) throws Exception {
         try {
             TechTalentDTO user = techTalentService.createTechTalent(techTalentDTO);
@@ -32,12 +33,14 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     }
 
 
-    @GetMapping("/users/tech-talent")
+    @GetMapping("/users/")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<TechTalentUser>> getAllTechTalentUsers(T techTalentDTO, S pageable) {
         try {
             Page<TechTalentUser> users = techTalentService.getAllTechTalent(techTalentDTO, pageable);
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.print(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

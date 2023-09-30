@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public interface  UserService<T> {
-    T createUser(UserDTO userDto) throws Exception; //Should return UserDto instead of user
+    String createUser(UserDTO userDto) throws Exception; //Should return UserDto instead of user
     Page<User> getAllUsers(Pageable pageable); //Should be a pageable and also return Pageable of userdto
-    User login(LoginDTO loginDto) throws Exception;
+    String login(LoginDTO loginDTO ) throws Exception;
 }

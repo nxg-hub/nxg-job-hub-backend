@@ -31,10 +31,12 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         if (user.isPresent()) {
             throw new UserAlreadyExistException("User already exists.");
         }
+        else{
         //
         TechTalentUser techTalentUser = new TechTalentUser();
         User user1 = techTalentUser.getUser();
         user1.setEmail(techTalentDto.getEmail());
+        user.get().setId(user1.getId());
 
 
         techTalentUser.setNationality(techTalentDto.getNationality());
@@ -48,7 +50,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setWorkMode(techTalentDto.getWorkMode());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
     
-        techTalentRepository.save(techTalentUser);
+        techTalentRepository.save(techTalentUser);}
         return techTalentDto;
     }       
     

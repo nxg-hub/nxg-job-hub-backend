@@ -6,13 +6,14 @@ import lombok.*;
 
 
 
-import java.util.Locale.IsoCountryCode;
+//import java.util.Locale.IsoCountryCode;
 import core.nxg.enums.Experience;
 import core.nxg.enums.JobType;
 import core.nxg.enums.ProfessionalCert;
 import core.nxg.enums.Qualification;
 import core.nxg.enums.WorkMode;
 import java.util.List;
+import java.util.Locale;
 
 @Setter
 @Getter
@@ -52,7 +53,7 @@ public class TechTalentUser{
     private String resume;
     private String coverletter;
     private String linkedInUrl;
-    private IsoCountryCode countryCode;
+    private Locale countryCode;
     private String Nationality;
     private String city;
     private String state;

@@ -7,7 +7,10 @@ public final class Endpoints {
             "http://localhost:4200",
             "https://localhost:4200",
             "/swagger","/swagger-ui/**",
-            "/v3/**"
+            "/v3/**",
+            "/api/v1/auth/tech-talent/**",
+            "/api/v1/auth/**"
+            
     };
 
 

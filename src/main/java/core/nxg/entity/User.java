@@ -1,20 +1,20 @@
 package core.nxg.entity;
-import core.nxg.enums.Gender;
-import core.nxg.enums.UserType;
+
 import lombok.*;
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 
-@Data
+
+
+import core.nxg.enums.Gender;
+
+
 @RequiredArgsConstructor
 @Entity
+@Data
 @Table(name = "users")
-public class User implements UserDetails {
-
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -38,8 +38,9 @@ public class User implements UserDetails {
 
     private LocalDateTime dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+    @Column(name = "roles")
+    private String roles;
+
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
@@ -54,40 +55,5 @@ public class User implements UserDetails {
     private Employer employer;
 
 
-
-
-
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
     
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

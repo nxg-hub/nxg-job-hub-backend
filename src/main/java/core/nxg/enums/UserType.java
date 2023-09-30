@@ -1,9 +1,15 @@
 package core.nxg.enums;
+import org.springframework.security.core.GrantedAuthority;
 
-public enum UserType {
+public enum UserType implements GrantedAuthority {
     TECHTALENT,
     AGENT,
     EMPLOYER,
-    ADMIN
+    ADMIN;
     
+    @Override
+    public String getAuthority() {
+        return name();
+    }
+
 }
