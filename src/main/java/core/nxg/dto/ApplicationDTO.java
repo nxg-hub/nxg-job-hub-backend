@@ -1,20 +1,19 @@
 package core.nxg.dto;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import core.nxg.entity.TechTalentUser;
+import core.nxg.enums.ApplicationStatus;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class ApplicationDTO {
 
    private Long applicationId;
-   private String applicationStatus;
-   private Date timestamp;
+   private ApplicationStatus applicationStatus;
+   private LocalDateTime timestamp;
    private TechTalentUser applicant;
 
     

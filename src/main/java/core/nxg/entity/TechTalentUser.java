@@ -6,13 +6,15 @@ import lombok.*;
 
 
 
-import java.util.Locale.IsoCountryCode;
+//import java.util.Locale.IsoCountryCode;
 import core.nxg.enums.Experience;
 import core.nxg.enums.JobType;
 import core.nxg.enums.ProfessionalCert;
 import core.nxg.enums.Qualification;
 import core.nxg.enums.WorkMode;
-import core.nxg.entity.Skill;
+import java.util.List;
+import java.util.Locale;
+
 
 @Setter
 @Getter
@@ -22,14 +24,15 @@ import core.nxg.entity.Skill;
 public class TechTalentUser{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long tech_id;
+    @Column(name = "techId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long techId;
 
     @Enumerated(EnumType.STRING)
     private Qualification highestQualification;
 
     @Enumerated(EnumType.STRING)
-    private Experience experienceLevel;
+    private Experience experienceLevel; 
     
     @Enumerated(EnumType.STRING)
     private JobType jobType;
@@ -39,19 +42,18 @@ public class TechTalentUser{
 
     @Enumerated(EnumType.STRING)
     private ProfessionalCert professionalCert;
+    
+    @OneToMany(mappedBy = "techTalentUser", cascade = CascadeType.PERSIST)
+    private List<Skill<String>> skills ;
 
-    @OneToMany
-    private Skill skills ;
-
-
-    @OneToOne
+    @OneToOne()
     @MapsId
     private User user;
 
     private String resume;
     private String coverletter;
     private String linkedInUrl;
-    private IsoCountryCode countryCode;
+    private Locale countryCode;
     private String Nationality;
     private String city;
     private String state;
@@ -62,7 +64,10 @@ public class TechTalentUser{
     private int yearsOfExperience;
 
 
-    
+     public void addSkill(Skill<String> skill) {
+        skills.add(skill);
+        skill.setTechTalentUser(this);
+    }
 
     
 }

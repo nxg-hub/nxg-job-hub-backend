@@ -1,8 +1,6 @@
 package core.nxg.dto;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import java.util.Date;
 import core.nxg.entity.User;
 import lombok.Setter;

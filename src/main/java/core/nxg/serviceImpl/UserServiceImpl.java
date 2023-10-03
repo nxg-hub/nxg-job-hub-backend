@@ -4,54 +4,96 @@ import core.nxg.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import core.nxg.configs.JwtService;
+import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;    
 import core.nxg.entity.User;
+import core.nxg.exceptions.AccountExpiredException;
+import core.nxg.exceptions.UserAlreadyExistException;
+import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
-import java.util.List;
+//import java.util.List;
 import java.util.Optional;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import core.nxg.entity.UserInfoDetails;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService<UserDTO> {
+    @Autowired
+    private final UserRepository userRepository;
+
 
     @Autowired
-    private UserRepository userRepository;
-    
-    public UserServiceImpl(UserRepository userRepository){
-                this.userRepository = userRepository;
-}
-    @Override
-    public User createUser(UserDTO userDTO) throws Exception {
+    private final JwtService jwt;
 
-        Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
+     @Autowired
+    private PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    public String encodePassword(String password) {
+        return encoder.encode(password);
+    
+    }
+
+    @Override
+    public String createUser(UserDTO userDTO) throws Exception {
+
+        Optional<User> existingUser = userRepository.findByEmail(userDTO.getUsername());
         if (existingUser.isPresent()) {
-            throw new Exception("User already exists.");
+            throw new UserAlreadyExistException("User with email already exists.");
         }
         User user = new User();
-        user.setEmail(userDTO.getEmail());
+        System.out.println("Creating new user and setting paswword!!");
+        user.setPassword(encodePassword(userDTO.getPassword()));
+
+        user.setEmail(userDTO.getUsername());
         user.setFirstName(userDTO.getFirstName());
         user.setGender(userDTO.getGender());
         user.setLastName(userDTO.getLastName());
-        user.setUserType(userDTO.getUserType());
+        user.setRoles(userDTO.getRoles());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
-        user.setPassword(userDTO.getPassword());
-        return userRepository.saveAndFlush(user);
+        System.out.println("Successfully created ");
+
+        userRepository.saveAndFlush(user);
+        return "User saved Successfully";
 
 
     }
+
 
     @Override
-    public List<User> getAllUsers(){
+    public Page<User> getAllUsers(Pageable pageable){
+        return userRepository.findAll(pageable);}
 
-        List<User> users = userRepository.findAll();
-        return users;
+        //Page<User> users = userRepository.findAll();
+    @Override
+    public String login(LoginDTO loginDTO) throws Exception {
+        
+        Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
+        UserInfoDetails userInfoDetails = new UserInfoDetails(user.get());
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException( "Wrong username or password!");
 
+         } 
+        if (!encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
+            throw new UserNotFoundException("Wrong username or password!");
+        }
+        if (!userInfoDetails.isEnabled()) {
+            throw new UsernameNotFoundException( "User account is not enabled!");}
+
+         else {
+            String token = jwt.generateToken(new UserInfoDetails(user.get()));
+            loginDTO.setToken(token);
+            return loginDTO.getToken();
+             
+         }
     }
-
-
-
-
-    
 }
