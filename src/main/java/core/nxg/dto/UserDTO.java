@@ -5,6 +5,8 @@ package core.nxg.dto;
 import lombok.*;
 import core.nxg.enums.Gender;
 
+import java.util.Date;
+
 
 
 @Data
@@ -19,7 +21,7 @@ public class UserDTO {
     private String roles;
     private String password;
     private String phoneNumber;
-    private String dateOfBirth;
+    private Date dateOfBirth;
     private String Nationality;
 
 }

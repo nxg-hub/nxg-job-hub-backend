@@ -12,7 +12,9 @@ import core.nxg.configs.JwtService;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;    
 import core.nxg.entity.User;
+import core.nxg.exceptions.AccountExpiredException;
 import core.nxg.exceptions.UserAlreadyExistException;
+import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.util.Optional;
@@ -74,16 +76,23 @@ public class UserServiceImpl implements UserService<UserDTO> {
         //Page<User> users = userRepository.findAll();
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
-
+        
         Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
-            if (!user.isPresent() && !user.get().getPassword().equals(loginDTO.getPassword())) {
-                throw new UsernameNotFoundException( "Wrong username or password!");
+        UserInfoDetails userInfoDetails = new UserInfoDetails(user.get());
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException( "Wrong username or password!");
 
          } 
+        if (!encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
+            throw new UserNotFoundException("Wrong username or password!");
+        }
+        if (!userInfoDetails.isEnabled()) {
+            throw new UsernameNotFoundException( "User account is not enabled!");}
+
          else {
             String token = jwt.generateToken(new UserInfoDetails(user.get()));
             loginDTO.setToken(token);
-            return token;
+            return loginDTO.getToken();
              
          }
     }

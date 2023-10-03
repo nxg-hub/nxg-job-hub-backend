@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import core.nxg.enums.Gender;
 
@@ -44,14 +44,17 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
+    @JsonIgnore
     private TechTalentUser techTalent;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @PrimaryKeyJoinColumn 
+    @JsonIgnore
     private TechTalentAgent techTalentAgent;
 
      @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
+    @JsonIgnore
     private Employer employer;
 
 

@@ -17,26 +17,34 @@ public class Skill<E> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "skill_name")
     private String skillName; //if skill ! in available skill add skill to available skill
-   ;    
+   
     private List<String> availableSkills = Arrays.asList(
             "Java",
             "Python",
             "C Sharp"
     );
     @ManyToOne
-    @PrimaryKeyJoinColumn
+    @PrimaryKeyJoinColumn(name = "techId")
     private TechTalentUser techTalentUser;
     
     public Skill(String skillName, ArrayList<E> availableSkills){
         this.skillName = skillName;
         this.availableSkills = new ArrayList<>();
+        this.addSkillIfNotExists(skillName);
 
     }
     public void addSkillIfNotExists(String skillName) {
         if (!availableSkills.contains(skillName)) {
-            availableSkills.add(0, skillName);
+            availableSkills.add(skillName);
         }
     }
     
-}
+    public Skill<E> addAllSkillsIfNotExist(List<Skill<E>> skills) {
+        for (Skill<?> skill : skills) {
+            addSkillIfNotExists((String) skill.getSkillName());
+        }
+        return this;
+    }
+} 

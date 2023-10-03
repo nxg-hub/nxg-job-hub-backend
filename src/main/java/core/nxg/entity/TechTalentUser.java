@@ -15,6 +15,7 @@ import core.nxg.enums.WorkMode;
 import java.util.List;
 import java.util.Locale;
 
+
 @Setter
 @Getter
 @RequiredArgsConstructor
@@ -41,12 +42,11 @@ public class TechTalentUser{
 
     @Enumerated(EnumType.STRING)
     private ProfessionalCert professionalCert;
-
-    @OneToMany
+    
+    @OneToMany(mappedBy = "techTalentUser", cascade = CascadeType.PERSIST)
     private List<Skill<String>> skills ;
 
-
-    @OneToOne
+    @OneToOne()
     @MapsId
     private User user;
 
@@ -64,7 +64,10 @@ public class TechTalentUser{
     private int yearsOfExperience;
 
 
-    
+     public void addSkill(Skill<String> skill) {
+        skills.add(skill);
+        skill.setTechTalentUser(this);
+    }
 
     
 }

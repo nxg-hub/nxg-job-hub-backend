@@ -12,8 +12,7 @@ import java.util.List;
 //import java.util.List;
 import java.util.Locale;
 
-@Getter
-@Setter
+@Data
 public class TechTalentDTO {
 
     private String email;
@@ -25,14 +24,20 @@ public class TechTalentDTO {
     private Locale countryCode;
     private String resume;
     private String nationality;
-    private byte coverletter;
+    private String coverletter;
+    private String state;
     private ProfessionalCert professionalCert;    
     private String linkedInUrl;
     private String residentialAddress;
+    private String city;
     private String zipCode;
     private String location;
     private String currentJob;
     private int yearsOfExperience;
+    private TechTalentDTO message;
+
+    
+
 
     
 }

@@ -11,7 +11,14 @@ public final class Endpoints {
             "/api/v1/auth/tech-talent/**",
             "/api/v1/auth/**"
             
+            
+    };
+
+    public static final String SECURED_ENDPOINT = "/api/v1/auth/**";
+ 
+
+
     };
 
 
-}
+

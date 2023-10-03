@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import static core.nxg.utils.Endpoints.UNSECURED_ENDPOINT;
 
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
