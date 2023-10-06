@@ -6,7 +6,6 @@ import lombok.*;
 import core.nxg.enums.ApplicationStatus;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data
@@ -25,12 +24,11 @@ public class Application {
     private ApplicationStatus applicationStatus;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "applicantid", referencedColumnName = "tech_id")
+    @PrimaryKeyJoinColumn
     private TechTalentUser applicant;
 
-////////////////////////////////////////////////////////////////////
-    //@ManyToOne
-    //@JPrimaryKeyJoinColumn
-    //private JobPosting jobPosting;
-///////////////////////////////////////////////////////////////// 
+
+    @ManyToOne
+    @PrimaryKeyJoinColumn
+    private JobPosting jobPosting;
 }

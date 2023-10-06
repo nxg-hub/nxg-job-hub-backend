@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long>{
     Optional<List<Application>> findByApplicant(TechTalentUser applicant);
-    Optional<List<Application>>findByStatus(ApplicationStatus status);
+    Optional<List<Application>>findByApplicationStatus(ApplicationStatus applicationStatus);
     
 }
