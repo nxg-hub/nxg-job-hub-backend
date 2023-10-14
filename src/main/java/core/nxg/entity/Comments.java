@@ -18,5 +18,6 @@ public class Comments{
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private JobPosting jobPosting;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column(nullable = true)
     private List<Reactions> reactions;
 }
