@@ -1,6 +1,7 @@
 package core.nxg.controller;
 
 import core.nxg.dto.CommentsDto;
+import core.nxg.entity.Comments;
 import core.nxg.service.CommentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class CommentsController {
     }
 
     @GetMapping("/comments-by-{jobID}")
-    public ResponseEntity<List<CommentsDto>> getAllCommentsByJobID(@PathVariable String jobID) {
+    public ResponseEntity<List<CommentsDto>> getAllCommentsByJobID(@PathVariable Long jobID) {
         List<CommentsDto> comments = commentsService.getAllCommentsByJobID(jobID);
         return ResponseEntity.ok(comments);
     }
@@ -35,8 +36,8 @@ public class CommentsController {
 //    }
 
     @PostMapping("/create")
-    public ResponseEntity<CommentsDto> createComment(@RequestBody CommentsDto commentsDto) {
-        CommentsDto createdComment = commentsService.createComments(commentsDto);
+    public ResponseEntity<Comments> createComment(@RequestBody CommentsDto commentsDto) {
+        Comments createdComment = commentsService.createComments(commentsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
     }
     @PutMapping("/update/{id}")
