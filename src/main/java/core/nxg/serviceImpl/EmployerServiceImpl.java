@@ -8,8 +8,11 @@ import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.EmployerService;
+import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -18,29 +21,36 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+//TODO use map to dto properly
 public class EmployerServiceImpl implements EmployerService {
 
     private final EmployerRepository employerRepository;
     private final UserRepository userRepository;
+    private final Helper helper;
     // private JavaLangInvokeAccess principal;
 
     @Override
     public List<EmployerDto> getAllEmployers() {
+
+        //TODO return pageable
         return employerRepository.findAll()
                 .stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-   // @Override
-    //public Employer createEmployer(EmployerDto employerDto) {
 
+    //TODO refactor to use HttpServletRequest
         @Override
-        public Employer createEmployer (EmployerDto employerDto, Principal principal){
+        public Employer createEmployer (EmployerDto employerDto, Principal principal /*HttpServletRequest request*/){
             String loggedInUserEmail = principal.getName();
+
+            //User user = helper.extractLoggedInUser(request);
 
             User user = userRepository.findByEmail(loggedInUserEmail)
                     .orElseThrow(() -> new NotFoundException("User with email " + loggedInUserEmail + " not found"));
 
             Employer employer = new Employer();
+            //TODO refactor code
+            //helper.copyFromDto(employerDto,employer);
             employer.setCompanyName(employerDto.getCompanyName());
             employer.setCompanyDescription(employerDto.getCompanyDescription());
             employer.setPosition(employerDto.getPosition());
@@ -88,6 +98,8 @@ public class EmployerServiceImpl implements EmployerService {
         return employerDto;
     }
 
+
+    //TODO return a response
     @Override
     public void deleteEmployer(Long employerId) {
         Employer employer = employerRepository.findById(employerId)
