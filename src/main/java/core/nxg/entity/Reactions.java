@@ -17,7 +17,7 @@ public class Reactions{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private ReactionType reactionType;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)

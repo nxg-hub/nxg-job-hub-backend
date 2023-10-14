@@ -11,12 +11,15 @@ import java.util.List;
 
 //import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Data
 public class TechTalentDTO {
 
     private String email;
+    private Set<Skill> skill;
     private List<Skill<String>> skills;
+//5eac8a4eecfadf8a951c65e436ab64b039cb837b
     private Qualification highestQualification;
     private Experience experienceLevel;
     private JobType jobType;
