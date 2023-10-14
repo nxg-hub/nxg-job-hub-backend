@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @ControllerAdvice
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler({TokenNotFoundException.class, NoSuchElementException.class})
+    @ExceptionHandler(TokenNotFoundException.class)
     @ResponseStatus(HttpStatus.ALREADY_REPORTED)
     public ResponseEntity<ErrorResponseDto> handleTokenNotFoundException(final TokenNotFoundException ex) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto();

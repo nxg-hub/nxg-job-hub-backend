@@ -1,7 +1,7 @@
 package core.nxg.dto;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+
 
 @Data
 @RequiredArgsConstructor
@@ -11,4 +11,5 @@ public class LoginDTO {
     private String password;
     private String token;
 
-}
+
+    }

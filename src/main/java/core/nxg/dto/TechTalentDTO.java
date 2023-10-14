@@ -7,8 +7,6 @@ import core.nxg.enums.ProfessionalCert;
 import core.nxg.enums.Qualification;
 import core.nxg.enums.WorkMode;
 import core.nxg.entity.Skill;
-import core.nxg.entity.TechTalentUser;
-
 import java.util.List;
 
 //import java.util.List;
@@ -16,7 +14,6 @@ import java.util.Locale;
 import java.util.Set;
 
 @Data
-@RequiredArgsConstructor
 public class TechTalentDTO {
 
     private String email;
@@ -40,29 +37,7 @@ public class TechTalentDTO {
     private String location;
     private String currentJob;
     private int yearsOfExperience;
-
-    public TechTalentDTO(TechTalentUser user) {
-        this.skills = user.getSkills();
-        this.highestQualification = user.getHighestQualification();
-        this.experienceLevel = user.getExperienceLevel();
-        this.jobType = user.getJobType();
-        this.workMode = user.getWorkMode();
-        this.countryCode = user.getCountryCode();
-        this.resume = user.getResume();
-        this.nationality = user.getNationality();
-        this.coverletter = user.getCoverletter();
-        this.state = user.getState();
-        this.professionalCert = user.getProfessionalCert();
-        this.linkedInUrl = user.getLinkedInUrl();
-        this.residentialAddress = user.getResidentialAddress();
-        this.city = user.getCity();
-        this.zipCode = user.getZipCode();
-        this.location = user.getLocation();
-        this.currentJob = user.getCurrentJob();
-        this.yearsOfExperience = user.getYearsOfExperience();
-        
-    }
-
+    private TechTalentDTO message;
 
     
 

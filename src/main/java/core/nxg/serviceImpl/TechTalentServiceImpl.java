@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import core.nxg.entity.Skill;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.dto.TechTalentDTO;
-import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import java.util.Optional;
 
@@ -35,10 +34,21 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     public TechTalentDTO createTechTalent(TechTalentDTO techTalentDto) throws Exception {
         Optional<User> userOptional = userRepository.findByEmail(techTalentDto.getEmail());
 
-            if (userOptional.isEmpty()) {
+        try {
+            if (!userOptional.isPresent()) {
             throw new UserNotFoundException("Account with this email does not exist. Create an account!");}
 
+        if (techTalentDto.getSkills() != null){
 
+            List<Skill<String>> newSkills = new ArrayList<>();
+            for (Skill<String> skillName : techTalentDto.getSkills()) {
+                SkillNames skillNames = new SkillNames();
+                Skill<String> skill = new Skill<String>();
+                skill.addAllSkillsIfNotExist((List<Skill<String>>) techTalentDto.getSkills());
+                newSkills.add(skill);
+            }
+                techTalentDto.getSkills().addAll(newSkills);
+      
     
         // Your code here
         //
@@ -73,37 +83,27 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
         user.setTechTalent(techTalentUser);
         techTalentUser.setUser(user);
-        techTalentRepository.saveAndFlush(techTalentUser);
-
+        techTalentRepository.saveAndFlush(techTalentUser);}
+        }catch(Exception e){   
+            throw new Exception("Oops! Something went wrong. Please check and try again!");   
+        }
         return techTalentDto;          
 
 
-    } ;
+    } 
             
 
     
-  
-    
     @Override
-    public Page<TechTalentDTO> getAllTechTalent(Pageable pageable) throws Exception {
-        Page<TechTalentUser> techTalentUser = techTalentRepository.findAll(pageable);
-        return techTalentUser.map(TechTalentDTO::new);
+    public Page<TechTalentUser> getAllTechTalent(TechTalentDTO techTalentDto, Pageable pageable) throws Exception {
+        List<TechTalentUser> techTalentUser = techTalentRepository.findAll();
+        return techTalentRepository.findAll((Pageable) pageable);
        
     }
-
-        //return techTalentRepository.findAll((Pageable) pageable);
-       
 
     
 
 };
-
-
-
-
-
-
-
 
 
     

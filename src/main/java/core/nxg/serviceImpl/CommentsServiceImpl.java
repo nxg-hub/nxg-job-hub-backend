@@ -16,22 +16,21 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-//TODO use map to dto properly
 public class CommentsServiceImpl implements CommentsService {
 
     private final CommentsRepository commentsRepository;
     private final JobPostingRepository jobPostingRepository;
 
     @Override
-    public Comments createComments(CommentsDto commentsDto) {
+    public CommentsDto createComments(CommentsDto commentsDto) {
         JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(commentsDto.getJobID())
                 .orElseThrow(() -> new NotFoundException("Job posting with ID " + commentsDto.getJobID() + " not found"));
 
         Comments comments = new Comments();
         comments.setComment(commentsDto.getComment());
         comments.setJobPosting(jobPosting);
-        return commentsRepository.saveAndFlush(comments);
-//        return mapToDto(savedComment);
+        Comments savedComment = commentsRepository.save(comments);
+        return mapToDto(savedComment);
     }
 
     @Override
@@ -40,29 +39,20 @@ public class CommentsServiceImpl implements CommentsService {
         return comments.stream().map(this::mapToDto).collect(Collectors.toList());
     }
     @Override
-    public List<CommentsDto> getAllCommentsByJobID(Long jobID) {
-        JobPosting jobPosting = jobPostingRepository.findById(jobID).orElseThrow(
-                ()-> new NotFoundException("Job Posting not found")
-        );
-
-        List<Comments> comments = commentsRepository.findByJobPosting(jobPosting);
-
-        /*TODO Return A Pageable of Comments */
-
+    public List<CommentsDto> getAllCommentsByJobID(String jobID) {
+        List<Comments> comments = commentsRepository.findAllByJobPostingJobID(jobID);
         return comments.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-
-    // TODO create updateCommentDTO, remove map to DTO, remove jobPosting
     @Override
     public CommentsDto updateComments(CommentsDto commentsDto, Long id) {
         Comments comments = commentsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Comments with ID " + id + " not found"));
-//        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(commentsDto.getJobID())
-//                .orElseThrow(() -> new NotFoundException("Job posting with ID " + commentsDto.getJobID() + " not found"));
+        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(commentsDto.getJobID())
+                .orElseThrow(() -> new NotFoundException("Job posting with ID " + commentsDto.getJobID() + " not found"));
 
         comments.setComment(commentsDto.getComment());
-//        comments.setJobPosting(jobPosting);
+        comments.setJobPosting(jobPosting);
         comments = commentsRepository.save(comments);
         return mapToDto(comments);
     }
@@ -74,7 +64,6 @@ public class CommentsServiceImpl implements CommentsService {
         return mapToDto(comments);
     }
 
-    //TODO add a return statement
     @Override
     public void deleteCommentById(Long id) {
         Comments comments = commentsRepository.findById(id)

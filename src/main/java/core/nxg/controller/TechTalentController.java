@@ -5,7 +5,6 @@ import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.service.TechTalentService;
-import jakarta.validation.Valid;
 import core.nxg.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,47 +43,42 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     }
 
     @PostMapping("/register/")
-    public ResponseEntity<String> createTechTalentUser(@RequestBody TechTalentDTO techTalentDTO) {
+    @PreAuthorize("hasAuthority('ROLE_TECHTALENT')")
+    public ResponseEntity<String> createTechTalentUser(@RequestBody(required = false) T techTalentDTO) throws Exception {
+        if (techTalentDTO == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please provide the required fields");
 
-        // Check if the user with the provided email exists
-        Optional<User> existingUser = userRepository.findByEmail(techTalentDTO.getEmail());
-        if (existingUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User does not exist");
         }
+        Optional<User >Optional = userRepository.findByEmail(techTalentDTO.getEmail());
+        Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(Optional.get().getTechTalent().getTechId());
+        if (techTalentUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists");
+        }  
+        try {
+            TechTalentDTO user = techTalentService.createTechTalent(techTalentDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("TechTalent User created successfully");
+        } catch (UserNotFoundException e) {
+ 
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+                //e.printStackTrace();
 
-        // Check if a TechTalentUser already exists for this User
-        Optional<TechTalentUser> existingTechTalentUser = techTalentRepository.findByUser(existingUser.get());
-        if (existingTechTalentUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("TechTalent User already exists");
-        } 
-        else{
-
-            try {
-                // Create the TechTalentUser and return a success response
-                techTalentService.createTechTalent(techTalentDTO);
-                return ResponseEntity.status(HttpStatus.CREATED).body("TechTalent User created successfully");
-            } catch (UserNotFoundException e) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            } catch (Exception e) {
-                logger.error("Error creating TechTalentUser: {}", e.getMessage());
-                return ResponseEntity.badRequest().body("An error occurred while creating the TechTalent User");
-            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        
+        }
     }
-}
-
     
 
 
     @GetMapping("/users/")
-    public ResponseEntity<Page<TechTalentDTO>> getAllTechTalentUsers(Pageable pageable) {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<TechTalentUser>> getAllTechTalentUsers(T techTalentDTO, S pageable) {
         try {
-            Page<TechTalentDTO> users = techTalentService.getAllTechTalent(pageable);
+            Page<TechTalentUser> users = techTalentService.getAllTechTalent(techTalentDTO, pageable);
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             System.out.print(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    
 }
