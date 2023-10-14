@@ -39,7 +39,6 @@ public class CommentsController {
         CommentsDto createdComment = commentsService.createComments(commentsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
     }
-
     @PutMapping("/update/{id}")
     public ResponseEntity<CommentsDto> updateComment(@PathVariable Long id, @RequestBody CommentsDto commentsDto) {
         CommentsDto updatedComment = commentsService.updateComments(commentsDto, id);
