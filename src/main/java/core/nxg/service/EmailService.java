@@ -1,23 +1,21 @@
 package core.nxg.service;
 
 
-import java.io.UnsupportedEncodingException;
-import java.util.Optional;
-
+import core.nxg.dto.UserDTO;
+import core.nxg.entity.User;
+import core.nxg.entity.VerificationCode;
+import core.nxg.repository.UserRepository;
+import core.nxg.repository.VerificationCodeRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import core.nxg.dto.UserDTO;
-import core.nxg.entity.User;
-import core.nxg.entity.VerificationCode;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import core.nxg.repository.UserRepository;
-import core.nxg.repository.VerificationCodeRepository;
+import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 
 
 @Service
