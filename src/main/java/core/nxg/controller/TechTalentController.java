@@ -50,6 +50,8 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
         }
         Optional<User >Optional = userRepository.findByEmail(techTalentDTO.getEmail());
+        if (Optional.isEmpty()){
+            throw new UserNotFoundException("User does not exist");}
         Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(Optional.get().getTechTalent().getTechId());
         if (techTalentUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists");

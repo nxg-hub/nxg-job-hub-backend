@@ -34,21 +34,10 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     public TechTalentDTO createTechTalent(TechTalentDTO techTalentDto) throws Exception {
         Optional<User> userOptional = userRepository.findByEmail(techTalentDto.getEmail());
 
-        try {
-            if (!userOptional.isPresent()) {
+            if (userOptional.isEmpty()) {
             throw new UserNotFoundException("Account with this email does not exist. Create an account!");}
 
-        if (techTalentDto.getSkills() != null){
 
-            List<Skill<String>> newSkills = new ArrayList<>();
-            for (Skill<String> skillName : techTalentDto.getSkills()) {
-                SkillNames skillNames = new SkillNames();
-                Skill<String> skill = new Skill<String>();
-                skill.addAllSkillsIfNotExist((List<Skill<String>>) techTalentDto.getSkills());
-                newSkills.add(skill);
-            }
-                techTalentDto.getSkills().addAll(newSkills);
-      
     
         // Your code here
         //
@@ -83,14 +72,12 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
         user.setTechTalent(techTalentUser);
         techTalentUser.setUser(user);
-        techTalentRepository.saveAndFlush(techTalentUser);}
-        }catch(Exception e){   
-            throw new Exception("Oops! Something went wrong. Please check and try again!");   
-        }
+        techTalentRepository.saveAndFlush(techTalentUser);
+
         return techTalentDto;          
 
 
-    } 
+    } ;
             
 
     
