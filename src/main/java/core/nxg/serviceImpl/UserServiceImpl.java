@@ -16,6 +16,8 @@ import core.nxg.exceptions.AccountExpiredException;
 import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
+import core.nxg.repository.VerificationCodeRepository;
+
 //import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import core.nxg.entity.UserInfoDetails;
+import core.nxg.entity.VerificationCode;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +33,15 @@ public class UserServiceImpl implements UserService<UserDTO> {
     @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
+    private final VerificationCodeRepository verificationRepo;
+
 
     @Autowired
     private final JwtService jwt;
 
-     @Autowired
-    private PasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public String encodePassword(String password) {
         return encoder.encode(password);
@@ -50,7 +56,6 @@ public class UserServiceImpl implements UserService<UserDTO> {
             throw new UserAlreadyExistException("User with email already exists.");
         }
         User user = new User();
-        System.out.println("Creating new user and setting paswword!!");
         user.setPassword(encodePassword(userDTO.getPassword()));
 
         user.setEmail(userDTO.getUsername());
@@ -60,9 +65,11 @@ public class UserServiceImpl implements UserService<UserDTO> {
         user.setRoles(userDTO.getRoles());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
-        System.out.println("Successfully created ");
-
+        VerificationCode verificationCode = new VerificationCode(user);
+        
         userRepository.saveAndFlush(user);
+        verificationRepo.saveAndFlush(verificationCode);
+
         return "User saved Successfully";
 
 
@@ -78,11 +85,9 @@ public class UserServiceImpl implements UserService<UserDTO> {
     public String login(LoginDTO loginDTO) throws Exception {
         
         Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
+        if (user.isEmpty()){ throw new UsernameNotFoundException("Username does not exist");}
         UserInfoDetails userInfoDetails = new UserInfoDetails(user.get());
-        if (!user.isPresent()) {
-            throw new UsernameNotFoundException( "Wrong username or password!");
 
-         } 
         if (!encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
             throw new UserNotFoundException("Wrong username or password!");
         }
