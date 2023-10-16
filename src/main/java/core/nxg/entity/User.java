@@ -42,6 +42,11 @@ public class User {
     private String roles;
 
 
+    private boolean enabled;
+    public boolean enabled(){
+        return false;
+    }
+
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     @JsonIgnore
