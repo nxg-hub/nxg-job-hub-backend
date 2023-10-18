@@ -41,7 +41,6 @@ public class techTalentAgentController {
         TechTalentAgentDto techTalentAgent = techTalentAgentService.getTechTalentAgentById(agentId);
         return ResponseEntity.ok(techTalentAgent);
     }
-
     @DeleteMapping("/{agentId}")
     public ResponseEntity<Void> deleteTechTalentAgent(@PathVariable Long agentId) {
         techTalentAgentService.deleteTechTalentAgent(agentId);
