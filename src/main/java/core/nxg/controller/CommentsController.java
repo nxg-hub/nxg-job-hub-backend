@@ -8,14 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentsController {
 
     private final CommentsService commentsService;
-
     @GetMapping
     public ResponseEntity<List<CommentsDto>> getAllComments() {
         List<CommentsDto> comments = commentsService.getAllComments();

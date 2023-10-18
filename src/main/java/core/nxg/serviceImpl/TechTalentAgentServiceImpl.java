@@ -36,7 +36,6 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
         techTalentAgent.setZipCode(agentDto.getZipCode());
         return techTalentAgentRepository.save(techTalentAgent);
     }
-
     @Override
     public TechTalentAgentDto updateTechTalentAgent(Long agentId, TechTalentAgentDto techTalentAgentDto) {
         TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(agentId)
@@ -48,7 +47,6 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
         techTalentAgent = techTalentAgentRepository.save(techTalentAgent);
         return mapToDto(techTalentAgent);
     }
-
 
 
     @Override
