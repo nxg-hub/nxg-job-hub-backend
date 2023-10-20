@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface TechTalentService<T> {
-    TechTalentDTO createTechTalent(T techTalentDto) throws Exception;
-    Page<TechTalentUser> getAllTechTalent(TechTalentDTO techTalentDto, Pageable pageable) throws Exception; //this should be  pageable and not list
+    TechTalentDTO createTechTalent(TechTalentDTO techTalentDto) throws Exception;
+    Page<TechTalentDTO> getAllTechTalent(Pageable pageable) throws Exception; //this should be  pageable and not list
     //TechTalentUser  deleteTechTalentUser(Long techId) throws Exception;
    
         

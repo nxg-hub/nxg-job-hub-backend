@@ -15,6 +15,8 @@ import core.nxg.enums.WorkMode;
 import java.util.List;
 import java.util.Locale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Setter
 @Getter
@@ -46,8 +48,9 @@ public class TechTalentUser{
     @OneToMany(mappedBy = "techTalentUser", cascade = CascadeType.PERSIST)
     private List<Skill<String>> skills ;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @JsonIgnore
     private User user;
 
     private String resume;

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import core.nxg.entity.Skill;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.dto.TechTalentDTO;
+import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import java.util.Optional;
 
@@ -81,16 +82,28 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             
 
     
+  
+    
     @Override
-    public Page<TechTalentUser> getAllTechTalent(TechTalentDTO techTalentDto, Pageable pageable) throws Exception {
-        List<TechTalentUser> techTalentUser = techTalentRepository.findAll();
-        return techTalentRepository.findAll((Pageable) pageable);
+    public Page<TechTalentDTO> getAllTechTalent(Pageable pageable) throws Exception {
+        Page<TechTalentUser> techTalentUser = techTalentRepository.findAll(pageable);
+        return techTalentUser.map(TechTalentDTO::new);
        
     }
+
+        //return techTalentRepository.findAll((Pageable) pageable);
+       
 
     
 
 };
+
+
+
+
+
+
+
 
 
     

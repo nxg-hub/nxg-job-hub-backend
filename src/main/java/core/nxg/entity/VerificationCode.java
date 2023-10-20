@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 
@@ -25,7 +24,7 @@ public class VerificationCode {
 
     private String code;
 
-    @OneToOne(targetEntity = User.class ,cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = User.class ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @PrimaryKeyJoinColumn
     private User user;
 
@@ -34,12 +33,10 @@ public class VerificationCode {
 
     private Instant expiryDate;
  
-    private boolean isExpired;
 
     public boolean isExpired() {
     if (expiryDate == null) {
-      /*1000  TODO below*/
-        return false; // or return true, depending on your logic
+        return true;
     }
     return Instant.now().isAfter(expiryDate);}
   
