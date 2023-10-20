@@ -1,8 +1,8 @@
 package core.nxg.controller;
 
 
+import core.nxg.dto.EmailDTO;
 import core.nxg.dto.LoginDTO;
-import core.nxg.dto.UserDTO;
 import core.nxg.entity.VerificationCode;
 import core.nxg.exceptions.AccountExpiredException;
 import core.nxg.exceptions.UserNotFoundException;
@@ -11,20 +11,20 @@ import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
 import core.nxg.serviceImpl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.UnsupportedEncodingException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -34,12 +34,13 @@ public class AuthController {
 
 
     @Autowired
-    private final EmailService emailService;
+    EmailService emailService;
 
     @Autowired
     private final UserServiceImpl userService;
 
-    
+    private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
 
     @Autowired
     private final UserRepository userRepository;
@@ -62,38 +63,43 @@ public class AuthController {
        
     }
     @PostMapping("/verify-by-email")
-    /*  TODO REPLACE USERDTO WITH A MORE FLEXIBLE AND SAFE DTO FOR EMAIL VERIFICATION*/
-    public ResponseEntity<String> verifyEmail(@Valid @RequestBody UserDTO dto, HttpServletRequest request) throws UnsupportedEncodingException, Exception {
+    public String verifyEmail(@RequestBody EmailDTO dto, HttpServletRequest request) {
         try {
             emailService.sendVerificationEmail(dto, getSiteURL(request));
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Email verification link sent successfully!");
+            return "Email verification sent successfully!";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Oops! Something went wrong. Please try again!");
+            logger.error("Error sending email: {}", e.getMessage());
+            return "Error sending email: "+ e.getMessage();
         }
     }
-    private String getSiteURL(HttpServletRequest request) {
-    return ServletUriComponentsBuilder.fromRequestUri(request)
-            .replacePath(null)
-            .build()
-            .toString();
-}
+        private String getSiteURL(HttpServletRequest request) {
+        return ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toString();
+    }
 
 
     @GetMapping("/confirm-email")
-    public String verifyUser(@NotNull @RequestParam("code") String code) throws UnsupportedEncodingException, Exception {
-     
-        Optional<VerificationCode> verificationCode = verificationRepo.findByCode(code);
-        VerificationCode verification = verificationCode.get();
-        /* TODO : CHECK FOR REAL VERIFICATION CODE WITH EXPIRYDATE SET AND NOT SET */
-            if (verificationCode.isEmpty() && verification.isExpired()) {
-                return "Expiredlink";
-            } else {
-                verification.getUser().setEnabled(true);
-                userRepository.save(verification.getUser());
-    /* TODO : CHECK WHY THYMELEAF IS NOT RETURNING A TEMPLATE VIEW */
-                verificationRepo.deleteById(verification.getId());
-                return "EmailVerified";
+    public String verifyUser(@NonNull @RequestParam("code") String code) throws NoSuchElementException, Exception {
+        try {
+            Optional<VerificationCode> verificationCode = verificationRepo.findByCode(code);
+            if (verificationCode.isPresent()) {
+                VerificationCode verification = verificationCode.get();
+                if (verification.isExpired()) {
+                    return "Expired";
+                }else {
+                    verification.getUser().setEnabled(true);
+                    userRepository.save(verification.getUser());
+                    /* TODO : RETURNING A TEMPLATE VIEW */
+                    verificationRepo.deleteById(verification.getId());
+                    return "EmailVerified";
+                }
+            }else {
+                return "Expired";
             }
+        } catch (NoSuchElementException e) {
+            return "Expired";}
     }
 }
 

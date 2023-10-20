@@ -13,12 +13,9 @@ public final class Endpoints {
             
             
     };
+}
 
-    public static final String SECURED_ENDPOINT = "/api/v1/auth/**";
- 
-
-
-    };
+  
 
 
 
