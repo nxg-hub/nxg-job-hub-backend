@@ -18,13 +18,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -49,6 +51,7 @@ public class AuthController {
     private final VerificationCodeRepository verificationRepo;
 
     @PostMapping("/login")
+    @ResponseBody
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) throws Exception {
         try {
              
@@ -62,8 +65,9 @@ public class AuthController {
          
        
     }
+    @ResponseBody
     @PostMapping("/verify-by-email")
-    public String verifyEmail(@RequestBody EmailDTO dto, HttpServletRequest request) {
+    public String verifyEmail( @RequestBody EmailDTO dto, HttpServletRequest request) {
         try {
             emailService.sendVerificationEmail(dto, getSiteURL(request));
             return "Email verification sent successfully!";
@@ -80,27 +84,28 @@ public class AuthController {
     }
 
 
+
     @GetMapping("/confirm-email")
-    public String verifyUser(@NonNull @RequestParam("code") String code) throws NoSuchElementException, Exception {
+    public String verifyUser(@NonNull @RequestParam("code") String code, Model model) throws NoSuchElementException, Exception {
         try {
             Optional<VerificationCode> verificationCode = verificationRepo.findByCode(code);
             if (verificationCode.isPresent()) {
                 VerificationCode verification = verificationCode.get();
                 if (verification.isExpired()) {
-                    return "Expired";
+                    return "Expiredlink";
                 }else {
                     verification.getUser().setEnabled(true);
                     userRepository.save(verification.getUser());
-                    /* TODO : RETURNING A TEMPLATE VIEW */
                     verificationRepo.deleteById(verification.getId());
+                    /* TODO : MAKE THIS A SERVICE TO ENCAPSULATE THIS OPERATION */
+
                     return "EmailVerified";
                 }
             }else {
-                return "Expired";
-            }
+                return "Expiredlink";          }
         } catch (NoSuchElementException e) {
-            return "Expired";}
-    }
+            return "Expiredlink";    }
+}
 }
 
 
