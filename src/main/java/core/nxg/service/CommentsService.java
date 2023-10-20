@@ -6,11 +6,11 @@ import core.nxg.entity.Comments;
 import java.util.List;
 
 public interface CommentsService {
-    CommentsDto createComments(CommentsDto commentsDto);
+    Comments createComments(CommentsDto commentsDto);
 
     List<CommentsDto> getAllComments();
 
-    List<CommentsDto> getAllCommentsByJobID(String jobID);
+    List<CommentsDto> getAllCommentsByJobID(Long jobID);
 
     CommentsDto updateComments(CommentsDto commentsDto, Long id);
 
