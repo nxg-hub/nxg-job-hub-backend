@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
                 String subject = "[[message]]";
                 String toAddress = userOptional.get().getEmail();
                 //                String toAddress = request.getEmail();
-                String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
+                String fromAddress = "fromAddress";
                 String senderName = "NXG HUB DIGITECH";
                 String content =
 

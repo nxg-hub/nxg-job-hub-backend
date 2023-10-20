@@ -34,6 +34,7 @@ public class VerificationCode {
     private Instant expiryDate;
  
 
+    @Column(name = "is_expired")
     public boolean isExpired() {
     if (expiryDate == null) {
         return true;
