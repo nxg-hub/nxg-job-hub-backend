@@ -1,20 +1,19 @@
 package core.nxg.dto;
 
 
-
-import lombok.*;
+import core.nxg.entity.User;
 import core.nxg.enums.Gender;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
-import core.nxg.entity.User;
 
 
 
 @Data
 @RequiredArgsConstructor
 public class UserDTO {
-    private String username;
+    private String email;
     private String firstName;
     private String lastName;
     private String password;
@@ -26,7 +25,7 @@ public class UserDTO {
     private String Nationality;
 
     public UserDTO(User user) {
-        this.username = user.getEmail();
+        this.email = user.getEmail();
         this.password = user.getPassword();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();

@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public interface UserService {
-    String createUser(UserDTO userDto) throws Exception;
+    String createUser(UserDTO userDto, String siteURL) throws Exception;
     Page<UserResponseDto> getAllUsers(Pageable pageable);
     UserResponseDto getUserById(Long id) throws Exception;
     String updateUser(Long id, UserDTO userDto) throws Exception;

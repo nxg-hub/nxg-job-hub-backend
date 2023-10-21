@@ -11,14 +11,14 @@ import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
 import core.nxg.repository.VerificationCodeRepository;
+import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
+import core.nxg.utils.Helper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -32,30 +32,30 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final VerificationCodeRepository verificationRepo;
 
+    @Autowired
+    private final EmailService emailService;
 
     @Autowired
     private final JwtService jwt;
 
     @Autowired
-    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final Helper helper;
 
-    public String encodePassword(String password) {
-        return encoder.encode(password);
+
+
     
-    }
 
     @Override
-    public String createUser(UserDTO userDTO) throws Exception {
+    public String createUser(UserDTO userDTO, String siteURL) throws Exception {
 
-        Optional<User> existingUser = userRepository.findByEmail(userDTO.getUsername());
+        Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistException("User with email already exists.");
         }
         User user = new User();
-        user.setPassword(encodePassword(userDTO.getPassword()));
-        // Check the UserType and perform the logic of creating a techtalent,aget or emplyer account
+        user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
-        user.setEmail(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
         user.setFirstName(userDTO.getFirstName());
         user.setGender(userDTO.getGender());
         user.setLastName(userDTO.getLastName());
@@ -64,9 +64,10 @@ public class UserServiceImpl implements UserService {
         user.setProfilePicture(userDTO.getProfilePicture());
 
         
-        userRepository.saveAndFlush(user);
+        
         VerificationCode verificationCode = new VerificationCode(user);
-//        verificationCode.setUser(user);
+        emailService.sendVerificationEmail(userDTO, verificationCode, siteURL);
+        userRepository.saveAndFlush(user);
         verificationRepo.saveAndFlush(verificationCode);
 
         return "User saved Successfully";
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
     public String updateUser(Long id, UserDTO userDto) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         user.setFirstName(userDto.getFirstName());
-        user.setEmail(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
         userRepository.save(user);
         return "User updated successfully";
      
@@ -111,7 +112,7 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()){ throw new UsernameNotFoundException("Username does not exist");}
         UserInfoDetails userInfoDetails = new UserInfoDetails(user.get());
 
-        if (!encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
+        if (!helper.encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
             throw new UserNotFoundException("Wrong username or password!");
         }
         if (!userInfoDetails.isEnabled()) {
