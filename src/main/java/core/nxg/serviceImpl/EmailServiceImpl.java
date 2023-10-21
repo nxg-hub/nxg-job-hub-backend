@@ -43,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
 
                 String subject = "Almost there! Please verify your email address.";
                 String toAddress = request.getEmail();
-                String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
+                String fromAddress = "YOUR EMAIL ADDRESS";
                 String senderName = "NXG HUB DIGITECH";
                 String content = "<html>"
                                 + "<br> Dear [[name]],<br>"
