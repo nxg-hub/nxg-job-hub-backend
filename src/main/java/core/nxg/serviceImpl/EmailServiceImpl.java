@@ -1,9 +1,10 @@
 package core.nxg.serviceImpl;
 
 
-import core.nxg.dto.EmailDTO;
-import core.nxg.entity.User;
+import core.nxg.dto.UserDTO;
 import core.nxg.entity.VerificationCode;
+import core.nxg.exceptions.TokenExpiredException;
+import core.nxg.exceptions.TokenNotFoundException;
 import core.nxg.repository.UserRepository;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
@@ -34,24 +35,17 @@ public class EmailServiceImpl implements EmailService {
     VerificationCodeRepository verificationRepo;
 
     @Override
-    public void sendVerificationEmail(EmailDTO request, String siteURL) throws MessagingException, UnsupportedEncodingException, MailException {
+    public void sendVerificationEmail(UserDTO request, VerificationCode code , String siteURL) throws MessagingException, UnsupportedEncodingException, MailException {
 
-        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
-        if (userOptional.isPresent()) {
 //
-            VerificationCode user = verificationRepo.findByUser(userOptional.get());
 
-            if (user != null) {
 
-                String subject = "[[message]]";
-                String toAddress = userOptional.get().getEmail();
-                //                String toAddress = request.getEmail();
-                String fromAddress = "fromAddress";
+
+                String subject = "Almost there! Please verify your email address.";
+                String toAddress = request.getEmail();
+                String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
                 String senderName = "NXG HUB DIGITECH";
-                String content =
-
-
-                        "<html>"
+                String content = "<html>"
                                 + "<br> Dear [[name]],<br>"
                                 + "<head>"
                                 + "<style>"
@@ -84,13 +78,15 @@ public class EmailServiceImpl implements EmailService {
                 helper.setFrom(fromAddress, senderName);
                 helper.setTo(toAddress);
 
-//            content = content.replace("[[message]]", request.getMessage());
-                subject = subject.replace("[[message]]", request.getMessage());
                 helper.setSubject(subject);
-                String full_name = userOptional.get().getFirstName() + " " + userOptional.get().getLastName();
+
+                String full_name = request.getFirstName() + " " + request.getLastName();
+
                 content = content.replace("[[name]]", full_name);
-//                            String verifyURL = siteURL + "/api/v1/auth/confirm-email?code=" + user.get().getCode();
-                String verifyURL = siteURL + "/api/v1/auth/confirm-email?code=" + user.getCode();
+
+                String verification = code.getCode();
+
+                String verifyURL = siteURL + "/api/v1/auth/confirm-email?code=" + verification;
 
 
                 content = content.replace("[[URL]]", verifyURL);
@@ -99,6 +95,25 @@ public class EmailServiceImpl implements EmailService {
 
                 mailSender.send(message);
             }
-        }
+
+
+    @Override
+    public void confirmVerificationEmail(String verificationCode) throws  Exception {
+
+            Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
+            if(verification.isEmpty()) {
+                throw new TokenNotFoundException("Invalid verification code");
+            }else{
+                if(verification.get().isExpired()) {
+                    throw new TokenExpiredException("Verification code has expired");
+                }else{
+                    verification.get().getUser().setEnabled(true);
+                    userRepository.save(verification.get().getUser());
+                    verificationRepo.deleteById(verification.get().getId());
+                }
+            }
+
     }
+
 }
+

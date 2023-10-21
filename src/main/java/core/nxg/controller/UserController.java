@@ -1,25 +1,20 @@
 package core.nxg.controller;
 
+import core.nxg.dto.UserDTO;
+import core.nxg.dto.UserResponseDto;
+import core.nxg.exceptions.UserAlreadyExistException;
+import core.nxg.serviceImpl.UserServiceImpl;
+import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import core.nxg.serviceImpl.UserServiceImpl;
-import core.nxg.configs.JwtService;
-import core.nxg.dto.TechTalentDTO;
-import core.nxg.dto.UserDTO;
-import core.nxg.dto.UserResponseDto;
-import core.nxg.exceptions.UserAlreadyExistException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class UserController {
@@ -31,12 +26,15 @@ public class UserController {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Autowired
+    private Helper helper;
+
+    @Autowired
     private UserServiceImpl userService;
 
     @PostMapping("/register/")
-    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) throws Exception{
+    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
         try {
-            String response =  userService.createUser(userDTO);
+            String response =  userService.createUser(userDTO, helper.getSiteURL(request) );
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (UserAlreadyExistException e) {
             
@@ -44,7 +42,6 @@ public class UserController {
         
 
         }  catch (Exception e) {
-                e.printStackTrace();
             logError.error("Error creating User: {}", e.getMessage());
 
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
@@ -60,7 +57,6 @@ public class UserController {
             Page<UserResponseDto> users = userService.getAllUsers(pageable);
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.print(e);
             logError.error("Error caused by: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
