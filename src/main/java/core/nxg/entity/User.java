@@ -1,17 +1,16 @@
 package core.nxg.entity;
 
-import core.nxg.enums.UserType;
-import lombok.*;
-import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import core.nxg.enums.Gender;
+import core.nxg.enums.UserType;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Date;
 
 
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class User implements UserDetails {
 
     private String lastName;
 
-    private String profilePicture; 
+    private String profilePicture;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -40,11 +39,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    private LocalDateTime dateOfBirth;
+    @Column(name = "nationality")
+    private String nationality;
+
+    @Column(name = "date_of_birth")
+    private Date dateOfBirth;
 
     @Column(name = "roles")
     private String roles;
 
+    @Column(name = "user_type")
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
@@ -52,11 +58,11 @@ public class User implements UserDetails {
     private TechTalentUser techTalent;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn 
+    @PrimaryKeyJoinColumn
     @JsonIgnore
     private TechTalentAgent techTalentAgent;
 
-     @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     @JsonIgnore
     private Employer employer;
@@ -91,9 +97,10 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return false;
     }
-
+    @Column(name = "enabled")
+    public boolean enabled;
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

@@ -26,11 +26,8 @@ public class EmployerServiceImpl implements EmployerService {
 
     private final EmployerRepository employerRepository;
     private final UserRepository userRepository;
-<<<<<<< HEAD
-=======
     private final Helper helper;
     // private JavaLangInvokeAccess principal;
->>>>>>> 524d41ce867a3c78f5a1357dee6248d0e3e3acf4
 
     @Override
     public List<EmployerDto> getAllEmployers() {
