@@ -1,34 +1,29 @@
 package core.nxg.utils;
 
+import core.nxg.configs.JwtService;
+import core.nxg.entity.User;
+import core.nxg.exceptions.NotFoundException;
+import core.nxg.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@Service
 @RequiredArgsConstructor
-public class Helper {
+@Service
+public class Helper<K,V> {
+    private final JwtService jwtService;
+    private final UserRepository userRepo;
 
-    @Autowired
-    public final PasswordEncoder encoder = new BCryptPasswordEncoder();
-
-
-//    @Autowired
-//    private ServletUriComponentsBuilder builder;
-
-    // Helper method to get the site URL
-    public String getSiteURL(HttpServletRequest request) {
-        return ServletUriComponentsBuilder.fromRequestUri(request)
-                .replacePath(null)
-                .build()
-                .toString();
+    public User extractLoggedInUser(HttpServletRequest request){
+        final String authHeader = request.getHeader("Authorization");
+        String jwt = authHeader.substring(7);
+        String email = jwtService.extractUsername(jwt);
+        return userRepo.findByEmail(email).orElseThrow(()-> new NotFoundException("User not found"));
     }
 
-    // Helper method to encode password
-    public String encodePassword(String password) {
-        return encoder.encode(password);
+    public K copyFromDto ( V v,K k){
+        BeanUtils.copyProperties(v,k);
+        return k;
     }
 }

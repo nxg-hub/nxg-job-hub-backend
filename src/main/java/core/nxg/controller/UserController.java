@@ -2,6 +2,7 @@ package core.nxg.controller;
 
 import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.User;
 import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.serviceImpl.UserServiceImpl;
 import core.nxg.utils.Helper;
@@ -32,9 +33,9 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PostMapping("/register/")
-    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
+    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) throws Exception{
         try {
-            String response =  userService.createUser(userDTO, helper.getSiteURL(request) );
+            String response =  userService.createUser(userDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (UserAlreadyExistException e) {
 
@@ -42,23 +43,23 @@ public class UserController {
 
 
         }  catch (Exception e) {
-            logError.error("Error creating User: {}", e.getMessage());
-
+                e.printStackTrace();
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
             }
 
 
 
+
     }
 
-    @GetMapping("/users/")
-    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
-        try {
-            Page<UserResponseDto> users = userService.getAllUsers(pageable);
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            logError.error("Error caused by: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping("/users/")
+//    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
+//        try {
+//            Page<UserResponseDto> users = userService.getAllUsers(pageable);
+//            return new ResponseEntity<>(users, HttpStatus.OK);
+//        } catch (Exception e) {
+//            logError.error("Error caused by: {}", e.getMessage());
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }
