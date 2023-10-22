@@ -14,4 +14,7 @@ public class NxgApplication {
 		SpringApplication.run(NxgApplication.class, args);
 	}
 
+
+
 }
+
