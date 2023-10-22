@@ -3,11 +3,10 @@ package core.nxg.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale.IsoCountryCode;
-import java.util.Set;
+
+
+
+//import java.util.Locale.IsoCountryCode;
 import core.nxg.enums.Experience;
 import core.nxg.enums.JobType;
 import core.nxg.enums.ProfessionalCert;
@@ -15,6 +14,8 @@ import core.nxg.enums.Qualification;
 import core.nxg.enums.WorkMode;
 import java.util.List;
 import java.util.Locale;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Setter
@@ -33,11 +34,8 @@ public class TechTalentUser{
     private Qualification highestQualification;
 
     @Enumerated(EnumType.STRING)
-
-    private Experience experienceLevel;
-
-    //private Experience experienceLevel;
-
+    private Experience experienceLevel; 
+    
     @Enumerated(EnumType.STRING)
     private JobType jobType;
 
@@ -50,15 +48,9 @@ public class TechTalentUser{
     @OneToMany(mappedBy = "techTalentUser", cascade = CascadeType.PERSIST)
     private List<Skill<String>> skills ;
 
-
-    @OneToMany(mappedBy = "techTalentUser", cascade = CascadeType.ALL)
-    private Set<Skill> skill = new HashSet<>();
-
-
-
-
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @JsonIgnore
     private User user;
 
     private String resume;
@@ -81,5 +73,4 @@ public class TechTalentUser{
     }
 
     
-
 }

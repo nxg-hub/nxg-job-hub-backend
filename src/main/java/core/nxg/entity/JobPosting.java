@@ -23,7 +23,6 @@ public class JobPosting {
     private String location;
     private String tags;
     private String reaction;
-    private String jobID;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Reactions> reactions;

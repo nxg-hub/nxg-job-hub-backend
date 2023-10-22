@@ -1,16 +1,22 @@
-//package core.nxg.service;
-//
-//import org.springframework.data.domain.Page;
-//import org.springframework.stereotype.Service;
-//
-//import core.nxg.dto.LoginDTO;
-//import core.nxg.dto.UserDTO;
-//import core.nxg.entity.User;
-//import org.springframework.data.domain.Pageable;
-//
-//@Service
-//public interface  UserService<T> {
-//    String createUser(UserDTO userDto) throws Exception; //Should return UserDto instead of user
-//    Page<User> getAllUsers(Pageable pageable); //Should be a pageable and also return Pageable of userdto
-//    String login(LoginDTO loginDTO ) throws Exception;
-//}
+package core.nxg.service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import core.nxg.dto.LoginDTO;
+import core.nxg.dto.UserDTO;
+import core.nxg.dto.UserResponseDto;
+
+import org.springframework.data.domain.Pageable;
+
+@Service
+public interface UserService {
+//    String createUser(UserDTO userDto, String siteURL) throws Exception;
+//    Page<UserResponseDto> getAllUsers(Pageable pageable);
+//    UserResponseDto getUserById(Long id) throws Exception;
+//    String updateUser(Long id, UserDTO userDto) throws Exception;
+//    String deleteUser(Long id) throws Exception;
+    String login(LoginDTO loginDTO) throws Exception;
+
+    String createUser(UserDTO userDTO) throws Exception;
+}
