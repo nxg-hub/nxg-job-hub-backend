@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     Optional<JobPosting> findJobPostingByJobID(String jobID);
+    /* TODO: CHANGE ALL JOBID OCCURRENCES TO A LONG NOT STRING. */
 }
