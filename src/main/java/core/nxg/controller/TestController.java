@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @RestController
 public class TestController {
 
-    @GetMapping("status")
+    @GetMapping()
     public String getStatus(){
         return "Job hub is up and running, time: "+ LocalDateTime.now();
     }
