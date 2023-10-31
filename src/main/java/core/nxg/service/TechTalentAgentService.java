@@ -1,18 +1,26 @@
 package core.nxg.service;
 
 import core.nxg.dto.TechTalentAgentDto;
-import core.nxg.entity.TechTalentAgent;
+import core.nxg.enums.IndustryType;
+import core.nxg.enums.JobType;
+import core.nxg.response.PaginatedResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface TechTalentAgentService {
-    TechTalentAgent createAgents(TechTalentAgentDto agentDto);
 
-    TechTalentAgentDto updateTechTalentAgent(Long agentId, TechTalentAgentDto techTalentAgentDto);
+    String verifyTechTalentAgent(String email, HttpServletRequest request);
+
+    String createAgent(TechTalentAgentDto agentDTO);
+
+    TechTalentAgentDto updateTechTalentAgent(TechTalentAgentDto techTalentAgentDto);
 
     void deleteTechTalentAgent(Long techTalentAgentId);
 
     TechTalentAgentDto getTechTalentAgentById(Long techTalentAgentId);
 
-    List<TechTalentAgentDto> getAllTechTalentAgent();
+   PaginatedResponse<TechTalentAgentDto> getAllTechTalentAgent(int page, int size);
+
 }

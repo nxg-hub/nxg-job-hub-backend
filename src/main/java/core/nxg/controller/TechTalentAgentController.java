@@ -1,9 +1,11 @@
 package core.nxg.controller;
 
 import core.nxg.dto.TechTalentAgentDto;
-import core.nxg.entity.TechTalentAgent;
-import core.nxg.serviceImpl.TechTalentAgentServiceImpl;
+import core.nxg.response.PaginatedResponse;
+import core.nxg.service.TechTalentAgentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,32 +15,39 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/agents")
-public class techTalentAgentController {
-    private final TechTalentAgentServiceImpl techTalentAgentService;
+public class TechTalentAgentController {
+    private final TechTalentAgentService techTalentAgentService;
 
-    @PostMapping("/create")
-    public ResponseEntity<TechTalentAgent> createAgent(
-            @RequestBody TechTalentAgentDto techTalentAgentDto){
-        TechTalentAgent createdAgent = techTalentAgentService.createAgents(techTalentAgentDto);
-        return new ResponseEntity<>(createdAgent, HttpStatus.CREATED);
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyTechTalentAgent(HttpServletRequest request, @RequestParam("email") String email) {
+        String message = techTalentAgentService.verifyTechTalentAgent(email, request);
+        return ResponseEntity.ok(message);
     }
 
+    @PostMapping("/createAgent")
+    public ResponseEntity<String> createAgent(@RequestBody TechTalentAgentDto agentDTO) {
+        String message = techTalentAgentService.createAgent(agentDTO);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+
     @PutMapping("/{agentId}")
-    public ResponseEntity<TechTalentAgentDto> updateTechTalentAgent(@PathVariable Long agentId, @RequestBody TechTalentAgentDto techTalentAgentDto) {
-        TechTalentAgentDto updatedTechTalentAgent = techTalentAgentService.updateTechTalentAgent(agentId, techTalentAgentDto);
+    public ResponseEntity<TechTalentAgentDto> updateTechTalentAgent(@RequestBody TechTalentAgentDto techTalentAgentDto) {
+        TechTalentAgentDto updatedTechTalentAgent = techTalentAgentService.updateTechTalentAgent(techTalentAgentDto);
         return ResponseEntity.ok(updatedTechTalentAgent);
     }
 
 
     @GetMapping
-    public List<TechTalentAgentDto> getAllTechTalentAgent() {
-        return techTalentAgentService.getAllTechTalentAgent();
+    public PaginatedResponse<TechTalentAgentDto> getAllTechTalentAgent(@RequestParam(value = "page", defaultValue = "1")int page,
+                                                                       @RequestParam(value = "size", defaultValue = "10")int size) {
+        return techTalentAgentService.getAllTechTalentAgent(page, size);
     }
 
 
-    @GetMapping("/{agentId}")
-    public ResponseEntity<TechTalentAgentDto> getTechTalentAgentById(@PathVariable Long agentId) {
-        TechTalentAgentDto techTalentAgent = techTalentAgentService.getTechTalentAgentById(agentId);
+    @GetMapping("/{Id}")
+    public ResponseEntity<TechTalentAgentDto> getTechTalentAgentById(@PathVariable Long Id) {
+        TechTalentAgentDto techTalentAgent = techTalentAgentService.getTechTalentAgentById(Id);
         return ResponseEntity.ok(techTalentAgent);
     }
 
@@ -47,6 +56,8 @@ public class techTalentAgentController {
         techTalentAgentService.deleteTechTalentAgent(agentId);
         return ResponseEntity.noContent().build();
     }
+}
+
 
 
 
@@ -144,6 +155,8 @@ public class techTalentAgentController {
 //        // Return true if empty, false otherwise
 //        return value == null || value.trim().isEmpty();
 //    }
-}
+
+
+
 
 

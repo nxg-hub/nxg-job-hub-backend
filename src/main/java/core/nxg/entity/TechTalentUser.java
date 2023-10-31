@@ -49,8 +49,7 @@ public class TechTalentUser{
     private List<Skill<String>> skills ;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JsonIgnore
+    @JoinColumn(name = "user_id")
     private User user;
 
     private String resume;

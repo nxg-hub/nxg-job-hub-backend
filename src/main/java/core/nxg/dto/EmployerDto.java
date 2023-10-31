@@ -1,14 +1,16 @@
 package core.nxg.dto;
 
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 import core.nxg.entity.User;
 
 @Getter
 @Setter
-public class EmployerDto<T> {
-    private String employerID;
-    private String email;
+public class EmployerDto {
+    Long id;
+    //private Long employerId;
+    //private String email;
     private String companyName;
     private String companyDescription;
     private String position;
@@ -19,9 +21,9 @@ public class EmployerDto<T> {
     private String companySize;
     private String ratings;
 
-    public User setUser(User user) {
-        return user;
+    @OneToOne(mappedBy = "employer")
+    private User user;
 
     }
    
-}
+

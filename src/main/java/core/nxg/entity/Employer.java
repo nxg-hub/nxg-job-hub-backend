@@ -12,6 +12,7 @@ public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String email;
     private String companyName;
     private String companyDescription; /// SHOULD WE HAVE A COMPANY ENTITY INSTEAD?
     private String position;
@@ -21,6 +22,7 @@ public class Employer {
     private String industryType; //<------- AND THIS?
     
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     private String companySize; /// <----- AND THIS? AFTER EVERYTHING IS DONE.

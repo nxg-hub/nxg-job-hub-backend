@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReactionsDto {
-    //private String reactionID;
-    //private String jobID;
+    //private String reactionId;
+    //private String jobId;
     private ReactionType reactionType;
 }
