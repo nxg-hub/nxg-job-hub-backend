@@ -1,5 +1,6 @@
 package core.nxg.controller;
 
+import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 
 @RestController
@@ -29,12 +29,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     @Autowired
     private final TechTalentService<T> techTalentService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TechTalentRepository techTalentRepository;
-
+    
     public TechTalentController(TechTalentService<T> techTalentService) {
         this.techTalentService = techTalentService;
     }
@@ -42,30 +37,13 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     @PostMapping("/register/")
     public ResponseEntity<String> createTechTalentUser(@RequestBody TechTalentDTO techTalentDTO) {
 
-        // Check if the user with the provided email exists
-        Optional<User> existingUser = userRepository.findByEmail(techTalentDTO.getEmail());
-        if (existingUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User does not exist");
-        }
-
-        // Check if a TechTalentUser already exists for this User
-        Optional<TechTalentUser> existingTechTalentUser = techTalentRepository.findByUser(existingUser.get());
-        if (existingTechTalentUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("TechTalent User already exists");
-        }
-        else{
-
-            try {
-                techTalentService.createTechTalent(techTalentDTO);
-                return ResponseEntity.status(HttpStatus.CREATED).body("TechTalent User created successfully");
-            } catch (UserNotFoundException e) {
-                logger.error("Try creating TechTalentUser but: {}", e.getMessage());
-                return ResponseEntity.badRequest().body(e.getMessage());
-            } catch (Exception e) {
-                logger.error("Error creating TechTalentUser: {}", e.getMessage());
-                return ResponseEntity.badRequest().body("An error occurred while creating the TechTalent User");
-            }
-        }
+        try {
+            techTalentService.createTechTalent(techTalentDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("TechTalent User created successfully");
+        } catch (Exception e) {
+            logger.error("Error creating TechTalentUser : {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+           }  
     }
 
 
@@ -81,6 +59,17 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/get-{ID}")
+    public ResponseEntity<TechTalentDTO> getTechTalent(@PathVariable Long ID) throws Exception {
+        TechTalentDTO techtalents = techTalentService.getTechTalentById(ID);
+        return ResponseEntity.ok(techtalents);
 
 
+};
+
+    @PutMapping("/update-{ID}")
+    public ResponseEntity<TechTalentDTO> updateTechTalent(@PathVariable Long ID, @RequestBody TechTalentDTO techTalentDTO) throws Exception {
+        TechTalentDTO techtalents = techTalentService.updateTechTalent(techTalentDTO,ID);
+        return ResponseEntity.ok(techtalents);
+    }
 }
