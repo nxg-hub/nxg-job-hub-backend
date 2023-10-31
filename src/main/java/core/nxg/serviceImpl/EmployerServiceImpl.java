@@ -45,7 +45,7 @@ public class EmployerServiceImpl implements EmployerService {
 
             //User user = helper.extractLoggedInUser(request);
 
-            User user = userRepository.findByEmail(loggedInUserEmail)
+            User user = (User)userRepository.findByEmail(loggedInUserEmail)
                     .orElseThrow(() -> new NotFoundException("User with email " + loggedInUserEmail + " not found"));
 
             Employer employer = new Employer();

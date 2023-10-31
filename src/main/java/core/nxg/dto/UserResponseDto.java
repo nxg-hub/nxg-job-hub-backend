@@ -1,13 +1,15 @@
 package core.nxg.dto;
-
 import core.nxg.entity.User;
 import core.nxg.enums.Gender;
 import core.nxg.enums.UserType;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
+@RequiredArgsConstructor
 public class UserResponseDto {
 
         private Long id;
@@ -17,7 +19,7 @@ public class UserResponseDto {
         private Gender gender;
         private String phoneNumber;
         private String email;
-        private Date dateOfBirth;
+        private LocalDate dateOfBirth;
         private UserType userType;
 
         // Constructor to map values from User entity to DTO
@@ -32,6 +34,4 @@ public class UserResponseDto {
                 this.dateOfBirth = user.getDateOfBirth();
                 this.userType = user.getUserType();
         }
-
-
 }

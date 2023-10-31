@@ -24,7 +24,7 @@ public class VerificationCode {
 
     private String code;
 
-    @OneToOne(targetEntity = User.class ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(targetEntity = User.class ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @PrimaryKeyJoinColumn
     private User user;
 

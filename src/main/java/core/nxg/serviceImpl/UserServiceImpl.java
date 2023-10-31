@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +23,6 @@ import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.util.Optional;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 //import core.nxg.entity.UserInfoDetails;
 
 @Service
@@ -85,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public String login(LoginDTO loginDTO) throws Exception {
 
         Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new UsernameNotFoundException( "Wrong username or password!");
 
          }
@@ -128,10 +124,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        return users.map(UserResponseDto::new);
-
-    }
+        Page<User> user = userRepository.findAll(pageable);
+        return user.map(UserResponseDto::new);
+}
 
 }
 

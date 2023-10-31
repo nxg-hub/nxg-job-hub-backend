@@ -20,16 +20,27 @@ public class Helper<K,V> {
 
 
     public final PasswordEncoder encoder = new BCryptPasswordEncoder();
+    // Helper method to get logged in user
+
 
     public User extractLoggedInUser(HttpServletRequest request){
         final String authHeader = request.getHeader("Authorization");
         String jwt = authHeader.substring(7);
         String email = jwtService.extractUsername(jwt);
         return userRepo.findByEmail(email).orElseThrow(()-> new NotFoundException("User not found"));
+
+    }
+    public String extractLoggedInStringUser(HttpServletRequest request){
+        final String authHeader = request.getHeader("Authorization");
+        String jwt = authHeader.substring(7);
+        String email = jwtService.extractUsername(jwt);
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+        return user.getEmail();
     }
 
-    public K copyFromDto ( V v,K k){
-        BeanUtils.copyProperties(v,k);
+    // Helper method to copy properties from dto to entity
+    public K copyFromDto(V v, K k){
+        BeanUtils.copyProperties(v, k);
         return k;
     }
 
@@ -46,5 +57,6 @@ public class Helper<K,V> {
 
         return encoder.encode(password);
     }
+    
 
 }
