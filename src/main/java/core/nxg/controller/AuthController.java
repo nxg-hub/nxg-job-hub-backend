@@ -26,8 +26,8 @@ public class AuthController {
 
 
 
-    @Autowired
-    private final EmailService emailService;
+//    @Autowired
+//    private final EmailService emailService;
 
     @Autowired
     private final UserServiceImpl userService;
@@ -52,19 +52,19 @@ public class AuthController {
 
     }
 
-    @GetMapping("/confirm-email")
-    public String verifyUser(@Nonnull @RequestParam("code") String code, Model model) throws Exception{
-        try{
-            emailService.confirmVerificationEmail(code);
-            return "EmailVerified";
-        }catch (Exception e){
+//    @GetMapping("/confirm-email")
+//    public String verifyUser(@Nonnull @RequestParam("code") String code, Model model) throws Exception{
+//        try{
+//            emailService.confirmVerificationEmail(code);
+//            return "EmailVerified";
+//        }catch (Exception e){
+//
+//            logger.error("Error while verifying email: " + e.getMessage());
+//            return "Expiredlink";
+//
+//        }
 
-            logger.error("Error while verifying email: " + e.getMessage());
-            return "Expiredlink";
-
-        }
-
-    }
+//    }
 }
 
 

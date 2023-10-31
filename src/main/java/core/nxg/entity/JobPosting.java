@@ -3,7 +3,9 @@ package core.nxg.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,8 +15,8 @@ import java.util.List;
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String employerID;
+    private Long jobId;
+    private String employerId;
     private String title;
     private String description;
     private String salary;
@@ -24,12 +26,12 @@ public class JobPosting {
     private String tags;
     private String reaction;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Reactions> reactions;
-
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "jobPosting", cascade = CascadeType.ALL)
     private List<Comments> comments;
-
-    @OneToOne
-    private View view;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinTable(name = "reactions_jobPosting_mapping",
+            joinColumns = @JoinColumn(name = "job_posting_id", referencedColumnName = "jobId"),
+            inverseJoinColumns = @JoinColumn(name = "reaction_id", referencedColumnName = "id"))
+    @ToString.Exclude
+    private List<Reactions> reactions = new ArrayList<>();
 }

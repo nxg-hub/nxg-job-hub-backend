@@ -38,11 +38,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             if (userOptional.isEmpty()) {
             throw new UserNotFoundException("Account with this email does not exist. Create an account!");}
 
-
-    
-        // Your code here
-        //
-        TechTalentUser techTalentUser = new TechTalentUser(); 
+        TechTalentUser techTalentUser = new TechTalentUser();
 
         User user = userOptional.get();        
 
@@ -71,7 +67,6 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         
         techTalentUser.setCoverletter(techTalentDto.getCoverletter());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
-        user.setTechTalent(techTalentUser);
         techTalentUser.setUser(user);
         techTalentRepository.saveAndFlush(techTalentUser);
 

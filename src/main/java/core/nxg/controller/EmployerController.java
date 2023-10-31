@@ -1,15 +1,13 @@
 package core.nxg.controller;
 
 import core.nxg.dto.EmployerDto;
-import core.nxg.entity.Employer;
 import core.nxg.service.EmployerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -18,35 +16,43 @@ public class EmployerController {
 
     private final EmployerService employerService;
 
+//    @GetMapping("/verify")
+//    public ResponseEntity<String> verifyEmployer(HttpServletRequest request, @RequestParam("email") String email) {
+//        String message = employerService.verifyEmployer(email, request);
+//        return ResponseEntity.ok(message);
+//    }
 
-    @PostMapping("/create")
-    public ResponseEntity<Employer> createEmployer(
-            @RequestBody EmployerDto employerDto, Principal principal){
-        Employer createdEmployer = employerService.createEmployer(employerDto, principal);
-        return new ResponseEntity<>(createdEmployer, HttpStatus.CREATED);
+    @PostMapping("/createEmployer")
+    public ResponseEntity<String> createEmployer(@RequestParam("email") String email, @RequestBody EmployerDto employerDTO) {
+        String message = employerService.createEmployer(email, employerDTO);
+        return ResponseEntity.ok(message);
     }
 
-    @GetMapping
-    public List<EmployerDto> getAllEmployers() {
-        return employerService.getAllEmployers();
-    }
-
-    @GetMapping("/{employerId}")
-    public ResponseEntity<EmployerDto> getEmployerById(@PathVariable Long employerId) {
-        EmployerDto employer = employerService.getEmployerById(employerId);
+    @GetMapping("/{Id}")
+    public ResponseEntity<EmployerDto> getEmployerById(@PathVariable Long Id) {
+        EmployerDto employer = employerService.getEmployerById(Id);
         return ResponseEntity.ok(employer);
     }
 
-    @PutMapping("/{employerId}")
-    public ResponseEntity<EmployerDto> updateEmployer(@PathVariable Long employerId, @RequestBody EmployerDto employerDto) {
-        EmployerDto updatedEmployer = employerService.updateEmployer(employerId, employerDto);
+    @PutMapping("/{Id}")
+    public ResponseEntity<String> updateEmployer(@PathVariable Long Id, @RequestBody EmployerDto employerDto) {
+        String updatedEmployer = employerService.updateEmployer(Id, employerDto);
         return ResponseEntity.ok(updatedEmployer);
     }
 
-    @DeleteMapping("/{employerId}")
-    public ResponseEntity<Void> deleteEmployer(@PathVariable Long employerId) {
-        employerService.deleteEmployer(employerId);
+    @DeleteMapping("/{Id}")
+    public ResponseEntity<Void> deleteEmployer(@PathVariable Long Id) {
+        employerService.deleteEmployer(Id);
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public List<EmployerDto> getAllEmployer() {
+
+        return employerService.getAllEmployer();
+    }
+
+
 }
+
+

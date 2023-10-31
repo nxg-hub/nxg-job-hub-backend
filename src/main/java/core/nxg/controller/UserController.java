@@ -34,32 +34,37 @@ public class UserController {
 
     @PostMapping("/register/")
     public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) throws Exception{
-        try {
+//        try {
             String response =  userService.createUser(userDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (UserAlreadyExistException e) {
-
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-
-
-        }  catch (Exception e) {
-                e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
-            }
+//        } catch (UserAlreadyExistException e) {
+//
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+//
+//
+//        }  catch (Exception e) {
+//                e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
+//            }
 
 
 
 
     }
 
-//    @GetMapping("/users/")
-//    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
+    @GetMapping("/get/user")
+    public ResponseEntity<User> getUser(@RequestParam(value = "email") String email){
+        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/")
+    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
 //        try {
-//            Page<UserResponseDto> users = userService.getAllUsers(pageable);
-//            return new ResponseEntity<>(users, HttpStatus.OK);
+            Page<User> users = userService.getAllUsers(pageable);
+            return new ResponseEntity<>(users, HttpStatus.OK);
 //        } catch (Exception e) {
 //            logError.error("Error caused by: {}", e.getMessage());
 //            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
-//    }
+    }
 }

@@ -1,10 +1,13 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.LoginDTO;
+import core.nxg.exceptions.NotFoundException;
 import core.nxg.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import core.nxg.configs.JwtService;
@@ -57,18 +60,23 @@ public class UserServiceImpl implements UserService {
         user.setProfilePicture(userDTO.getProfilePicture());
         System.out.println("Successfully created ");
 
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
         return "User saved Successfully";
 
 
     }
 
+    public User getUserByEmail(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+         new NotFoundException("User with email already exists."));
+        return user;
+    }
 
-//    @Override
-//    public Page<UserResponseDto> getAllUsers(Pageable pageable){
-//        return userRepository.findAll(pageable);}
-//
-//        //Page<User> users = userRepository.findAll();
+
+    public Page<User> getAllUsers(Pageable pageable){
+        return userRepository.findAll(pageable);}
+
+        //Page<User> users = userRepository.findAll();
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
 //

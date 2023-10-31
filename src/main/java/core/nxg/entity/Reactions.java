@@ -4,6 +4,7 @@ import core.nxg.enums.ReactionType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -20,9 +21,5 @@ public class Reactions{
     @Enumerated(EnumType.STRING)
     private ReactionType reactionType;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private List<JobPosting> jobPosting;
 
-    @ManyToMany
-    private List<Comments> comments;
 }

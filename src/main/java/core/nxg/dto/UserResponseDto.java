@@ -1,5 +1,6 @@
 package core.nxg.dto;
 
+import core.nxg.entity.TechTalentAgent;
 import core.nxg.entity.User;
 import core.nxg.enums.Gender;
 import core.nxg.enums.UserType;
@@ -19,6 +20,7 @@ public class UserResponseDto {
         private String email;
         private Date dateOfBirth;
         private UserType userType;
+        private TechTalentAgent createdAgent;
 
         // Constructor to map values from User entity to DTO
         public UserResponseDto(User user) {
