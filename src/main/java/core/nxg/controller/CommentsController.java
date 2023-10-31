@@ -4,51 +4,52 @@ import core.nxg.dto.CommentsDto;
 import core.nxg.entity.Comments;
 import core.nxg.service.CommentsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentsController {
 
+    @Autowired
     private final CommentsService commentsService;
 
-    @GetMapping
-    public ResponseEntity<List<CommentsDto>> getAllComments() {
-        List<CommentsDto> comments = commentsService.getAllComments();
-        return ResponseEntity.ok(comments);
+    @PostMapping
+    public Comments createComments(@RequestBody CommentsDto commentsDto) {
+        return commentsService.createComments(commentsDto);
     }
 
-    @GetMapping("/comments-by-{jobID}")
-    public ResponseEntity<List<CommentsDto>> getAllCommentsByJobID(@PathVariable Long jobID) {
-        List<CommentsDto> comments = commentsService.getAllCommentsByJobID(jobID);
-        return ResponseEntity.ok(comments);
-    }
-
-//    @GetMapping("/{id}")
-//    public ResponseEntity<CommentsDto> getCommentById(@PathVariable Long id) {
-//        CommentsDto comment = commentsService.getCommentById(id);
-//        return ResponseEntity.ok(comment);
+//    @GetMapping
+//    public List<CommentsDto> getAllComments() {
+//        return commentsService.getAllComments();
 //    }
 
-    @PostMapping("/create")
-    public ResponseEntity<Comments> createComment(@RequestBody CommentsDto commentsDto) {
-        Comments createdComment = commentsService.createComments(commentsDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
-    }
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CommentsDto> updateComment(@PathVariable Long id, @RequestBody CommentsDto commentsDto) {
-        CommentsDto updatedComment = commentsService.updateComments(commentsDto, id);
-        return ResponseEntity.ok(updatedComment);
+//    @GetMapping("/{id}")
+//    public CommentsDto getCommentById(@PathVariable Long id) {
+//        return commentsService.getCommentById(id);
+//    }
+
+    @GetMapping("/job/{jobId}")
+    public List<CommentsDto> getAllCommentsByJobId(@PathVariable Long jobId) {
+        return commentsService.getAllCommentsByJobId(jobId);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+    @PutMapping("/{id}")
+    public CommentsDto updateComments(@RequestBody CommentsDto commentsDto, @PathVariable Long id) {
+        return commentsService.updateComments(commentsDto, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCommentById(@PathVariable Long id) {
         commentsService.deleteCommentById(id);
-        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/page")
+    public Page<CommentsDto> getAllCommentsPage(@RequestParam int page, @RequestParam int size) {
+        return commentsService.getAllCommentsPage(page, size);
     }
 }

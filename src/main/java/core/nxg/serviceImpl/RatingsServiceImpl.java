@@ -21,55 +21,52 @@ public class RatingsServiceImpl implements RatingsService {
     private final RatingsRepository ratingsRepository;
     private final EmployerRepository employerRepository;
 
-    @Override
-    public RatingsDto createRatings(RatingsDto ratingsDto) {
-        Ratings ratings = new Ratings();
-        ratings.setRating(Rating.valueOf(ratingsDto.getRating()));
-        Long employerId = Long.parseLong(ratingsDto.getEmployerID());
-        Employer employer = employerRepository.findById(employerId)
-                .orElseThrow(() -> new NotFoundException("Employer with ID " + employerId + " not found"));
-        ratings.setEmployer(employer);
+@Override
+public RatingsDto createRatings(Long Id, RatingsDto ratingsDto) {
+    Employer employer = employerRepository.findById(Id)
+            .orElseThrow(() -> new NotFoundException("Employer with id " + Id + " not found"));
 
-        Ratings savedRatings = ratingsRepository.save(ratings);
-        return mapToDto(savedRatings);
-    }
+    Ratings ratings = new Ratings();
+    ratings.setEmployer(employer);
+    ratings.setRating(Rating.valueOf(ratingsDto.getRating())); // Assuming Rating is an enum type
+
+    Ratings savedRatings = ratingsRepository.save(ratings);
+    return mapToDto(savedRatings);
+}
+
 
     @Override
-    public List<RatingsDto> getRatingsForEmployer(Long employerId) {
-        Employer employer = employerRepository.findById(employerId)
-                .orElseThrow(() -> new NotFoundException("Employer with id " + employerId + " not found"));
+    public List<RatingsDto> getRatingsForEmployer(Long Id) {
+        Employer employer = employerRepository.findById(Id)
+                .orElseThrow(() -> new NotFoundException("Employer with id " + Id + " not found"));
 
         List<Ratings> ratingsForEmployer = ratingsRepository.findAllByEmployer(employer);
 
         return ratingsForEmployer.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    @Override
-    public List<RatingsDto> getAllRatings() {
-        List<Ratings> allRatings = ratingsRepository.findAll();
-        return allRatings.stream().map(this::mapToDto).collect(Collectors.toList());
-    }
+//    @Override
+//    public List<RatingsDto> getAllRatings() {
+//        List<Ratings> allRatings = ratingsRepository.findAll();
+//        return allRatings.stream().map(this::mapToDto).collect(Collectors.toList());
+//    }
+
 
     @Override
-    public List<Ratings> getAllRating() {
-        return null;
-    }
-
-    @Override
-    public RatingsDto getRatingsById(Long ratingsId) {
-        Ratings ratings = ratingsRepository.findById(ratingsId)
-                .orElseThrow(() -> new NotFoundException("Ratings with ID " + ratingsId + " not found"));
+    public RatingsDto getRatingsById(Long Id) {
+        Ratings ratings = ratingsRepository.findById(Id)
+                .orElseThrow(() -> new NotFoundException("Ratings with ID " + Id + " not found"));
         return mapToDto(ratings);
     }
 
-    @Override
-    public void updateRatings(Long ratingsId, RatingsDto ratingsDto) {
-        Ratings ratings = ratingsRepository.findById(ratingsId)
-                .orElseThrow(() -> new NotFoundException("Ratings with ID " + ratingsId + " not found"));
-        ratings.setRating(Rating.valueOf(ratingsDto.getRating()));
-
-        ratingsRepository.save(ratings);
-    }
+//    @Override
+//    public void updateRatings(Long ratingsId, RatingsDto ratingsDto) {
+//        Ratings ratings = ratingsRepository.findById(ratingsId)
+//                .orElseThrow(() -> new NotFoundException("Ratings with ID " + ratingsId + " not found"));
+//        ratings.setRating(Rating.valueOf(ratingsDto.getRating()));
+//
+//        ratingsRepository.save(ratings);
+//    }
 
     @Override
     public void deleteRatings(Long ratingsId) {
@@ -78,7 +75,7 @@ public class RatingsServiceImpl implements RatingsService {
 
     private RatingsDto mapToDto(Ratings ratings) {
         RatingsDto ratingsDto = new RatingsDto();
-        ratingsDto.setEmployerID(String.valueOf(ratings.getEmployer().getId()));
+        ratingsDto.setId(String.valueOf(ratings.getEmployer().getId()));
         ratingsDto.setRating(ratings.getRating().name());
         return ratingsDto;
     }

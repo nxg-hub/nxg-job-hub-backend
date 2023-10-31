@@ -6,17 +6,19 @@ import core.nxg.entity.Ratings;
 import java.util.List;
 
 public interface RatingsService {
-    RatingsDto createRatings(RatingsDto ratingsDto);
+    RatingsDto createRatings(Long employerId,RatingsDto ratingsDto);
 
     List<RatingsDto> getRatingsForEmployer(Long employerId);
 
-    List<RatingsDto> getAllRatings();
-
-    List<Ratings> getAllRating();
-
-    RatingsDto getRatingsById(Long ratingsId);
-
-    void updateRatings(Long ratingsId, RatingsDto ratingsDto);
+    RatingsDto getRatingsById(Long Id);
 
     void deleteRatings(Long ratingsId);
+
+//    List<RatingsDto> getRatingsForEmployer(Long employerId);
+//
+//    List<RatingsDto> getAllRatings();
+//
+//    List<Ratings> getAllRating();
+//
+//    void deleteRatings(Long ratingsId);
 }

@@ -17,7 +17,8 @@ public class Ratings {
     @Enumerated(EnumType.STRING)
     private Rating rating;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne()
+    @JoinColumn(name = "employer_id")
     private Employer employer;
 
 }

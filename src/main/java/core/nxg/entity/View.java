@@ -3,6 +3,8 @@ package core.nxg.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @RequiredArgsConstructor
 @Entity
@@ -14,9 +16,12 @@ public class View {
 
     private int viewCount;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
-    private JobPosting jobPosting;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "job_postings_views_mapping",
+            joinColumns = @JoinColumn(name = "view_id", referencedColumnName = "viewId"),
+            inverseJoinColumns = @JoinColumn(name = "job_posting_id", referencedColumnName = "jobId"))
+    @ToString.Exclude
+    private List<JobPosting> jobPostings;
 
     
 }

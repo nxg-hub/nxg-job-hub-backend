@@ -2,6 +2,8 @@ package core.nxg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.enums.Gender;
+import core.nxg.enums.IndustryType;
+import core.nxg.enums.JobType;
 import core.nxg.enums.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -31,6 +33,7 @@ public class User implements UserDetails {
 
     private String profilePicture;
 
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -56,20 +59,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    @JsonIgnore
-    private TechTalentUser techTalent;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    @JsonIgnore
-    private TechTalentAgent techTalentAgent;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    @JsonIgnore
-    private Employer employer;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -109,4 +98,6 @@ public class User implements UserDetails {
 
         return enabled;
     }
+
+
 }

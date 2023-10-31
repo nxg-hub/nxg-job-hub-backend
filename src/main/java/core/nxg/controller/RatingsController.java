@@ -1,7 +1,6 @@
 package core.nxg.controller;
 
 import core.nxg.dto.RatingsDto;
-import core.nxg.entity.Ratings;
 import core.nxg.service.RatingsService;
 import core.nxg.serviceImpl.RatingsServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -15,42 +14,34 @@ import java.util.List;
 public class RatingsController {
 
     private final RatingsService ratingsService;
+    private final RatingsServiceImpl ratingsServiceImpl;
 
-    public RatingsController(RatingsServiceImpl ratingsService) {
+    public RatingsController(RatingsServiceImpl ratingsService, RatingsServiceImpl ratingsServiceImpl) {
         this.ratingsService = ratingsService;
+        this.ratingsServiceImpl = ratingsServiceImpl;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<RatingsDto> createRatings(@RequestBody RatingsDto ratingsDto) {
-        RatingsDto ratings = ratingsService.createRatings(ratingsDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(ratings);
-        return new ResponseEntity<>(ratings, HttpStatus.CREATED);
+//    @PostMapping("/create")
+//    public RatingsDto createRatings(@RequestBody RatingsDto ratingsDto) {
+//       return ratingsService.createRatings(ratingsDto);
+//
+//    }
+@PostMapping("/create/{Id}")
+public ResponseEntity<RatingsDto> createRatings(@PathVariable Long Id, @RequestBody RatingsDto ratingsDto) {
+    RatingsDto createdRatings = ratingsService.createRatings(Id, ratingsDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdRatings);
+}
 
-    }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<RatingsDto>> getAllRatings() {
-        List<RatingsDto> ratings = ratingsService.getAllRatings();
+
+    @GetMapping("/all-{Id}")
+    public ResponseEntity<List<RatingsDto>> getAllRatings(@PathVariable Long Id) {
+        List<RatingsDto> ratings = ratingsService.getRatingsForEmployer(Id);
         return ResponseEntity.ok(ratings);
     }
 
-    @GetMapping("/all-{employerId}")
-    public ResponseEntity<List<RatingsDto>> getAllRatings(@PathVariable Long employerId) {
-        List<RatingsDto> ratings = ratingsService.getRatingsForEmployer(employerId);
-        return ResponseEntity.ok(ratings);
-    }
 
-    @GetMapping("/{ratingsId}")
-    public ResponseEntity<RatingsDto> getRatingsById(@PathVariable Long ratingsId) {
-        RatingsDto ratings = ratingsService.getRatingsById(ratingsId);
-        return ResponseEntity.ok(ratings);
-    }
 
-    @PutMapping("/{ratingsId}")
-    public ResponseEntity<Void> updateRatings(@PathVariable Long ratingsId, @RequestBody RatingsDto ratingsDto) {
-        ratingsService.updateRatings(ratingsId, ratingsDto);
-        return ResponseEntity.noContent().build();
-    }
 
     @DeleteMapping("/{ratingsId}")
     public ResponseEntity<Void> deleteRatings(@PathVariable Long ratingsId) {
