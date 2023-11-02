@@ -14,7 +14,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         // Enable a simple memory-based message broker to send messages to clients on the "/topic" prefix and direct message to a user
-        config.enableSimpleBroker("/chatroom", "/queue");
+        config.enableSimpleBroker("/chatroom", "/user");
         // Set the application destination prefix to "/app"
         config.setApplicationDestinationPrefixes("/app");
         config.setUserDestinationPrefix("/user");
@@ -23,8 +23,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Register the "/chat" endpoint, enabling SockJS fallback options so that WebSocket can work on all browsers that support WebSocket.
-        registry.addEndpoint("/chat").setAllowedOrigins("*").withSockJS();
-        registry.addEndpoint("/chat").setAllowedOrigins("*");
+        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/chat").setAllowedOriginPatterns("*");
     }
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registry) {

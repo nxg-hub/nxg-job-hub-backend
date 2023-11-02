@@ -7,11 +7,23 @@
 </head>
 <body>
     <div id="chat-container">
-        <div id="chat-messages"></div>
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
-    </div>
-
+        <h1>Chat App</h1>
+    
+        <div id="public-chat">
+          <h2>Public Chat</h2>
+          <ul id="chat-messages"></ul>
+          <input type="text" id="message-input" placeholder="Enter a public message...">
+          <button id="send-button">Send</button>
+        </div>
+    
+        <div id="private-chat">
+          <h2>Private Chat</h2>
+          <ul id="private-chat-messages"></ul>
+          <input type="text" id="private-message-input" placeholder="Enter a private message...">
+          <input type="text" id="recipient-input" placeholder="Enter a recipient username...">
+          <button id="private-send-button">Send</button>
+        </div>
+      </div>
     <script src="./webjars/stomp-websocket/sockjs.js"></script>
     <script src="./webjars/stomp-websocket/stomp.js"></script>
     <script src="./js/chat.js"></script>
