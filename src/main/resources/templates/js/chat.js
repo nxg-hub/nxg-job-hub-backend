@@ -1,3 +1,6 @@
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
+
 const socket = new SockJS('/chat');
 const stompClient = Stomp.over(socket);
 
@@ -32,7 +35,7 @@ stompClient.connect({}, () => {
     });
 
     // Subscribe to private messages
-    stompClient.subscribe('/user/queue/direct', (message) => {
+    stompClient.subscribe('/user/ + ${username} /direct', (message) => {
         showMessage(JSON.parse(message.body));
     });
 });
