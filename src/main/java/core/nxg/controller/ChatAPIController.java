@@ -1,11 +1,7 @@
 package core.nxg.controller;
 
 import core.nxg.entity.ChatMessage;
-import core.nxg.entity.User;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 
-import java.security.Principal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +16,16 @@ import core.nxg.utils.Helper;
 @RestController
 public class ChatAPIController {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    SimpMessagingTemplate messagingTemplate;
 
     private final Logger logger = LoggerFactory.getLogger(ChatAPIController.class);
 
     @Autowired
     Helper helper;
 
-    public ChatAPIController(SimpMessagingTemplate messagingTemplate)  {
-        this.messagingTemplate = messagingTemplate;
-    }
-
+  
+    @PostMapping("/send")
     @MessageMapping("/message")
     @SendTo("/chatroom/public")    
     public ChatMessage sendMessage(@Payload ChatMessage message) throws InterruptedException {
@@ -38,12 +33,7 @@ public class ChatAPIController {
         return message;
     }
 
-    @MessageMapping("/message")
-    @SendTo("/chatroom/public")
-    public ChatMessage receiveMessage(@RequestBody ChatMessage message) throws InterruptedException {
-        System.out.println(message);
-        return message;
-    }
+
 
     // @MessageMapping("/typing")
     // @SendTo("/chatroom/public")
@@ -53,7 +43,7 @@ public class ChatAPIController {
   
         /* IMPLEMENT SENDING TO A UNIQUE USER pRIVATE MESAGES */
 
-
+    @PostMapping("/send-to")
     @MessageMapping("/private-message") 
     public ChatMessage sendPrivateMessage(@Payload ChatMessage message) {
         messagingTemplate.convertAndSendToUser(message.getReceiver(), "/private", message);
@@ -66,4 +56,5 @@ public class ChatAPIController {
     
 
 }
+
 
