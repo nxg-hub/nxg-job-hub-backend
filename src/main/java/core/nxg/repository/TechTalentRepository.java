@@ -12,6 +12,7 @@ public interface TechTalentRepository extends JpaRepository<TechTalentUser, Long
 
 
  Optional<TechTalentUser> findByUser(User user);
+ 
 
 
 }

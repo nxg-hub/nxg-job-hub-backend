@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 @Setter
 public class ApplicationDTO {
 
+   private String applicantEmail;
    private Long applicationId;
+   private Long jobPostingId;
    private ApplicationStatus applicationStatus;
    private LocalDateTime timestamp;
-   private TechTalentUser applicant;
+   // private TechTalentUser applicant;
 
     
 }

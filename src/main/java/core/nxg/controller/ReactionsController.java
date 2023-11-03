@@ -23,7 +23,7 @@ public class ReactionsController {
     }
     @PostMapping("/create/on-jobPosting/{jobID}")
     public ResponseEntity<ReactionsDto> createReactionOnJobPosting(
-            @PathVariable String jobID, @RequestBody ReactionsDto reactionsDto) {
+            @PathVariable Long jobID, @RequestBody ReactionsDto reactionsDto) {
         ReactionsDto createdReaction = reactionsService.createReactionOnJobPosting(jobID, reactionsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReaction);
     }
@@ -47,7 +47,7 @@ public class ReactionsController {
     }
 
     @GetMapping("/job/{jobID}")
-    public ResponseEntity<List<ReactionsDto>> getReactionsForJobPosting(@PathVariable String jobID) {
+    public ResponseEntity<List<ReactionsDto>> getReactionsForJobPosting(@PathVariable Long jobID) {
         List<ReactionsDto> reactions = reactionsService.getReactionsForJobPosting(jobID);
         return ResponseEntity.ok(reactions);
     }

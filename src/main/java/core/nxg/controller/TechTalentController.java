@@ -2,12 +2,20 @@ package core.nxg.controller;
 
 import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.TechTalentDTO;
+import core.nxg.dto.ApplicationDTO;
+
+import core.nxg.entity.Application;
+
 import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
+import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
+import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +37,12 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     @Autowired
     private final TechTalentService<T> techTalentService;
 
+    @Autowired
+    Helper helper;
+    
+ 
+    @Autowired
+    ApplicationService applicationService;
     
     public TechTalentController(TechTalentService<T> techTalentService) {
         this.techTalentService = techTalentService;
@@ -72,4 +86,11 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         TechTalentDTO techtalents = techTalentService.updateTechTalent(techTalentDTO,ID);
         return ResponseEntity.ok(techtalents);
     }
+
+    @GetMapping("/my-dashboard/job-applications")
+    public Page<ApplicationDTO> getJobApplicationsForUser( HttpServletRequest request, Pageable pageable) throws Exception {
+        User user = helper.extractLoggedInUser(request);
+        return applicationService.getMyApplications(user, pageable);
+    }
 }
+

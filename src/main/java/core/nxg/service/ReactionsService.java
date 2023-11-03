@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface ReactionsService {
-    ReactionsDto createReactionOnJobPosting(String jobID, ReactionsDto reactionsDto);
+    ReactionsDto createReactionOnJobPosting(Long jobID, ReactionsDto reactionsDto);
 
     ReactionsDto createReactionOnComment(Long commentID, ReactionsDto reactionsDto);
 
     List<ReactionsDto> getReactionsForComment(Long commentID);
 
-    List<ReactionsDto> getReactionsForJobPosting(String jobID);
+    List<ReactionsDto> getReactionsForJobPosting(Long jobID);
 
     ReactionsDto createReactions(ReactionsDto reactionsDto);
 
