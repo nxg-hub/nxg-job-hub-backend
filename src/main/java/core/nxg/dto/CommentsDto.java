@@ -8,6 +8,6 @@ import lombok.Setter;
 public class CommentsDto {
     private Long id;
     private String comment;
-    private String viewID;
-    private String jobID;
+    private Long viewID;
+    private Long jobID;
 }

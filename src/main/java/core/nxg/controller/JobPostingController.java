@@ -31,19 +31,19 @@ public class JobPostingController {
     }
 
     @GetMapping("/get-{jobID}")
-    public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable String jobID) {
+    public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable Long jobID) {
         JobPostingDto jobPosting = jobPostingService.getJobPostingById(jobID);
         return ResponseEntity.ok(jobPosting);
     }
 
     @PutMapping("/update/{jobID}")
-    public ResponseEntity<JobPostingDto> updateJobPosting(@PathVariable String jobID, @RequestBody JobPostingDto jobPostingDto) {
+    public ResponseEntity<JobPostingDto> updateJobPosting(@PathVariable Long jobID, @RequestBody JobPostingDto jobPostingDto) {
         JobPostingDto updatedJobPost = jobPostingService.updateJobPosting(jobID, jobPostingDto);
         return ResponseEntity.ok(updatedJobPost);
     }
 
     @DeleteMapping("/delete/{jobID}")
-    public ResponseEntity<Void> deleteComment(@PathVariable String jobID) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long jobID) {
         jobPostingService.deleteJobPosting(jobID);
         return ResponseEntity.noContent().build();
     }

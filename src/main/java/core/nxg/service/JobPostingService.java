@@ -9,11 +9,11 @@ public interface JobPostingService {
 
     JobPostingDto createJobPosting(JobPostingDto jobPostingDto);
 
-    JobPostingDto getJobPostingById(String jobId);
+    JobPostingDto getJobPostingById(Long jobId);
 
-    JobPostingDto updateJobPosting(String jobId, JobPostingDto jobPostingDto);
+    JobPostingDto updateJobPosting(Long jobId, JobPostingDto jobPostingDto);
 
-    void deleteJobPosting(String jobId);
+    void deleteJobPosting(Long jobId);
 
 //    void deleteJobPosting(JobPostingDto jobPostingDto);
 }

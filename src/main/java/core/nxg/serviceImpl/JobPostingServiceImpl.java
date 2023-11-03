@@ -28,7 +28,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto createJobPosting(JobPostingDto jobPostingDto) {
-        String jobID = jobPostingDto.getJobID();
+        Long jobID = jobPostingDto.getJobID();
         Optional<JobPosting> existingJobPosting = jobPostingRepository.findJobPostingByJobID(jobID);
         if (existingJobPosting.isPresent()) {
             throw new AlreadyExistException("Job posting with ID " + jobID + " already exists");
@@ -40,7 +40,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public JobPostingDto getJobPostingById(String jobId) {
+    public JobPostingDto getJobPostingById(Long jobId) {
         Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
         if (optionalJobPosting.isPresent()) {
             return mapToDto(optionalJobPosting.get());
@@ -50,7 +50,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
     @Override
-    public JobPostingDto updateJobPosting(String jobId, JobPostingDto jobPostingDto) {
+    public JobPostingDto updateJobPosting(Long jobId, JobPostingDto jobPostingDto) {
         Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
         if (optionalJobPosting.isPresent()) {
             JobPosting existingJobPosting = optionalJobPosting.get();
@@ -94,7 +94,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
     @Override
-    public void deleteJobPosting(String jobId) {
+    public void deleteJobPosting(Long jobId) {
         Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
         if (optionalJobPosting.isPresent()) {
             JobPosting jobPosting = optionalJobPosting.get();
