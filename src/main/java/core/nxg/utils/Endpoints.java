@@ -10,6 +10,8 @@ public final class Endpoints {
             "/v3/**",
             "/api/v1/auth/tech-talent/**",
             "/api/v1/auth/**",
+            "/h2-console/**",
+            "/h2/**",
         "/**"
             
             
