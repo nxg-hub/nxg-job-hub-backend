@@ -1,1 +1,0 @@
-web: java -Dserver.port=$PORT -Xmx671m -XX:CICompilerCount=2 -jar target/nxg-job-hub-BE-service-0.0.1-SNAPSHOT.jar
