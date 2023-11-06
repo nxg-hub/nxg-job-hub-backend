@@ -3,6 +3,7 @@ package core.nxg.controller;
 import core.nxg.dto.EmployerDto;
 import core.nxg.entity.Employer;
 import core.nxg.service.EmployerService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class EmployerController {
 
     @PostMapping("/create")
     public ResponseEntity<Employer> createEmployer(
-            @RequestBody EmployerDto employerDto, Principal principal){
-        Employer createdEmployer = employerService.createEmployer(employerDto, principal);
+            @RequestBody EmployerDto employerDto, HttpServletRequest request){
+        Employer createdEmployer = employerService.createEmployer(employerDto, request);
         return new ResponseEntity<>(createdEmployer, HttpStatus.CREATED);
     }
 

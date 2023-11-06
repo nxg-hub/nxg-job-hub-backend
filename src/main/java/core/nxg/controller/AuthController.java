@@ -48,13 +48,14 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) throws Exception{
         try {
-            ResponseEntity.ok()
+            String token = userService.login(loginDTO);
+           return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, "Bearer " 
-            + userService.login(loginDTO))
+            + token)
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,
             "Authorization")
             .build();
-            return ResponseEntity.status(HttpStatus.OK).body("Login successful");
+            // return ResponseEntity.status(HttpStatus.OK).body("Login successful");
 
         } catch (Exception e) {
             logger.error("Error while logging in: " + e.getMessage());
@@ -80,7 +81,7 @@ public class AuthController {
     /*  SEND A PASSWORD RESET EMAIL */
     public String sendResetPasswordEmail(@RequestBody EmailDTO dto, HttpServletRequest request) throws Exception {
         try {
-            emailService.sendPasswordResetEmail(dto, helper.getSiteURL(request));
+            emailService.sendPasswordResetEmail(dto, helper.getSiteURL(request), request);
             return "Reset Email Sent successfully!";
         } catch (Exception e) {
             logger.error("Error while sending reset password email: " + e.getMessage());
@@ -94,7 +95,7 @@ public class AuthController {
     public String resetPassword(@Nonnull @RequestParam("code") String code, Model model) throws Exception{
         try {
             emailService.confirmReset(code);
-            return "redirect:/api/vi/auth/reset-password/confirm";}
+            return "redirect:/api/vi/auth/update-password/";}
         catch(Exception e){
             logger.error("Error while confirming reset link: " + e.getMessage());
             return "ExpiredLink";
@@ -103,15 +104,15 @@ public class AuthController {
     }
 
 
-    @PostMapping("/reset-password/confirm")
+    @PostMapping("/update-password/")
     @ResponseBody
     /* RESET THE PASSWORD WITH OLD , NEW AND A CONFIRM PASSWORD */
-    public ResponseEntity<String> forgotPassword(@RequestBody passwordResetDTO dto) throws Exception {
-        try {passwordReset.resetPassword(dto);
+    public ResponseEntity<String> forgotPassword(@RequestBody passwordResetDTO dto, HttpServletRequest request) throws Exception {
+        try {passwordReset.updatePassword(dto, request);
             return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");
         } catch (Exception e) {
             logger.error("Error while resetting password: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.OK).body("Oops! Something went wrong. Please try again!");
+            return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
 
         }
     }

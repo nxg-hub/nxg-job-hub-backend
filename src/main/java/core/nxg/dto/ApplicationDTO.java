@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ApplicationDTO {
-
-   private String applicantEmail;
    private Long applicationId;
    private Long jobPostingId;
    private ApplicationStatus applicationStatus;

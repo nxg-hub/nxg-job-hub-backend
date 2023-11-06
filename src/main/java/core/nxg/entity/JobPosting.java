@@ -13,8 +13,8 @@ import java.util.List;
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String jobID;
+
+    private Long jobID;
 
     private String employerID;
     private String title;

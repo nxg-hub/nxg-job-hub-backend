@@ -38,10 +38,9 @@ public class EmployerServiceImpl implements EmployerService {
     }
 
 
-    //TODO refactor to use HttpServletRequest
         @Override
-        public Employer createEmployer (EmployerDto employerDto, Principal principal /*HttpServletRequest request*/){
-            String loggedInUserEmail = principal.getName();
+        public Employer createEmployer (EmployerDto employerDto, HttpServletRequest request){
+            String loggedInUserEmail =helper.extractLoggedInUser(request).getEmail();
 
             //User user = helper.extractLoggedInUser(request);
 

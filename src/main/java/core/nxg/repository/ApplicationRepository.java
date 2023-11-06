@@ -19,8 +19,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long>{
-    Page<ApplicationDTO> findByApplicant(User applicant, Pageable pageable);
+    Page<Application> findByApplicant(User applicant, Pageable pageable) throws Exception;
     Optional<List<Application>>findByApplicationStatus(ApplicationStatus applicationStatus, Pageable pageable);
-    
-    Boolean existsForApplicantAndJobPosting(TechTalentUser applicant, JobPosting jobPosting);
+    Application findByApplicationId(Long applicationId);
 }

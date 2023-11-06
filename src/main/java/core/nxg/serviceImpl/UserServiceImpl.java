@@ -9,6 +9,7 @@ import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
 
 import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.util.Optional;
+import org.modelmapper.ModelMapper;
 //import core.nxg.entity.UserInfoDetails;
 
 @Service
@@ -36,17 +38,20 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwt;
 
     @Autowired
-    EmailService emailService;
+    private final EmailService emailService;
 
     @Autowired
-    Helper<String,String> helper;
+    private final Helper<String,String> helper;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Autowired
-    VerificationCodeRepository verificationRepo;
+    private final VerificationCodeRepository verificationRepo;
 
     @Override
-    public String createUser(UserDTO userDTO, String siteURL) throws Exception {
+    public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
         if (existingUser.isPresent()) {
@@ -66,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
 
         VerificationCode verificationCode = new VerificationCode(user);
-        emailService.sendVerificationEmail(userDTO, verificationCode, siteURL);
+        emailService.sendVerificationEmail(verificationCode, siteURL, request);
         userRepository.saveAndFlush(user);
         verificationRepo.saveAndFlush(verificationCode);
 
@@ -93,8 +98,7 @@ public class UserServiceImpl implements UserService {
 
          else {
             String token = jwt.generateToken(user.get());
-            loginDTO.setToken(token);
-            return loginDTO.getToken();
+            return token;
 
          }
     }
@@ -102,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(Long id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
-        return new UserResponseDto(user);
+        return modelMapper.map(user, UserResponseDto.class);
     }
 
     @Override
@@ -119,14 +123,16 @@ public class UserServiceImpl implements UserService {
     public String deleteUser(Long id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
-        return "User deleted successfully";    }
+        return "User deleted successfully";
+    }
 
 
     @Override
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
         Page<User> user = userRepository.findAll(pageable);
-        return user.map(UserResponseDto::new);
-}
+        Page<UserResponseDto> userResponseDto = user.map(u -> modelMapper.map(u, UserResponseDto.class));
+        return userResponseDto;
+    }
 
 }
 

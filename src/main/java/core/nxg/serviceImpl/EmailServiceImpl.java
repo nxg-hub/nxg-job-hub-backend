@@ -2,7 +2,6 @@ package core.nxg.serviceImpl;
 
 
 import core.nxg.dto.EmailDTO;
-import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import core.nxg.entity.VerificationCode;
 import core.nxg.exceptions.AccountExpiredException;
@@ -12,8 +11,12 @@ import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
+import core.nxg.utils.Helper;
+import static core.nxg.utils.constants.EmailConstant.PASSWORD_RESET_CONTENT;
+import static core.nxg.utils.constants.EmailConstant.VERIFICATION_EMAIL_CONTENT;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
@@ -32,11 +36,15 @@ public class EmailServiceImpl implements EmailService {
     JavaMailSender mailSender;
 
 
+
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     VerificationCodeRepository verificationRepo;
+
+    @Autowired
+    Helper helper;
 
 
 
@@ -74,8 +82,9 @@ public void confirmVerification(String verificationCode) throws  Exception {
     }
 }
     @Override
-    public void sendPasswordResetEmail(EmailDTO request, String siteURL) throws MessagingException, UnsupportedEncodingException, MailException {
-        Optional<User> user = userRepository.findByEmail(request.getEmail());
+    public void sendPasswordResetEmail(EmailDTO dto, String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
+        User loggedInUser = helper.extractLoggedInUser(request);
+        Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
         if(user.isEmpty()){
             throw new UserNotFoundException("User with email does not exist");}
         if (!user.get().isEnabled()){
@@ -86,34 +95,10 @@ public void confirmVerification(String verificationCode) throws  Exception {
 
 
             String subject = "Password Reset";
-            String toAddress = request.getEmail();
+            String toAddress = loggedInUser.getEmail();
             String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
             String senderName = "NXG HUB DIGITECH";
-            String content = "<html>"
-                    + "<br> Dear [[name]],<br>"
-                    + "<head>"
-                    + "<style>"
-                    + "body {"
-                    + "  font-family: Arial, Helvetica, sans-serif;"
-                    + "  font-size: 1rem;"
-                    + "  line-height: 1.6;"
-                    + "  color: #000;"
-                    + "}"
-                    + "</style>"
-                    + "</head>"
-                    + "<body style=\"text-align: center;\">"
-                    + " <div style=\"margin: 0 auto; width: 50%;\">"
-                    + "   <h1 style=\"font-weight: bold;\">Reset Your Password!</h1>"
-                    + "   <p>Your request to <strong>Reset your password!</strong> To get started, please click the button.</p>"
-                    + "   <a href=\"[[URL]]\" style=\"text-decoration: none;\">"
-                    + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Verify Your Email</button>"
-                    + "   </a>"
-                    + " </div>"
-                    + " <p style=\"margin-top: 50px;\">If you did not make this request please report this incident.</p>"
-                    + " <p>Thanks,</p>"
-                    + " <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
-                    + "</body>"
-                    + "</html>";
+            String content  = PASSWORD_RESET_CONTENT;
 
 
             MimeMessage message = mailSender.createMimeMessage();
@@ -143,40 +128,19 @@ public void confirmVerification(String verificationCode) throws  Exception {
     }
 
     @Override
-    public void sendVerificationEmail(UserDTO request, VerificationCode code , String siteURL) throws MessagingException, UnsupportedEncodingException, MailException {
+    public void sendVerificationEmail(
+    VerificationCode code , 
+    String siteURL,
+    HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
 
 
     /* TODO: IMPLEMENT A METHOD TO RESEND VERIFICATION EMAIL IF USER DOES NOT RECEIVE IT OR IT'S EXPIRED */
-    
+        User loggedInUser = helper.extractLoggedInUser(request);
         String subject = "Almost there! Please verify your email address.";
-        String toAddress = request.getEmail();
+        String toAddress = loggedInUser.getEmail();
         String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
         String senderName = "NXG HUB DIGITECH";
-        String content = "<html>"
-                + "<br> Dear [[name]],<br>"
-                + "<head>"
-                + "<style>"
-                + "body {"
-                + "  font-family: Arial, Helvetica, sans-serif;"
-                + "  font-size: 1rem;"
-                + "  line-height: 1.6;"
-                + "  color: #000;"
-                + "}"
-                + "</style>"
-                + "</head>"
-                + "<body style=\"text-align: center;\">"
-                + " <div style=\"margin: 0 auto; width: 50%;\">"
-                + "   <h1 style=\"font-weight: bold;\">Verify your email address</h1>"
-                + "   <p>Welcome to <strong>NXG-JOB HUB</strong>! To get started, please click the button below to verify your email address.</p>"
-                + "   <a href=\"[[URL]]\" style=\"text-decoration: none;\">"
-                + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Verify Your Email</button>"
-                + "   </a>"
-                + " </div>"
-                + " <p style=\"margin-top: 50px;\">If you did not create an account using this address, please ignore this email.</p>"
-                + " <p>Thanks,</p>"
-                + " <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
-                + "</body>"
-                + "</html>";
+        String content = VERIFICATION_EMAIL_CONTENT;
 
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -187,7 +151,7 @@ public void confirmVerification(String verificationCode) throws  Exception {
 
         helper.setSubject(subject);
 
-        String full_name = request.getFirstName() + " " + request.getLastName();
+        String full_name = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
 
         content = content.replace("[[name]]", full_name);
 
