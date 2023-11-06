@@ -9,18 +9,33 @@ import java.time.LocalDateTime;
 @Data
 @RequiredArgsConstructor
 @EqualsAndHashCode
+@Entity
 @Table(name = "notifications")
 public class Notification {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long notificationId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ref_user")
+	private User referencedUser;
+	
 
-    private String message;
+	@Column
+	private String message;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime dateTime;
+	
 
-    private LocalDateTime timestamp;
+	
+	@Column
+	private Boolean seen;
+	
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }
+

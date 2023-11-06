@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Application {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long applicationId;
 
     @Column(name = "application_date")
@@ -25,7 +25,7 @@ public class Application {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private TechTalentUser applicant;
+    private User applicant;
 
 
     @ManyToOne

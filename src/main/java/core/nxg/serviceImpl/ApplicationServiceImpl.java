@@ -1,8 +1,10 @@
 package core.nxg.serviceImpl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,43 +12,53 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import core.nxg.dto.ApplicationDTO;
-import core.nxg.dto.TechTalentDTO;
 import core.nxg.enums.ApplicationStatus;
 import core.nxg.entity.Application;
 import core.nxg.entity.JobPosting;
+import core.nxg.entity.SavedJobs;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.ApplicationRepository;
 import core.nxg.repository.JobPostingRepository;
+import core.nxg.repository.SavedJobRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.ApplicationService;
+import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
 
 
     @Autowired
-    ApplicationRepository appRepo;
+    private ApplicationRepository appRepo;
 
     @Autowired
-    TechTalentRepository techRepo;
+    private TechTalentRepository techRepo;
 
     @Autowired
-    JobPostingRepository jobRepo;
+    private JobPostingRepository jobRepo;
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
+
+    @Autowired
+    private Helper helper;
+
+    @Autowired
+    private SavedJobRepository savedJobRepo;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
-    public void createApplication(ApplicationDTO applicationDTO) throws Exception {
-        Optional<User> user = userRepo.findByEmail(applicationDTO.getApplicantEmail());
-        if (user.isEmpty()){
-            throw new UserNotFoundException("Applicant cannot be found!");}
+    public void createApplication(HttpServletRequest request, ApplicationDTO applicationDTO) throws Exception {
+        User user = helper.extractLoggedInUser(request);
         
         
-        Optional<TechTalentUser> techTalentUser = techRepo.findByUser(user.get());
+        Optional<TechTalentUser> techTalentUser = techRepo.findByUser(user);
         if (techTalentUser.isEmpty()){
             throw new UserNotFoundException("Applicant cannot be found!");
         }
@@ -61,7 +73,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         newApplication.setJobPosting(job.get());
         newApplication.setApplicationStatus(ApplicationStatus.PENDING);
-        newApplication.setApplicant(techTalentUser.get());
+        newApplication.setApplicant(user);
         newApplication.setTimestamp(LocalDateTime.now());
 
         appRepo.saveAndFlush(newApplication);
@@ -76,14 +88,35 @@ public class ApplicationServiceImpl implements ApplicationService {
     
 
     @Override
-    public Page<ApplicationDTO> getMyApplications(User user, Pageable pageable) throws Exception {
+    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws Exception{
+        try{
+            User user = helper.extractLoggedInUser(request);   
         
-            TechTalentUser user1 = techRepo.findByUser(user)
-        .orElseThrow(
-            () -> new UserNotFoundException("TechTalent User does not exist!"))
-    ;
-        return appRepo.findByApplicant(user, pageable);
+            Page<Application> applications = appRepo.findByApplicant(user, pageable);
+            if(applications == null){
+                throw new NotFoundException("You do not have any applications at the moment");
+            }
+
+            Page<ApplicationDTO> my_aplications = applications.map(a -> mapper.map(a ,ApplicationDTO.class));
+            return my_aplications;   
+
+        }
+        catch(Exception e){
+            return null;}
+    }
+
+    @Override
+    public Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception{
+        User user = helper.extractLoggedInUser(request);
+        Page<SavedJobs> saved_jobs = savedJobRepo.findByUser(user, pageable);
+        return saved_jobs;
+
+    }
+        
+
+
+        
  
 
 }
-}
+
