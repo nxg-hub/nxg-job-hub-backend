@@ -9,7 +9,10 @@ public final class Endpoints {
             "/swagger","/swagger-ui/**",
             "/v3/**",
             "/api/v1/auth/tech-talent/**",
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/h2-console/**",
+            "/h2/**",
+        "/**"
             
             
     };
