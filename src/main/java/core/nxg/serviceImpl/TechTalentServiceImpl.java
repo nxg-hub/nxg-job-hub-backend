@@ -39,6 +39,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             throw new UserNotFoundException("Account with this email does not exist. Create an account!");}
 
         TechTalentUser techTalentUser = new TechTalentUser();
+// =======
+
+
+//         TechTalentUser techTalentUser = new TechTalentUser(); 
+// >>>>>>> main
 
         User user = userOptional.get();        
 
@@ -74,10 +79,6 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 
     } ;
-            
-
-    
-  
     
     @Override
     public Page<TechTalentDTO> getAllTechTalent(Pageable pageable) throws Exception {
@@ -86,8 +87,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
        
     }
 
-        //return techTalentRepository.findAll((Pageable) pageable);
-       
+
 
     
 

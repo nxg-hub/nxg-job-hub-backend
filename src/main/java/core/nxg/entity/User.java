@@ -86,10 +86,12 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return false;
     }
+
     @Column(name = "enabled")
     public boolean enabled;
     @Override
     public boolean isEnabled() {
+
         return enabled;
     }
 

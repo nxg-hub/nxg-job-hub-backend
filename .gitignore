@@ -121,12 +121,9 @@ spark-warehouse/
 .vscode/
 
 *#
-*.iml
-*.ipr
-*.iws
+*.env
 *.jar
 *.sw?
-*~
 .#*
 
 

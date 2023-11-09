@@ -33,9 +33,15 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PostMapping("/register/")
+// <<<<<<< controllers-update
     public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) throws Exception{
 //        try {
             String response =  userService.createUser(userDTO);
+// =======
+//     public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
+//         try {
+//             String response =  userService.createUser(userDTO,helper.getSiteURL(request));
+// >>>>>>> main
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 //        } catch (UserAlreadyExistException e) {
 //
@@ -47,6 +53,13 @@ public class UserController {
 //            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
 //            }
 
+// <<<<<<< controllers-update
+// =======
+//         }  catch (Exception e) {
+//                 logError.error("Error creating new User: {}", e.getMessage());
+//             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
+//             }
+// >>>>>>> main
 
 
 

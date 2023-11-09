@@ -15,8 +15,15 @@ import java.util.List;
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+// <<<<<<< controllers-update
     private Long jobId;
     private String employerId;
+// =======
+//     private Long id;
+//     private String jobID;
+
+//     private String employerID;
+// >>>>>>> main
     private String title;
     private String description;
     private String salary;
