@@ -13,16 +13,37 @@ import java.util.List;
 @RequestMapping("/api/job-postings")
 @RequiredArgsConstructor
 public class JobPostingController {
-
     private final JobPostingService jobPostingService;
+
+
     // private final RatingsServiceImpl ratingsService;
 
-
     @PostMapping("/create")
-    public ResponseEntity<JobPostingDto> createJobPosition(@RequestBody JobPostingDto jobPostingDto) {
-        JobPostingDto jobPosting = jobPostingService.createJobPosting(jobPostingDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
+    public ResponseEntity<JobPostingDto> createJobPosting(
+            @RequestBody JobPostingDto jobPostingDto) {
+        JobPostingDto createdJobPosting = jobPostingService.createJobPosting(jobPostingDto);
+        return new ResponseEntity<>(createdJobPosting, HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{jobId}")
+    public ResponseEntity<Void> deleteJobPosting(@PathVariable Long jobId) {
+        jobPostingService.deleteJobPosting(jobId);
+        return ResponseEntity.noContent().build();
+    }
+
+//    @DeleteMapping("/delete/{jobId}")
+//    public ResponseEntity<JobPostingDto> deleteJobPosting(@PathVariable Long jobId){
+//      JobPostingDto deletedJobPosting = jobPostingService.getJobPostingById(jobId);
+//      return ResponseEntity.ok(deletedJobPosting);
+//    }
+
+
+//   @DeleteMapping("/delete/{jobId}")
+//    public ResponseEntity<String> deleteComment(@PathVariable Long jobId) {
+//        String successMessage = jobPostingService.deleteJobPosting(jobId);
+//        return ResponseEntity.ok(successMessage);
+//    }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<JobPostingDto>> getAllJobPosting() {
@@ -30,21 +51,16 @@ public class JobPostingController {
         return ResponseEntity.ok(jobPostings);
     }
 
-    @GetMapping("/get-{jobID}")
-    public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable String jobID) {
-        JobPostingDto jobPosting = jobPostingService.getJobPostingById(jobID);
+    @GetMapping("/get-{jobId}")
+    public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable Long jobId) {
+        JobPostingDto jobPosting = jobPostingService.getJobPostingById(jobId);
         return ResponseEntity.ok(jobPosting);
     }
 
-    @PutMapping("/update/{jobID}")
-    public ResponseEntity<JobPostingDto> updateJobPosting(@PathVariable String jobID, @RequestBody JobPostingDto jobPostingDto) {
-        JobPostingDto updatedJobPost = jobPostingService.updateJobPosting(jobID, jobPostingDto);
+    @PutMapping("/update/{jobId}")
+    public ResponseEntity<JobPostingDto> updateJobPosting(@PathVariable Long jobId, @RequestBody JobPostingDto jobPostingDto) {
+        JobPostingDto updatedJobPost = jobPostingService.updateJobPosting(jobId, jobPostingDto);
         return ResponseEntity.ok(updatedJobPost);
     }
 
-    @DeleteMapping("/delete/{jobID}")
-    public ResponseEntity<Void> deleteComment(@PathVariable String jobID) {
-        jobPostingService.deleteJobPosting(jobID);
-        return ResponseEntity.noContent().build();
-    }
 }

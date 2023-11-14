@@ -33,33 +33,51 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PostMapping("/register/")
-    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
-        try {
-            String response =  userService.createUser(userDTO,helper.getSiteURL(request));
+// <<<<<<< controllers-update
+    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) throws Exception{
+//        try {
+            String response =  userService.createUser(userDTO);
+// =======
+//     public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
+//         try {
+//             String response =  userService.createUser(userDTO,helper.getSiteURL(request));
+// >>>>>>> main
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (UserAlreadyExistException e) {
+//        } catch (UserAlreadyExistException e) {
+//
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+//
+//
+//        }  catch (Exception e) {
+//                e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
+//            }
 
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-
-
-        }  catch (Exception e) {
-                logError.error("Error creating new User: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
-            }
-
+// <<<<<<< controllers-update
+// =======
+//         }  catch (Exception e) {
+//                 logError.error("Error creating new User: {}", e.getMessage());
+//             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body("Oops! Something went wrong. Please try again!");
+//             }
+// >>>>>>> main
 
 
 
     }
 
-//    @GetMapping("/users/")
-//    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
+    @GetMapping("/get/user")
+    public ResponseEntity<User> getUser(@RequestParam(value = "email") String email){
+        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/")
+    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
 //        try {
-//            Page<UserResponseDto> users = userService.getAllUsers(pageable);
-//            return new ResponseEntity<>(users, HttpStatus.OK);
+            Page<User> users = userService.getAllUsers(pageable);
+            return new ResponseEntity<>(users, HttpStatus.OK);
 //        } catch (Exception e) {
 //            logError.error("Error caused by: {}", e.getMessage());
 //            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
-//    }
+    }
 }

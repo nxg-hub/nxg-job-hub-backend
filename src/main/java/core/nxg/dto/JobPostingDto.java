@@ -1,13 +1,16 @@
 package core.nxg.dto;
 
+import core.nxg.entity.Reactions;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
 public class JobPostingDto {
-    private String jobID;
-    private String employerID;
+    private Long jobId;
+    private String employerId;
     private String title;
     private String description;
     private String salary;
@@ -17,4 +20,5 @@ public class JobPostingDto {
     private String tags;
     private String comments;
     private String reactions;
+
 }

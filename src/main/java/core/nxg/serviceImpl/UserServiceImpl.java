@@ -1,11 +1,15 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.LoginDTO;
-import core.nxg.dto.UserResponseDto;
-import core.nxg.entity.VerificationCode;
-import core.nxg.exceptions.UserNotFoundException;
-import core.nxg.repository.VerificationCodeRepository;
-import core.nxg.service.EmailService;
+
+import core.nxg.exceptions.NotFoundException;
+// =======
+// import core.nxg.dto.UserResponseDto;
+// import core.nxg.entity.VerificationCode;
+// import core.nxg.exceptions.UserNotFoundException;
+// import core.nxg.repository.VerificationCodeRepository;
+// import core.nxg.service.EmailService;
+// >>>>>>> main
 import core.nxg.service.UserService;
 
 import core.nxg.utils.Helper;
@@ -13,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+// =======
+// import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.core.userdetails.UsernameNotFoundException;
+// >>>>>>> main
 import org.springframework.stereotype.Service;
 
 import core.nxg.configs.JwtService;
@@ -67,20 +74,36 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
 
+// <<<<<<< controllers-update
+        userRepository.save(user);
+// =======
 
 
-        VerificationCode verificationCode = new VerificationCode(user);
-        emailService.sendVerificationEmail(userDTO, verificationCode, siteURL);
-        userRepository.saveAndFlush(user);
-        verificationRepo.saveAndFlush(verificationCode);
+//         VerificationCode verificationCode = new VerificationCode(user);
+//         emailService.sendVerificationEmail(userDTO, verificationCode, siteURL);
+//         userRepository.saveAndFlush(user);
+//         verificationRepo.saveAndFlush(verificationCode);
 
+// >>>>>>> main
         return "User saved Successfully";
 
 
     }
 
+    public User getUserByEmail(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+         new NotFoundException("User with email already exists."));
+        return user;
+    }
 
 
+// <<<<<<< controllers-update
+    public Page<User> getAllUsers(Pageable pageable){
+        return userRepository.findAll(pageable);}
+
+        //Page<User> users = userRepository.findAll();
+// =======
+// >>>>>>> main
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
 

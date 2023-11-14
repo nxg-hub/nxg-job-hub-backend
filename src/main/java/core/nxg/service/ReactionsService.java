@@ -6,17 +6,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface ReactionsService {
-    ReactionsDto createReactionOnJobPosting(String jobID, ReactionsDto reactionsDto);
+    ReactionsDto createReactionOnJobPosting(Long jobId, ReactionsDto reactionsDto);
 
-    ReactionsDto createReactionOnComment(Long commentID, ReactionsDto reactionsDto);
+   // ReactionsDto createReactionOnJobPosting(Long jobId, ReactionsDto reactionsDto);
 
-    List<ReactionsDto> getReactionsForComment(Long commentID);
+    ReactionsDto createReactionOnComment(Long commentId, ReactionsDto reactionsDto);
 
-    List<ReactionsDto> getReactionsForJobPosting(String jobID);
+    //List<ReactionsDto> getReactionsForComment(Long commentId);
+
+    //List<ReactionsDto> getReactionsForJobPosting(Long jobId);
 
     ReactionsDto createReactions(ReactionsDto reactionsDto);
 
-    List<ReactionsDto> getAllReactions();
+    //List<ReactionsDto> getAllReactions();
 
     @Transactional
     void deleteReaction(Long reactionId);
