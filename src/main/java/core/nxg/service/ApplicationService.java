@@ -5,10 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import core.nxg.dto.ApplicationDTO;
 import core.nxg.entity.SavedJobs;
-import core.nxg.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.List;
 
 public interface ApplicationService {
 
