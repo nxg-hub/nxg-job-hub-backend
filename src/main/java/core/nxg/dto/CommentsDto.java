@@ -6,10 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CommentsDto {
-    private Long Id;
+    private Long id;
     private String comment;
-    private String viewId;
-    private String jobId;
-
-
+    private Long viewID;
+    private Long jobID;
 }

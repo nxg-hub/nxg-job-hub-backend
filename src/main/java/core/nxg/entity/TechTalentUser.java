@@ -56,7 +56,7 @@ public class TechTalentUser{
     private String coverletter;
     private String linkedInUrl;
     private Locale countryCode;
-    private String Nationality;
+    private String nationality;
     private String city;
     private String state;
     private String residentialAddress;

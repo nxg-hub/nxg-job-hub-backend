@@ -6,13 +6,15 @@ import core.nxg.enums.IndustryType;
 import core.nxg.enums.JobType;
 import core.nxg.enums.UserType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 
 
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class User implements UserDetails {
 
     private String firstName;
 
+
     private String lastName;
 
     private String profilePicture;
@@ -37,6 +40,7 @@ public class User implements UserDetails {
     private String phoneNumber;
 
     @Column(nullable = false, unique = true)
+    @Email
     private String email;
 
     @Column(nullable = false)
@@ -46,7 +50,7 @@ public class User implements UserDetails {
     private String nationality;
 
     @Column(name = "date_of_birth")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "roles")
     private String roles;

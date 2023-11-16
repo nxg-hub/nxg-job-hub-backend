@@ -1,12 +1,12 @@
 package core.nxg.controller;
 
 import core.nxg.dto.EmployerDto;
+import core.nxg.entity.Employer;
 import core.nxg.service.EmployerService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -23,9 +23,9 @@ public class EmployerController {
 //    }
 
     @PostMapping("/createEmployer")
-    public ResponseEntity<String> createEmployer(@RequestParam("email") String email, @RequestBody EmployerDto employerDTO) {
-        String message = employerService.createEmployer(email, employerDTO);
-        return ResponseEntity.ok(message);
+    public ResponseEntity<String> createEmployer(@RequestBody EmployerDto employerDTO, HttpServletRequest request) {
+        Employer message = employerService.createEmployer(employerDTO, request);
+        return ResponseEntity.ok("Employer created successfully");
     }
 
     @GetMapping("/{Id}")
@@ -36,8 +36,8 @@ public class EmployerController {
 
     @PutMapping("/{Id}")
     public ResponseEntity<String> updateEmployer(@PathVariable Long Id, @RequestBody EmployerDto employerDto) {
-        String updatedEmployer = employerService.updateEmployer(Id, employerDto);
-        return ResponseEntity.ok(updatedEmployer);
+        EmployerDto updatedEmployer = employerService.updateEmployer(Id, employerDto);
+        return ResponseEntity.ok("Done!");
     }
 
     @DeleteMapping("/{Id}")
@@ -46,11 +46,11 @@ public class EmployerController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public List<EmployerDto> getAllEmployer() {
-
-        return employerService.getAllEmployer();
-    }
+//    @GetMapping
+//    public List<EmployerDto> getAllEmployer() {
+//
+//        return employerService.getAllEmployer();
+//    }
 
 
 }

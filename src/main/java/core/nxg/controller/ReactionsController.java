@@ -21,42 +21,38 @@ public class ReactionsController {
         ReactionsDto createdReaction = reactionsService.createReactions(reactionsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReaction);
     }
-    @PostMapping("/create/on-jobPosting/{jobId}")
+    @PostMapping("/create/on-jobPosting/{jobID}")
     public ResponseEntity<ReactionsDto> createReactionOnJobPosting(
-            @PathVariable String jobId, @RequestBody ReactionsDto reactionsDto) {
-        ReactionsDto createdReaction = reactionsService.createReactionOnJobPosting(Long.valueOf(jobId), reactionsDto);
+            @PathVariable Long jobID, @RequestBody ReactionsDto reactionsDto) {
+        ReactionsDto createdReaction = reactionsService.createReactionOnJobPosting(jobID, reactionsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReaction);
     }
 
-    @PostMapping("/create/on-comment/{commentId}")
+    @PostMapping("/create/on-comment/{commentID}")
     public ResponseEntity<ReactionsDto> createReactionOnComment(
-            @PathVariable Long commentId, @RequestBody ReactionsDto reactionsDto) {
-        ReactionsDto createdReaction = reactionsService.createReactionOnComment(commentId, reactionsDto);
+            @PathVariable Long commentID, @RequestBody ReactionsDto reactionsDto) {
+        ReactionsDto createdReaction = reactionsService.createReactionOnComment(commentID, reactionsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReaction);
     }
-//    @GetMapping("/all")
-//    public ResponseEntity<List<ReactionsDto>> getAllReactions() {
-//        List<ReactionsDto> reactions = reactionsService.getAllReactions();
-//        return ResponseEntity.ok(reactions);
-//    }
-
-//    @GetMapping("/comment/{commentId}")
-//    public ResponseEntity<List<ReactionsDto>> getReactionsForComment(@PathVariable Long commentId) {
-//        List<ReactionsDto> reactions = reactionsService.getReactionsForComment(commentId);
-//        return ResponseEntity.ok(reactions);
-//    }
-
-//    @GetMapping("/job/{jobId}")
-//    public ResponseEntity<List<ReactionsDto>> getReactionsForJobPosting(@PathVariable String jobId) {
-//        List<ReactionsDto> reactions = reactionsService.getReactionsForJobPosting(Long.valueOf(jobId));
-//        return ResponseEntity.ok(reactions);
-//    }
-
-    @DeleteMapping("/delete/{reactionId}")
-    public ResponseEntity<Void> deleteReaction(@PathVariable Long reactionId) {
-        reactionsService.deleteReaction(reactionId);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/all")
+    public ResponseEntity<List<ReactionsDto>> getAllReactions() {
+        List<ReactionsDto> reactions = reactionsService.getAllReactions();
+        return ResponseEntity.ok(reactions);
     }
+
+    @GetMapping("/comment/{commentID}")
+    public ResponseEntity<List<ReactionsDto>> getReactionsForComment(@PathVariable Long commentID) {
+        List<ReactionsDto> reactions = reactionsService.getReactionsForComment(commentID);
+        return ResponseEntity.ok(reactions);
+    }
+
+    @GetMapping("/job/{jobID}")
+    public ResponseEntity<List<ReactionsDto>> getReactionsForJobPosting(@PathVariable Long jobID) {
+        List<ReactionsDto> reactions = reactionsService.getReactionsForJobPosting(jobID);
+        return ResponseEntity.ok(reactions);
+    }
+
+
 
 
 }

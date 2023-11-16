@@ -2,20 +2,13 @@ package core.nxg.serviceImpl;
 
 import core.nxg.dto.JobPostingDto;
 import core.nxg.entity.JobPosting;
-import core.nxg.entity.TechTalentAgent;
 import core.nxg.exceptions.AlreadyExistException;
-import core.nxg.exceptions.ErrorException;
 import core.nxg.exceptions.NotFoundException;
-import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.JobPostingRepository;
 import core.nxg.service.JobPostingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,13 +28,11 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto createJobPosting(JobPostingDto jobPostingDto) {
-
-        Long jobId = jobPostingDto.getJobId();
-        Optional<JobPosting> existingJobPosting = jobPostingRepository.findJobPostingByJobId(jobId);
+        Long jobID = jobPostingDto.getJobID();
+        Optional<JobPosting> existingJobPosting = jobPostingRepository.findJobPostingByJobID(jobID);
         if (existingJobPosting.isPresent()) {
-            throw new AlreadyExistException("Job posting with Id " + jobId + " already exists");
+            throw new AlreadyExistException("Job posting with ID " + jobID + " already exists");
         }
-
         JobPosting jobPosting = new JobPosting();
         BeanUtils.copyProperties(jobPostingDto, jobPosting);
         JobPosting savedJobPosting = jobPostingRepository.save(jobPosting);
@@ -50,81 +41,77 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto getJobPostingById(Long jobId) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobId(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
         if (optionalJobPosting.isPresent()) {
             return mapToDto(optionalJobPosting.get());
         } else {
-            throw new NotFoundException("Job posting with Id " + jobId + " not found");
+            throw new NotFoundException("Job posting with ID " + jobId + " not found");
         }
     }
 
-
     @Override
     public JobPostingDto updateJobPosting(Long jobId, JobPostingDto jobPostingDto) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobId(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
         if (optionalJobPosting.isPresent()) {
             JobPosting existingJobPosting = optionalJobPosting.get();
 
-            // Validate if the provided job ID in the path matches the job ID in the request body
-            if (!jobId.equals(jobPostingDto.getJobId())) {
-                throw new NotFoundException("Job ID in the path does not match the request body");
-            }
-
-            // Update fields that are allowed to be modified
-            existingJobPosting.setTitle(jobPostingDto.getTitle());
-            existingJobPosting.setDescription(jobPostingDto.getDescription());
-            existingJobPosting.setSalary(jobPostingDto.getSalary());
-            existingJobPosting.setJobType(jobPostingDto.getJobType());
-            existingJobPosting.setDeadline(jobPostingDto.getDeadline());
-            existingJobPosting.setLocation(jobPostingDto.getLocation());
-            existingJobPosting.setTags(jobPostingDto.getTags());
-
-
+            BeanUtils.copyProperties(jobPostingDto, existingJobPosting);
             JobPosting updatedJobPosting = jobPostingRepository.save(existingJobPosting);
 
             return mapToDto(updatedJobPosting);
         } else {
-            throw new NotFoundException("Job posting with Id " + jobId + " not found");
+            throw new NotFoundException("Job posting with ID " + jobId + " not found");
         }
     }
-
-    // Utility method to map JobPosting entity to JobPostingDto
-    private JobPostingDto mapToDto(JobPosting jobPosting) {
-        JobPostingDto jobPostingDto = new JobPostingDto();
-        jobPostingDto.setJobId(jobPosting.getJobId());
-        jobPostingDto.setTitle(jobPosting.getTitle());
-        jobPostingDto.setDescription(jobPosting.getDescription());
-        jobPostingDto.setSalary(jobPosting.getSalary());
-        jobPostingDto.setJobType(jobPosting.getJobType());
-        jobPostingDto.setDeadline(jobPosting.getDeadline());
-        jobPostingDto.setLocation(jobPosting.getLocation());
-        jobPostingDto.setTags(jobPosting.getTags());
-        jobPostingDto.setComments(jobPosting.getComments().toString());
-        jobPostingDto.setReactions(jobPosting.getReaction());
-
-        // Set other properties of jobPostingDto using getters or additional mapping logic
-        return jobPostingDto;
-    }
-
-
-//    @Transactional
-//    public void deleteJobPosting(Long jobId) {
-//        try {
-//            jobPostingRepository.deleteById(jobId);
-//        } catch (UserNotFoundException e) {
-//            throw new NotFoundException("Job Posting with jobId " + jobId + " not found");
-//        } catch (Exception e) {
-//            throw new ErrorException("Failed to delete job posting with jobId: " + jobId, e);
+//
+//    @Override
+//    public void deleteJobPosting(JobPostingDto jobPostingDto) {
+//        // Convert JobPostingDto to JobPosting entity (assuming you have a conversion method or constructor)
+//        JobPosting jobPosting = convertToJobPostingEntity(jobPostingDto);
+//
+//        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobPosting.getJobID());
+//        if (optionalJobPosting.isPresent()) {
+//            JobPosting existingJobPosting = optionalJobPosting.get();
+//
+//            // Check if the existing job post matches the provided details
+//            if (existingJobPosting.equals(jobPosting)) {
+//                jobPostingRepository.delete(existingJobPosting);
+//            } else {
+//                throw new NotFoundException("Job posting details provided do not match the existing record");
+//            }
+//        } else {
+//            throw new NotFoundException("Job posting not found");
 //        }
 //    }
+//
+//    // Conversion method from JobPostingDto to JobPosting entity (example)
+//    private JobPosting convertToJobPostingEntity(JobPostingDto jobPostingDto) {
+//        JobPosting jobPosting = new JobPosting();
+//        jobPosting.setJobID(jobPostingDto.getJobID());
+//        // Set other properties accordingly
+//        return jobPosting;
+//    }
+
 
     @Override
     public void deleteJobPosting(Long jobId) {
-        JobPosting jobPosting = jobPostingRepository.findById(jobId)
-                .orElseThrow(() -> new NotFoundException("TechTalentAgent with ID " + jobId + " not found"));
-        jobPostingRepository.delete(jobPosting);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
+        if (optionalJobPosting.isPresent()) {
+            JobPosting jobPosting = optionalJobPosting.get();
+            jobPostingRepository.delete(jobPosting);
+        } else {
+            throw new NotFoundException("Job posting with ID " + jobId + " not found");
+        }
     }
 
+//    @Override
+//    public void deleteJobPosting(JobPostingDto jobPostingDto) {
+//
+//    }
+
+    private JobPostingDto mapToDto(JobPosting jobPosting) {
+        JobPostingDto jobPostingDto = new JobPostingDto();
+        BeanUtils.copyProperties(jobPosting, jobPostingDto);
+        return jobPostingDto;
+    }
 }
-
-

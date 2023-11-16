@@ -1,27 +1,20 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.LoginDTO;
-
-import core.nxg.exceptions.NotFoundException;
-// =======
-// import core.nxg.dto.UserResponseDto;
-// import core.nxg.entity.VerificationCode;
-// import core.nxg.exceptions.UserNotFoundException;
-// import core.nxg.repository.VerificationCodeRepository;
-// import core.nxg.service.EmailService;
-// >>>>>>> main
+import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.VerificationCode;
+import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.repository.VerificationCodeRepository;
+import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
 
 import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-// =======
-// import org.springframework.security.core.userdetails.UserDetails;
-// import org.springframework.security.core.userdetails.UsernameNotFoundException;
-// >>>>>>> main
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import core.nxg.configs.JwtService;
@@ -31,9 +24,7 @@ import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.util.Optional;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.modelmapper.ModelMapper;
 //import core.nxg.entity.UserInfoDetails;
 
 @Service
@@ -47,17 +38,20 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwt;
 
     @Autowired
-    EmailService emailService;
+    private final EmailService emailService;
 
     @Autowired
-    Helper<String,String> helper;
+    private final Helper<String,String> helper;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Autowired
-    VerificationCodeRepository verificationRepo;
+    private final VerificationCodeRepository verificationRepo;
 
     @Override
-    public String createUser(UserDTO userDTO, String siteURL) throws Exception {
+    public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
         if (existingUser.isPresent()) {
@@ -74,41 +68,25 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
 
-// <<<<<<< controllers-update
-        userRepository.save(user);
-// =======
 
 
-//         VerificationCode verificationCode = new VerificationCode(user);
-//         emailService.sendVerificationEmail(userDTO, verificationCode, siteURL);
-//         userRepository.saveAndFlush(user);
-//         verificationRepo.saveAndFlush(verificationCode);
+        VerificationCode verificationCode = new VerificationCode(user);
+        emailService.sendVerificationEmail(verificationCode, siteURL, request);
+        userRepository.saveAndFlush(user);
+        verificationRepo.saveAndFlush(verificationCode);
 
-// >>>>>>> main
         return "User saved Successfully";
 
 
     }
 
-    public User getUserByEmail(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-         new NotFoundException("User with email already exists."));
-        return user;
-    }
 
 
-// <<<<<<< controllers-update
-    public Page<User> getAllUsers(Pageable pageable){
-        return userRepository.findAll(pageable);}
-
-        //Page<User> users = userRepository.findAll();
-// =======
-// >>>>>>> main
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
 
         Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new UsernameNotFoundException( "Wrong username or password!");
 
          }
@@ -119,9 +97,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException( "User account is not enabled!");}
 
          else {
-            String token = jwt.generateToken(user.get());
-            loginDTO.setToken(token);
-            return loginDTO.getToken();
+            return jwt.generateToken(user.get());
 
          }
     }
@@ -129,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(Long id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
-        return new UserResponseDto(user);
+        return modelMapper.map(user, UserResponseDto.class);
     }
 
     @Override
@@ -146,14 +122,15 @@ public class UserServiceImpl implements UserService {
     public String deleteUser(Long id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
-        return "User deleted successfully";    }
+        return "User deleted successfully";
+    }
 
 
     @Override
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        return users.map(UserResponseDto::new);
-
+        Page<User> user = userRepository.findAll(pageable);
+        Page<UserResponseDto> userResponseDto = user.map(u -> modelMapper.map(u, UserResponseDto.class));
+        return userResponseDto;
     }
 
 }

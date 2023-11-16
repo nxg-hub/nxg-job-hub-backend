@@ -26,9 +26,9 @@ public class ReactionsServiceImpl implements ReactionsService {
     private final CommentsRepository commentsRepository;
 
     @Override
-    public ReactionsDto createReactionOnJobPosting(Long jobId, ReactionsDto reactionsDto) {
-        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobId(jobId)
-                .orElseThrow(() -> new NotFoundException("Job posting with ID " + jobId + " not found"));
+    public ReactionsDto createReactionOnJobPosting(Long jobID, ReactionsDto reactionsDto) {
+        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(jobID)
+                .orElseThrow(() -> new NotFoundException("Job posting with ID " + jobID + " not found"));
 
         Reactions reactions = new Reactions();
         reactions.setReactionType(reactionsDto.getReactionType());
@@ -39,9 +39,9 @@ public class ReactionsServiceImpl implements ReactionsService {
     }
 
     @Override
-    public ReactionsDto createReactionOnComment(Long commentId, ReactionsDto reactionsDto) {
-        Comments comment = commentsRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException("Comment with Id " + commentId + " not found"));
+    public ReactionsDto createReactionOnComment(Long commentID, ReactionsDto reactionsDto) {
+        Comments comment = commentsRepository.findById(commentID)
+                .orElseThrow(() -> new NotFoundException("Comment with ID " + commentID + " not found"));
 
         Reactions reactions = new Reactions();
         reactions.setReactionType(reactionsDto.getReactionType());
@@ -53,23 +53,23 @@ public class ReactionsServiceImpl implements ReactionsService {
                 reactionsRepository.save(reactions));
     }
 
-//    @Override
-//    public List<ReactionsDto> getReactionsForComment(Long commentId) {
-//        Comments comment = commentsRepository.findById(commentId)
-//                .orElseThrow(() -> new NotFoundException("Comment with Id " + commentId + " not found"));
-//
-//        return comment.getReactions()
-//                .stream().map(this::mapToDto).collect(Collectors.toList());
-//    }
+    @Override
+    public List<ReactionsDto> getReactionsForComment(Long commentID) {
+        Comments comment = commentsRepository.findById(commentID)
+                .orElseThrow(() -> new NotFoundException("Comment with ID " + commentID + " not found"));
 
-//    @Override
-//    public List<ReactionsDto> getReactionsForJobPosting(Long jobId) {
-//        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobId(jobId)
-//                .orElseThrow(() -> new NotFoundException("Job posting with Id " + jobId + " not found"));
-//
-//        return jobPosting.getReactions()
-//                .stream().map(this::mapToDto).collect(Collectors.toList());
-//    }
+        return comment.getReactions()
+                .stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReactionsDto> getReactionsForJobPosting(Long jobID) {
+        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(jobID)
+                .orElseThrow(() -> new NotFoundException("Job posting with ID " + jobID + " not found"));
+
+        return jobPosting.getReactions()
+                .stream().map(this::mapToDto).collect(Collectors.toList());
+    }
 
     @Override
     public ReactionsDto createReactions(ReactionsDto reactionsDto) {
@@ -78,26 +78,26 @@ public class ReactionsServiceImpl implements ReactionsService {
         return this.mapToDto(reactionsRepository.save(reactions));
     }
 
-//    @Override
-//    public List<ReactionsDto> getAllReactions() {
-//        return reactionsRepository.findAll()
-//                .stream().map(this::mapToDto).collect(Collectors.toList());
-//    }
-
     @Override
-    @Transactional
-    public void deleteReaction(Long reactionId) {
-        Reactions reaction = reactionsRepository.findById(reactionId)
-                .orElseThrow(() -> new NotFoundException("Reaction with Id " + reactionId + " not found"));
+    public List<ReactionsDto> getAllReactions() {
+        return reactionsRepository.findAll()
+                .stream().map(this::mapToDto).collect(Collectors.toList());
+    }
 
+//    @Override
+//    @Transactional
+//    public void deleteReaction(Long reactionId) {
+//        Reactions reaction = reactionsRepository.findById(reactionId)
+//                .orElseThrow(() -> new NotFoundException("Reaction with ID " + reactionId + " not found"));
+//
 //        for (JobPosting jobPosting : reaction.getJobPosting()) {
 //            jobPosting.getReactions().remove(reaction);
 //        }
 //        for (Comments comment : reaction.getComments()) {
 //            comment.getReactions().remove(reaction);
 //        }
-        reactionsRepository.delete(reaction);
-    }
+//        reactionsRepository.delete(reaction);
+//    }
 
     private ReactionsDto mapToDto(Reactions reactions) {
         ReactionsDto reactionsDto = new ReactionsDto();
