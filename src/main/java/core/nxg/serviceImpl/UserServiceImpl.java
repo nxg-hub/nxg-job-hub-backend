@@ -1,13 +1,20 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.LoginDTO;
-import core.nxg.exceptions.NotFoundException;
+import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.VerificationCode;
+import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.repository.VerificationCodeRepository;
+import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
 
+import core.nxg.utils.Helper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import core.nxg.configs.JwtService;
@@ -17,9 +24,7 @@ import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.util.Optional;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.modelmapper.ModelMapper;
 //import core.nxg.entity.UserInfoDetails;
 
 @Service
@@ -33,23 +38,27 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwt;
 
     @Autowired
-    private PasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final EmailService emailService;
 
-    public String encodePassword(String password) {
-        return encoder.encode(password);
+    @Autowired
+    private final Helper<String,String> helper;
 
-    }
+    @Autowired
+    private ModelMapper modelMapper;
+
+
+    @Autowired
+    private final VerificationCodeRepository verificationRepo;
 
     @Override
-    public String createUser(UserDTO userDTO) throws Exception {
+    public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistException("User with email already exists.");
         }
         User user = new User();
-        System.out.println("Creating new user and setting paswword!!");
-        user.setPassword(encodePassword(userDTO.getPassword()));
+        user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         user.setEmail(userDTO.getEmail());
         user.setFirstName(userDTO.getFirstName());
@@ -58,44 +67,70 @@ public class UserServiceImpl implements UserService {
         user.setRoles(userDTO.getRoles());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
-        System.out.println("Successfully created ");
 
-        userRepository.save(user);
+        VerificationCode verificationCode = new VerificationCode(user);
+        emailService.sendVerificationEmail(verificationCode, siteURL, request);
+        userRepository.saveAndFlush(user);
+        verificationRepo.saveAndFlush(verificationCode);
+
         return "User saved Successfully";
 
 
     }
 
-    public User getUserByEmail(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-         new NotFoundException("User with email already exists."));
-        return user;
-    }
 
 
-    public Page<User> getAllUsers(Pageable pageable){
-        return userRepository.findAll(pageable);}
-
-        //Page<User> users = userRepository.findAll();
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
-//
-//        Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
-//        UserInfoDetails userInfoDetails = new UserInfoDetails(user.get());
-//        if (!user.isPresent()) {
-//            throw new UsernameNotFoundException( "Wrong username or password!");
-//
-//         }
-//        if (!encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
-//            throw new UserNotFoundException("Wrong username or password!");
-//        }
-//        if (!userInfoDetails.isEnabled()) {
-//            throw new UsernameNotFoundException( "User account is not enabled!");}
-//
-//         else {
-//            String token = jwt.generateToken(new UserInfoDetails(user.get()));
-//            loginDTO.setToken(token);
-            return loginDTO.getToken();
+
+        Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException( "Wrong username or password!");
+
+         }
+        if (!helper.encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
+            throw new UserNotFoundException("Wrong username or password!");
+        }
+        if (!user.get().isEnabled()) {
+            throw new UsernameNotFoundException( "User account is not enabled!");}
+
+         else {
+            return jwt.generateToken(user.get());
 
          }
     }
+
+    @Override
+    public UserResponseDto getUserById(Long id) throws Exception {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return modelMapper.map(user, UserResponseDto.class);
+    }
+
+    @Override
+    public String updateUser(Long id, UserDTO userDto) throws Exception {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setFirstName(userDto.getFirstName());
+        user.setEmail(userDto.getEmail());
+        userRepository.save(user);
+        return "User updated successfully";
+
+    }
+
+    @Override
+    public String deleteUser(Long id) throws Exception {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        userRepository.delete(user);
+        return "User deleted successfully";
+    }
+
+
+    @Override
+    public Page<UserResponseDto> getAllUsers(Pageable pageable) {
+        Page<User> user = userRepository.findAll(pageable);
+        Page<UserResponseDto> userResponseDto = user.map(u -> modelMapper.map(u, UserResponseDto.class));
+        return userResponseDto;
+    }
+
+}
+
+
