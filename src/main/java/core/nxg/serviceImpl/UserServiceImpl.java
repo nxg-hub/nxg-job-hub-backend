@@ -68,8 +68,6 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
 
-
-
         VerificationCode verificationCode = new VerificationCode(user);
         emailService.sendVerificationEmail(verificationCode, siteURL, request);
         userRepository.saveAndFlush(user);
