@@ -52,11 +52,7 @@ public class ReactionsController {
         return ResponseEntity.ok(reactions);
     }
 
-    @DeleteMapping("/delete/{reactionId}")
-    public ResponseEntity<Void> deleteReaction(@PathVariable Long reactionId) {
-        reactionsService.deleteReaction(reactionId);
-        return ResponseEntity.noContent().build();
-    }
+
 
 
 }

@@ -1,7 +1,6 @@
 package core.nxg.serviceImpl;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -79,16 +78,16 @@ public class ApplicationServiceImpl implements ApplicationService {
         appRepo.saveAndFlush(newApplication);
             
 
-    };
+    }
 
     @Override
     public void updateApplication(ApplicationDTO applicationDTO){
 
-         };
+         }
     
 
     @Override
-    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws Exception{
+    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws NullPointerException{
         try{
             User user = helper.extractLoggedInUser(request);   
         
@@ -97,8 +96,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 throw new NotFoundException("You do not have any applications at the moment");
             }
 
-            Page<ApplicationDTO> my_aplications = applications.map(a -> mapper.map(a ,ApplicationDTO.class));
-            return my_aplications;   
+            return applications.map(a -> mapper.map(a ,ApplicationDTO.class));
 
         }
         catch(Exception e){
@@ -108,8 +106,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception{
         User user = helper.extractLoggedInUser(request);
-        Page<SavedJobs> saved_jobs = savedJobRepo.findByUser(user, pageable);
-        return saved_jobs;
+        return savedJobRepo.findByUser(user, pageable);
 
     }
         

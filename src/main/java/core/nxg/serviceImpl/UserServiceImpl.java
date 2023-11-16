@@ -97,8 +97,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException( "User account is not enabled!");}
 
          else {
-            String token = jwt.generateToken(user.get());
-            return token;
+            return jwt.generateToken(user.get());
 
          }
     }

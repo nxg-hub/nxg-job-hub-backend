@@ -89,7 +89,6 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         
         techTalentUser.setCoverletter(techTalentDto.getCoverletter());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
-        loggedInUser.setTechTalent(techTalentUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.saveAndFlush(techTalentUser);
 
