@@ -1,7 +1,6 @@
 package core.nxg.service;
 
 import core.nxg.dto.ReactionsDto;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +17,6 @@ public interface ReactionsService {
 
     List<ReactionsDto> getAllReactions();
 
-    @Transactional
-    void deleteReaction(Long reactionId);
+//    @Transactional
+//    void deleteReaction(Long reactionId);
 }

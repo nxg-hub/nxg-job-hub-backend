@@ -71,7 +71,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @GetMapping("/users/")
     @ResponseBody
-    public ResponseEntity<Page<TechTalentDTO>> getAllTechTalentUsers(Pageable pageable) {
+    public ResponseEntity<Page<?>> getAllTechTalentUsers(Pageable pageable) {
         try {
             Page<TechTalentDTO> users = techTalentService.getAllTechTalent(pageable);
             return new ResponseEntity<>(users, HttpStatus.OK);
@@ -82,7 +82,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     }
     @GetMapping("/get-{ID}")
     @ResponseBody
-    public ResponseEntity<TechTalentDTO> getTechTalent(@PathVariable Long ID) throws Exception {
+    public ResponseEntity<?> getTechTalent(@PathVariable Long ID) throws Exception {
         TechTalentDTO techtalent = techTalentService.getTechTalentById(ID);
         return ResponseEntity.ok(techtalent);
 
@@ -98,7 +98,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @GetMapping("/my-dashboard/my-applications")
     @ResponseBody
-    public ResponseEntity<Page<ApplicationDTO>> getJobApplicationsForUser( HttpServletRequest request, Pageable pageable) throws Exception {
+    public ResponseEntity<Object> getJobApplicationsForUser( HttpServletRequest request, Pageable pageable) throws Exception {
         return ResponseEntity.ok(applicationService.getMyApplications(request, pageable));
     }
 
