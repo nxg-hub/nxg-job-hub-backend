@@ -96,7 +96,7 @@ public void confirmVerification(String verificationCode) throws  Exception {
 
             String subject = "Password Reset";
             String toAddress = loggedInUser.getEmail();
-            String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
+            String fromAddress = "josgolf3@@gmail.com";
             String senderName = "NXG HUB DIGITECH";
             String content  = PASSWORD_RESET_CONTENT;
 
@@ -138,7 +138,7 @@ public void confirmVerification(String verificationCode) throws  Exception {
         User loggedInUser = helper.extractLoggedInUser(request);
         String subject = "Almost there! Please verify your email address.";
         String toAddress = loggedInUser.getEmail();
-        String fromAddress = "abayomioluwatimilehinstephen@gmail.com";
+        String fromAddress = "josgolf3@gmail.com";
         String senderName = "NXG HUB DIGITECH";
         String content = VERIFICATION_EMAIL_CONTENT;
 
