@@ -30,9 +30,9 @@ public class Helper<K,V> {
         return userRepo.findByEmail(email).orElseThrow(()-> new NotFoundException("User not found"));
     }
 
-    public K copyFromDto ( V v,K k){
-        BeanUtils.copyProperties(v,k);
-        return k;
+    public K copyFromDto ( V source,K target){
+        BeanUtils.copyProperties(source,target);
+        return target;
     }
 
     // Helper method to get the site URL
@@ -52,10 +52,10 @@ public class Helper<K,V> {
     public boolean isEmailValid(String email) {
         Pattern pattern = Pattern.compile("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
 
-        return email != null && pattern.matcher(email).matches();
+        return email == null || !pattern.matcher(email).matches();
     }
 
-    public boolean isPasswordMatch(String password, String encodedPassword){
+    public boolean isPasswordValid(String password, String encodedPassword){
         return encoder.matches(password, encodedPassword);
     }
 

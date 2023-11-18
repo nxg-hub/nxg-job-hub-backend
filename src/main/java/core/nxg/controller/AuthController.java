@@ -59,7 +59,7 @@ public class AuthController {
 
         } catch (Exception e) {
             logger.error("Error while logging in: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());}
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());}
     }
 
 
@@ -79,13 +79,13 @@ public class AuthController {
     @PostMapping("/reset-password-email")
     @ResponseBody
     /*  SEND A PASSWORD RESET EMAIL */
-    public String sendResetPasswordEmail(@RequestBody EmailDTO dto, HttpServletRequest request) throws Exception {
+    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailDTO dto, HttpServletRequest request) throws Exception {
         try {
             emailService.sendPasswordResetEmail(dto, helper.getSiteURL(request), request);
-            return "Reset Email Sent successfully!";
+            return ResponseEntity.status(HttpStatus.OK).body("Reset password link sent successfully");
         } catch (Exception e) {
             logger.error("Error while sending reset password email: " + e.getMessage());
-            return ("Oops! " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid! Please try again!");
         }
     }
 
@@ -112,7 +112,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");
         } catch (Exception e) {
             logger.error("Error while resetting password: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 
         }
     }
