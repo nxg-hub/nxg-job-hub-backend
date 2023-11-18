@@ -5,7 +5,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -14,8 +17,15 @@ import org.springframework.hateoas.RepresentationModel;
 @RequiredArgsConstructor
 public class DashboardDTO extends RepresentationModel<DashboardDTO> {
 
-    private UserResponseDto privacy;
+
+    
+
+
+    private UserResponseDto profile;
+    private TechTalentDTO other_profile;
     private List<ApplicationDTO> my_applications;
     private List<SavedJobs> saved_jobs;
+
+
     
 }

@@ -1,4 +1,6 @@
 package core.nxg.repository;
+import core.nxg.dto.TechTalentDTO;
+import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.User;
 import java.util.Optional;
 
@@ -11,8 +13,10 @@ import core.nxg.entity.TechTalentUser;
 public interface TechTalentRepository extends JpaRepository<TechTalentUser, Long> {
 
 
- Optional<TechTalentUser> findByUser(User user);
- 
+ Optional<TechTalentDTO> findByUser(User user);
+
+
+
 
 
 }

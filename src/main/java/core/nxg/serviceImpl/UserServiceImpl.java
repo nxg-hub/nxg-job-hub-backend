@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final UserRepository userRepository;
 
-
     @Autowired
     private final JwtService jwt;
 
@@ -43,10 +42,10 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Autowired
-    private final Helper<String,String> helper;
+    private final Helper helper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
 
     @Autowired
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService {
     public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (!helper.isEmailValid(userDTO.getEmail())) {
+        if (helper.isEmailValid(userDTO.getEmail())) {
             throw new EmailNotValidException("Invalid email address");
         }
         if (existingUser.isPresent()) {
@@ -64,6 +63,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
+//        User user = (User) helper.copyFromDto(userDTO, user1);// TODO: YET TO BE TESTED
+
 
         user.setEmail(userDTO.getEmail());
         user.setFirstName(userDTO.getFirstName());
@@ -71,7 +72,6 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDTO.getLastName());
         user.setRoles(userDTO.getRoles());
         user.setPhoneNumber(userDTO.getPhoneNumber());
-        user.setProfilePicture(userDTO.getProfilePicture());
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         VerificationCode verificationCode = new VerificationCode(user);
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> user = userRepository.findByEmail(loginDTO.getEmail()) ;
 
-        if(!helper.isEmailValid(loginDTO.getEmail())){
+        if(helper.isEmailValid(loginDTO.getEmail())){
             throw new EmailNotValidException("Invalid email address");
         }
         if (user.isEmpty()) {
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
          }
 
-        if (!helper.isPasswordMatch(loginDTO.getPassword(), user.get().getPassword())){
+        if (!helper.isPasswordValid(loginDTO.getPassword(), user.get().getPassword())){
             throw new IncorrectDetailsException("Wrong username or password!");
         }
 
@@ -119,10 +119,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateUser(Long id, UserDTO userDto) throws Exception {
+    public String updateUser(Long id, UserResponseDto userDto) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        modelMapper.map(userDto, user);
+
+//        User user = (User) helper.copyFromDto(userDto, user1); //TODO: YET TO BE TESTED
+
         userRepository.save(user);
         return "User updated successfully";
 
