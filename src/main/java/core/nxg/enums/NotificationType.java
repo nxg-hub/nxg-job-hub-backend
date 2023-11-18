@@ -1,5 +1,5 @@
 package core.nxg.enums;
 
 public enum NotificationType {
-    MESSAGE, 
+    MESSAGE, LIKE, COMMENT, SHARE, NEW_POST
 }
