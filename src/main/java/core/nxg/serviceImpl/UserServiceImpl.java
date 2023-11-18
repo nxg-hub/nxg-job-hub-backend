@@ -3,6 +3,8 @@ package core.nxg.serviceImpl;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.VerificationCode;
+import core.nxg.exceptions.EmailNotValidException;
+import core.nxg.exceptions.IncorrectDetailsException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
@@ -54,11 +56,14 @@ public class UserServiceImpl implements UserService {
     public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (existingUser.isPresent()) {
-            throw new UserAlreadyExistException("User with email already exists.");
+        if (!helper.isEmailValid(userDTO.getEmail())) {
+            throw new EmailNotValidException("Invalid email address");
         }
+        if (existingUser.isPresent()) {
+            throw new UserAlreadyExistException("User with email already exists!.");
+        }
+
         User user = new User();
-        user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         user.setEmail(userDTO.getEmail());
         user.setFirstName(userDTO.getFirstName());
@@ -67,6 +72,7 @@ public class UserServiceImpl implements UserService {
         user.setRoles(userDTO.getRoles());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setProfilePicture(userDTO.getProfilePicture());
+        user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         VerificationCode verificationCode = new VerificationCode(user);
         emailService.sendVerificationEmail(verificationCode, siteURL, request);
@@ -83,16 +89,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
 
-        Optional<User> user = userRepository.findByEmail(loginDTO.getUsername()) ;
+        Optional<User> user = userRepository.findByEmail(loginDTO.getEmail()) ;
+
+        if(!helper.isEmailValid(loginDTO.getEmail())){
+            throw new EmailNotValidException("Invalid email address");
+        }
         if (user.isEmpty()) {
             throw new UsernameNotFoundException( "Wrong username or password!");
 
          }
-        if (!helper.encoder.matches(loginDTO.getPassword(), user.get().getPassword())){
-            throw new UserNotFoundException("Wrong username or password!");
+
+        if (!helper.isPasswordMatch(loginDTO.getPassword(), user.get().getPassword())){
+            throw new IncorrectDetailsException("Wrong username or password!");
         }
+
         if (!user.get().isEnabled()) {
-            throw new UsernameNotFoundException( "User account is not enabled!");}
+            throw new UsernameNotFoundException( "Account is yet to be verified. Kindly confirm your email!");}
 
          else {
             return jwt.generateToken(user.get());
@@ -109,8 +121,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public String updateUser(Long id, UserDTO userDto) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setFirstName(userDto.getFirstName());
-        user.setEmail(userDto.getEmail());
+
+        modelMapper.map(userDto, user);
         userRepository.save(user);
         return "User updated successfully";
 
@@ -127,8 +139,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
         Page<User> user = userRepository.findAll(pageable);
-        Page<UserResponseDto> userResponseDto = user.map(u -> modelMapper.map(u, UserResponseDto.class));
-        return userResponseDto;
+        return user.map(u -> modelMapper.map(u, UserResponseDto.class));
     }
 
 }
