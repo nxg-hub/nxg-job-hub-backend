@@ -42,7 +42,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);}
         catch (Exception e) {
                 logError.error("Error creating new User: {}", e.getMessage());
-                return ResponseEntity.status(HttpStatus.OK).body("Invalid! Please try again!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid! Please try again!");
                 }
 }
 //    @GetMapping("/users/")

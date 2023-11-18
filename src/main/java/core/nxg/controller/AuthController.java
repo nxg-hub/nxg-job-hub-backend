@@ -59,7 +59,7 @@ public class AuthController {
 
         } catch (Exception e) {
             logger.error("Error while logging in: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());}
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());}
     }
 
 
@@ -112,7 +112,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");
         } catch (Exception e) {
             logger.error("Error while resetting password: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
         }
     }

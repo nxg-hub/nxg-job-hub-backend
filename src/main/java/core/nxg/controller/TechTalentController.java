@@ -108,26 +108,32 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         try{
              return ResponseEntity.ok(applicationService.getMySavedJobs(request, pageable));
         }catch(Exception e){
-            return ResponseEntity.ok(e.getMessage());}
+            return ResponseEntity.ok().body(e.getMessage());}
 
     }
 
     @GetMapping("/my-dashboard/privacy-settings")
     @ResponseBody
     public ResponseEntity<?> profile(HttpServletRequest request) throws Exception {
-        UserResponseDto User = techTalentService.getMe(request);
+       try{ UserResponseDto response = techTalentService.getMe(request);
 
-        return ResponseEntity.ok(User);
-    }
+        return ResponseEntity.ok(response);
+    }catch(Exception e){
+           return ResponseEntity.badRequest().body(e.getMessage());
+       }
+        }
 
     @GetMapping("/my-dashboard")
     @ResponseBody
     public ResponseEntity<?> getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception {
-        DashboardDTO dashboardDTO = techTalentService.getTechTalentDashboard(request, pageable);
+       try{ DashboardDTO dashboardDTO = techTalentService.getTechTalentDashboard(request, pageable);
 
 
         return ResponseEntity.ok(dashboardDTO);
-    }
+    }catch(Exception e){
+           return ResponseEntity.badRequest().body(e.getMessage());
+       }
+        }
 
     // @GetMapping("/profile/{ID}")
     // public String getProfilePage(@PathVariable Long ID, HttpServletRequest request, Model model) {

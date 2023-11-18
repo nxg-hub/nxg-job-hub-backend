@@ -18,3 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 }
+
+/* TODO : do a proper sdp dto mapping without model mapper */
