@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     private final VerificationCodeRepository verificationRepo;
 
     @Override
-    public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
+    public String createUser(UserDTO userDTO, String siteURL) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
         if (!helper.isEmailValid(userDTO.getEmail())) {
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         VerificationCode verificationCode = new VerificationCode(user);
-        emailService.sendVerificationEmail(verificationCode, siteURL, request);
+        emailService.sendVerificationEmail(verificationCode, siteURL);
         userRepository.saveAndFlush(user);
         verificationRepo.saveAndFlush(verificationCode);
 
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> user = userRepository.findByEmail(loginDTO.getEmail()) ;
 
-        if(helper.isEmailValid(loginDTO.getEmail())){
+        if(!helper.isEmailValid(loginDTO.getEmail())){
             throw new EmailNotValidException("Invalid email address");
         }
         if (user.isEmpty()) {
