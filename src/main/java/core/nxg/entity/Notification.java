@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "notifications")
@@ -19,7 +19,7 @@ public class Notification {
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ref_user")
+	@PrimaryKeyJoinColumn(name = "user_id")
 	private User referencedUser;
 	
 
@@ -38,7 +38,7 @@ public class Notification {
 	private boolean delivered;
 
 	
-	private Boolean seen;
+	private boolean seen;
 
 
 

@@ -27,7 +27,7 @@ import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
-//import core.nxg.entity.UserInfoDetails;
+
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
     public String createUser(UserDTO userDTO, String siteURL, HttpServletRequest request) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (helper.isEmailValid(userDTO.getEmail())) {
-            throw new EmailNotValidException("Invalid email address");
+        if (!helper.isEmailValid(userDTO.getEmail())) {
+            throw new EmailNotValidException("Invalid email address!");
         }
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistException("User with email already exists!.");

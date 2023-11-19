@@ -165,19 +165,24 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     }
     @Override
     public DashboardDTO getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception{
-        User user = helper.extractLoggedInUser(request);
+        User loggedInUser = helper.extractLoggedInUser(request);
 
-        TechTalentDTO techTalentUser = techTalentRepository.findByUser(user)
+        TechTalentDTO techTalentUser = techTalentRepository.findByUser(loggedInUser)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
 
-        UserResponseDto my_profile = userRepo.findWithEmail(user.getEmail());
-        
+        UserResponseDto my_profile = userRepo.findByEmailAndEnabledTrue(loggedInUser.getEmail());
+
+
         List<ApplicationDTO> my_applications = appService.getMyApplications(request, pageable).getContent() ;
+
+
         List<SavedJobs> my_saved_jobs = appService.getMySavedJobs(request, pageable).getContent();
 
 
         DashboardDTO response = new DashboardDTO();
+
+
         response.setProfile(my_profile);
         response.setMy_applications(my_applications);
         response.setSaved_jobs(my_saved_jobs);
