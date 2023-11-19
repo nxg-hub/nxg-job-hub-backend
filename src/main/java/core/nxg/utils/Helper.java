@@ -52,7 +52,7 @@ public class Helper<K,V> {
     public boolean isEmailValid(String email) {
         Pattern pattern = Pattern.compile("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
 
-        return email == null || !pattern.matcher(email).matches();
+        return email != null && pattern.matcher(email).matches();
     }
 
     public boolean isPasswordValid(String password, String encodedPassword){

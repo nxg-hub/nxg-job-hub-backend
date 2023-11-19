@@ -2,7 +2,10 @@ package core.nxg.service;
 
 import core.nxg.dto.NotificationDTO;
 import core.nxg.entity.Notification;
+import core.nxg.entity.User;
+import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.NotificationRepository;
+import core.nxg.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
@@ -26,6 +29,9 @@ public class PushNotifications {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
 
     public void pushNotification(NotificationDTO dto) {
         var notification =
@@ -40,8 +46,11 @@ public class PushNotifications {
         notificationRepository.save(notification);
     }
 
-    private List<Notification> getNotifs(Long userID) {
-        var notifications = notificationRepository.findByUserIdAndSeenFalse(userID);
+    private List<Notification> getNotifs(String userID) {
+        User user = userRepository.findById(Long.valueOf(userID))
+                .orElseThrow(() -> new UserNotFoundException("User Not Found!"));
+
+        var notifications = notificationRepository.findByReferencedUserAndSeenFalse(user);
         notifications.forEach(x -> x.setDelivered(true));
         notificationRepository.saveAll(notifications);
         return notifications;
@@ -56,7 +65,7 @@ public class PushNotifications {
             return Flux.interval(Duration.ofSeconds(1))
                     .publishOn(Schedulers.boundedElastic())
                     .map(sequence -> ServerSentEvent.<List<Notification>>builder().id(String.valueOf(sequence))
-                            .event("user-list-event").data(getNotifs(Long.valueOf(userID)))
+                            .event("user-list-event").data(getNotifs(userID))
                             .build());
         }
 
@@ -64,7 +73,10 @@ public class PushNotifications {
                 .id(String.valueOf(sequence)).event("user-list-event").data(new ArrayList<>()).build());
     }
     public List<Notification> getNotificationsByUserID(String userID) {
-        return notificationRepository.findByUserId(Long.valueOf(userID));
+
+        User user = userRepository.findById(Long.valueOf(userID))
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+        return notificationRepository.findByReferencedUserId(user);
     }
 
     public Notification changeNotifStatusToRead(String notifID) {
@@ -75,7 +87,9 @@ public class PushNotifications {
     }
 
     public List<Notification> getNotificationsByUserIDNotRead(String userID) {
-        return notificationRepository.findByUserIdAndSeenFalse(Long.valueOf(userID));
+        User user = userRepository.findById(Long.valueOf(userID))
+                .orElseThrow(() -> new UserNotFoundException("User Not Found!"));
+        return notificationRepository.findByReferencedUserAndSeenFalse(user);
     }
 
 
