@@ -16,7 +16,12 @@ import java.io.UnsupportedEncodingException;
 
 public interface EmailService {
 
-    public void sendVerificationEmail( VerificationCode code , String siteURL, HttpServletRequest request  ) throws MessagingException, UnsupportedEncodingException, MailException;
+
+    public void reSendVerificationEmail(
+            VerificationCode code ,
+            String siteURL,
+            HttpServletRequest request)throws MessagingException, UnsupportedEncodingException, MailException;
+    public void sendVerificationEmail( VerificationCode code , String siteURL ) throws MessagingException, UnsupportedEncodingException, MailException;
     public void sendPasswordResetEmail(EmailDTO dto ,String siteURL , HttpServletRequest request ) throws MessagingException, UnsupportedEncodingException, MailException ;
     public void confirmVerification(String verificationCode) throws Exception;
 

@@ -46,7 +46,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) throws Exception{
+    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) throws Exception{
         try {
             String token = userService.login(loginDTO);
            return ResponseEntity.ok()
