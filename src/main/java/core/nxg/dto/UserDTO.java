@@ -20,14 +20,11 @@ public class UserDTO {
     private String lastName;
     private String password;
     private String phoneNumber;
-    private String profilePicture;
     private Gender gender;
     private String roles;
     private LocalDate dateOfBirth;
-    private String Nationality;
+    private String nationality;
 
-    public UserDTO(User user) {
 
-    }
 }
 

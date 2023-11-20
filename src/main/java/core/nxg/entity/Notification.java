@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import core.nxg.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,8 +8,8 @@ import java.time.LocalDateTime;
 
 
 @Data
-@RequiredArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "notifications")
 public class Notification {
@@ -18,7 +19,7 @@ public class Notification {
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ref_user")
+	@PrimaryKeyJoinColumn(name = "user_id")
 	private User referencedUser;
 	
 
@@ -27,15 +28,19 @@ public class Notification {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime dateTime;
-	
 
-	
+
+
 	@Column
-	private Boolean seen;
-	
+	private NotificationType notificationType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+
+	private boolean delivered;
+
+	
+	private boolean seen;
+
+
+
 }
 

@@ -31,12 +31,12 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
 
     @Autowired
-    private final TechTalentService<T> techTalentService;
+    private TechTalentService<T> techTalentService;
 
     @Autowired
     Helper helper;
-    
- 
+
+
     @Autowired
     ApplicationService applicationService;
 
@@ -48,14 +48,13 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @Autowired
     UserService userService;
-    
-    public TechTalentController(TechTalentService<T> techTalentService) {
-        this.techTalentService = techTalentService;
-    }
+
+
 
     @PostMapping("/register/")
     @ResponseBody
-    public ResponseEntity<String> createTechTalentUser(@RequestBody TechTalentDTO techTalentDTO, HttpServletRequest request) {
+    public ResponseEntity<String> createTechTalentUser (@RequestBody TechTalentDTO techTalentDTO, HttpServletRequest
+    request){
 
         try {
             techTalentService.createTechTalent(request, techTalentDTO);
@@ -63,70 +62,78 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         } catch (Exception e) {
             logger.error("Error creating TechTalentUser : {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
-           }  
-    }
-
-
-
-
-    @GetMapping("/users/")
-    @ResponseBody
-    public ResponseEntity<Page<?>> getAllTechTalentUsers(Pageable pageable) {
-        try {
-            Page<TechTalentDTO> users = techTalentService.getAllTechTalent(pageable);
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Tried fetching TechTalentUser(s) but : {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+//    @GetMapping("/users/")
+//    @ResponseBody
+//    public ResponseEntity<Page<?>> getAllTechTalentUsers (Pageable pageable){
+//        try {
+//            Page<TechTalentDTO> users = techTalentService.getAllTechTalent(pageable);
+//            return new ResponseEntity<>(users, HttpStatus.OK);
+//        } catch (Exception e) {
+//            logger.error("Tried fetching TechTalentUser(s) but : {}", e.getMessage());
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
     @GetMapping("/get-{ID}")
     @ResponseBody
-    public ResponseEntity<?> getTechTalent(@PathVariable Long ID) throws Exception {
+    public ResponseEntity<?> getTechTalent (@PathVariable Long ID) throws Exception {
         TechTalentDTO techtalent = techTalentService.getTechTalentById(ID);
         return ResponseEntity.ok(techtalent);
 
 
-}
+    }
 
     @PutMapping("/update-{ID}")
     @ResponseBody
-    public ResponseEntity<TechTalentDTO> updateTechTalent(@PathVariable Long ID, @RequestBody TechTalentDTO techTalentDTO) throws Exception {
-        TechTalentDTO techtalent = techTalentService.updateTechTalent(techTalentDTO,ID);
+    public ResponseEntity<TechTalentDTO> updateTechTalent (@PathVariable Long ID, @RequestBody TechTalentDTO
+    techTalentDTO) throws Exception {
+        TechTalentDTO techtalent = techTalentService.updateTechTalent(techTalentDTO, ID);
         return ResponseEntity.ok(techtalent);
     }
 
     @GetMapping("/my-dashboard/my-applications")
     @ResponseBody
-    public ResponseEntity<Object> getJobApplicationsForUser( HttpServletRequest request, Pageable pageable) throws Exception {
+    public ResponseEntity<?> getJobApplicationsForUser (HttpServletRequest request, Pageable pageable) throws
+    Exception {
         return ResponseEntity.ok(applicationService.getMyApplications(request, pageable));
     }
 
     @GetMapping("/my-dashboard/saved")
     @ResponseBody
-    public ResponseEntity<?> getSavedJobs(HttpServletRequest request, @PageableDefault(size = 10) Pageable pageable){
-        try{
-             return ResponseEntity.ok(applicationService.getMySavedJobs(request, pageable));
-        }catch(Exception e){
-            return ResponseEntity.ok(e.getMessage());}
+    public ResponseEntity<?> getSavedJobs (HttpServletRequest request, @PageableDefault(size = 10) Pageable pageable)
+    {
+        try {
+            return ResponseEntity.ok(applicationService.getMySavedJobs(request, pageable));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid!");
+        }
 
     }
 
-    @GetMapping("/my-dashboard/privacy-settings")
+    @GetMapping("/my-dashboard/profile")
     @ResponseBody
-    public ResponseEntity<?> profile(HttpServletRequest request) throws Exception {
-        UserResponseDto User = techTalentService.getMe(request);
-
-        return ResponseEntity.ok(User);
+    public ResponseEntity<?> profile (HttpServletRequest request) throws Exception {
+        try {
+            UserResponseDto response = techTalentService.getMe(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid!");
+        }
     }
 
     @GetMapping("/my-dashboard")
     @ResponseBody
-    public ResponseEntity<?> getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception {
-        DashboardDTO dashboardDTO = techTalentService.getTechTalentDashboard(request, pageable);
-
-
-        return ResponseEntity.ok(dashboardDTO);
+    public ResponseEntity<?> getTechTalentDashboard (HttpServletRequest request, Pageable pageable) throws Exception
+    {
+        try {
+            DashboardDTO dashboardDTO = techTalentService.getTechTalentDashboard(request, pageable);
+            return ResponseEntity.ok(dashboardDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
     // @GetMapping("/profile/{ID}")
@@ -142,4 +149,5 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
 
 }
+
 

@@ -130,11 +130,49 @@ public void confirmVerification(String verificationCode) throws  Exception {
     @Override
     public void sendVerificationEmail(
     VerificationCode code , 
-    String siteURL,
-    HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
+    String siteURL
+   ) throws MessagingException, UnsupportedEncodingException, MailException {
 
 
-    /* TODO: IMPLEMENT A METHOD TO RESEND VERIFICATION EMAIL IF USER DOES NOT RECEIVE IT OR IT'S EXPIRED */
+        User user = code.getUser();
+        String subject = "Almost there! Please verify your email address.";
+        String toAddress = user.getEmail();
+        String fromAddress = "josgolf3@gmail.com";
+        String senderName = "NXG HUB DIGITECH";
+        String content = VERIFICATION_EMAIL_CONTENT;
+
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+
+        helper.setSubject(subject);
+
+        String full_name = user.getFirstName() + " " + user.getLastName();
+
+        content = content.replace("[[name]]", full_name);
+
+        String verification = code.getCode();
+
+        String verifyURL = siteURL + "/api/v1/auth/confirm-email?code=" + verification;
+
+
+        content = content.replace("[[URL]]", verifyURL);
+
+        helper.setText(content, true);
+
+        mailSender.send(message);
+    }
+
+    @Override
+    public void reSendVerificationEmail(
+            VerificationCode code ,
+            String siteURL,
+            HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
+
+
         User loggedInUser = helper.extractLoggedInUser(request);
         String subject = "Almost there! Please verify your email address.";
         String toAddress = loggedInUser.getEmail();

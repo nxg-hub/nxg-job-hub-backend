@@ -1,6 +1,8 @@
 package core.nxg.serviceImpl;
 
+import core.nxg.dto.*;
 import core.nxg.repository.TechTalentRepository;
+import core.nxg.repository.UserRepository;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,10 +10,6 @@ import lombok.RequiredArgsConstructor;
 import core.nxg.entity.SavedJobs;
 import core.nxg.entity.Skill;
 import core.nxg.entity.TechTalentUser;
-import core.nxg.dto.ApplicationDTO;
-import core.nxg.dto.DashboardDTO;
-import core.nxg.dto.TechTalentDTO;
-import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.User;
 import core.nxg.controller.TechTalentController;
 
@@ -31,6 +29,8 @@ import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.utils.Helper;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +38,10 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
     @Autowired
     private final TechTalentRepository techTalentRepository;
+
+
+    @Autowired
+    private final UserRepository userRepo;
 
 
     @Autowired
@@ -57,12 +61,14 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         User loggedInUser = helper.extractLoggedInUser(request);
 
 
-        TechTalentUser existingTechTalentUser = techTalentRepository.findByUser(loggedInUser)
+        TechTalentDTO existingTechTalentUser = techTalentRepository.findByUser(loggedInUser)
         .orElseThrow(() -> new UserAlreadyExistException("User with Email Already Exists"));
 
 
-        TechTalentUser techTalentUser = new TechTalentUser(); 
+        TechTalentUser techTalentUser = new TechTalentUser();
 
+//     // TODO: YET TO BE TESTED!
+//      TechTalentUser techTalentUser1 = (TechTalentUser)helper.copyFromDto(techTalentDto, techTalentUser1);
 
 
         techTalentUser.setNationality(techTalentDto.getNationality());
@@ -118,6 +124,9 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     public TechTalentDTO updateTechTalent(TechTalentDTO userDto, Long id ) throws Exception {
         TechTalentUser user = techTalentRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+//        TechTalentUser user1 = (TechTalentUser) helper.copyFromDto(userDto, user1);// TODO: YET TO BE TESTED
+
         user.setCity(userDto.getCity());
         user.setCountryCode(userDto.getCountryCode());        
         user.setCoverletter(userDto.getCoverletter());
@@ -156,17 +165,28 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     }
     @Override
     public DashboardDTO getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception{
-        User user = helper.extractLoggedInUser(request);
-        
+        User loggedInUser = helper.extractLoggedInUser(request);
+
+        TechTalentDTO techTalentUser = techTalentRepository.findByUser(loggedInUser)
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+
+        UserResponseDto my_profile = userRepo.findByEmailAndEnabledTrue(loggedInUser.getEmail());
+
+
         List<ApplicationDTO> my_applications = appService.getMyApplications(request, pageable).getContent() ;
+
+
         List<SavedJobs> my_saved_jobs = appService.getMySavedJobs(request, pageable).getContent();
 
 
-        UserResponseDto settings = mapper.map(user, UserResponseDto.class);
         DashboardDTO response = new DashboardDTO();
+
+
+        response.setProfile(my_profile);
         response.setMy_applications(my_applications);
         response.setSaved_jobs(my_saved_jobs);
-        response.setPrivacy(settings);
+        response.setOther_profile(techTalentUser);
 
         Link selfLink = linkTo(TechTalentController.class)
             .slash("my-dashboard")
@@ -183,12 +203,12 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
                 .getSavedJobs(request, pageable))
             .withRel("saved_jobs");
 
-        Link settingsLink  = linkTo(
+        Link profileLink  = linkTo(
             methodOn(TechTalentController.class)
                 .profile(request))
-            .withRel("settings");
+            .withRel("profile");
 
-        response.add(settingsLink);
+        response.add(profileLink);
         response.add(myApplicationsLink);
         response.add(savedJobsLink);
         response.add(selfLink);

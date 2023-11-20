@@ -3,6 +3,7 @@ package core.nxg.serviceImpl;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import core.nxg.dto.TechTalentDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,7 +58,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         User user = helper.extractLoggedInUser(request);
         
         
-        Optional<TechTalentUser> techTalentUser = techRepo.findByUser(user);
+        Optional<TechTalentDTO> techTalentUser = techRepo.findByUser(user);
         if (techTalentUser.isEmpty()){
             throw new UserNotFoundException("Applicant cannot be found!");
         }

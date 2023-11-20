@@ -38,12 +38,14 @@ public class UserController {
 
     @PostMapping("/register/")
     public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
-        try {String response =  userService.createUser(userDTO,helper.getSiteURL(request), request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);}
-        catch (Exception e) {
-                logError.error("Error creating new User: {}", e.getMessage());
-                return ResponseEntity.status(HttpStatus.OK).body("Invalid! Please try again!");
-                }
+        try {
+            String response = userService.createUser(userDTO, helper.getSiteURL(request));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }catch (Exception e) {
+
+//            logError.error("Error creating new User: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
 }
 //    @GetMapping("/users/")
 //    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) throws Exception{
