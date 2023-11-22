@@ -47,6 +47,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
 }
+
+    @GetMapping("/get-user")
+    public ResponseEntity<UserResponseDto> getLoggedInUser(HttpServletRequest request){
+        try {
+            UserResponseDto response = userService.getLoggedInUser(request);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
+    }
 //    @GetMapping("/users/")
 //    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) throws Exception{
 //     try {

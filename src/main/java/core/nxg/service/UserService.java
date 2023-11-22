@@ -19,4 +19,6 @@ public interface UserService {
     String deleteUser(Long id) throws Exception;
     String login(LoginDTO loginDTO) throws Exception;
 
+    UserResponseDto getLoggedInUser(HttpServletRequest request) throws Exception;
+
 }

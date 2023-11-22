@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setGender(userDTO.getGender());
         user.setLastName(userDTO.getLastName());
-        user.setRoles(userDTO.getRoles());
+        user.setUserType(userDTO.getUsertype());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
@@ -116,6 +116,13 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserById(Long id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         return modelMapper.map(user, UserResponseDto.class);
+    }
+
+
+    @Override
+    public UserResponseDto getLoggedInUser(HttpServletRequest request) throws Exception {
+    User user  = helper.extractLoggedInUser(request);
+    return modelMapper.map(user, UserResponseDto.class);
     }
 
     @Override

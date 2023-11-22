@@ -1,8 +1,8 @@
 package core.nxg.dto;
 
 
-import core.nxg.entity.User;
 import core.nxg.enums.Gender;
+import core.nxg.enums.UserType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class UserDTO {
     private String password;
     private String phoneNumber;
     private Gender gender;
-    private String roles;
+    private UserType usertype;
     private LocalDate dateOfBirth;
     private String nationality;
 
