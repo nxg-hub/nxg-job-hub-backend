@@ -52,7 +52,7 @@ public class User implements UserDetails {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "roles")
+    @Column(name = "role")
     private String roles;
 
     @Column(name = "user_type")
