@@ -29,6 +29,10 @@ public class User implements UserDetails {
     private String firstName;
 
 
+    @Column(nullable = false, unique = true)
+    @Email
+    private String email;
+
     private String lastName;
 
     private String profilePicture;
@@ -37,11 +41,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+
     private String phoneNumber;
 
-    @Column(nullable = false, unique = true)
-    @Email
-    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -49,10 +51,11 @@ public class User implements UserDetails {
     @Column(name = "nationality")
     private String nationality;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "role")
+    @Column(name = "roles")
     private String roles;
 
     @Column(name = "user_type")

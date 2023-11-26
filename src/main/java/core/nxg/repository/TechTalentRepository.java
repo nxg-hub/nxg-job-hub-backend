@@ -12,7 +12,7 @@ import core.nxg.entity.TechTalentUser;
 @Repository
 public interface TechTalentRepository extends JpaRepository<TechTalentUser, Long> {
 
-
+Optional<TechTalentDTO >findByEmail(String email);
  Optional<TechTalentDTO> findByUser(User user);
 
 

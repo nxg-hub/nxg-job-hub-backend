@@ -1,6 +1,7 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.*;
+import core.nxg.enums.UserType;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.ApplicationService;
@@ -57,21 +58,19 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 
     @Override
-    public TechTalentDTO createTechTalent(HttpServletRequest request, TechTalentDTO techTalentDto) throws Exception {
+    public String createTechTalent(TechTalentDTO techTalentDto, HttpServletRequest request) throws Exception {
         User loggedInUser = helper.extractLoggedInUser(request);
 
-
-        TechTalentDTO existingTechTalentUser = techTalentRepository.findByUser(loggedInUser)
-        .orElseThrow(() -> new UserAlreadyExistException("User with Email Already Exists"));
-
+        Optional<TechTalentDTO> existingTechTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
+        if (existingTechTalentUser.isPresent())
+            throw new UserAlreadyExistException("Techtalent Account Exists!");
 
         TechTalentUser techTalentUser = new TechTalentUser();
 
 //     // TODO: YET TO BE TESTED!
 //      TechTalentUser techTalentUser1 = (TechTalentUser)helper.copyFromDto(techTalentDto, techTalentUser1);
 
-
-        techTalentUser.setNationality(techTalentDto.getNationality());
+        techTalentUser.setEmail(loggedInUser.getEmail());
         techTalentUser.setSkills(techTalentDto.getSkills());
         techTalentUser.setResidentialAddress(techTalentDto.getResidentialAddress());
         techTalentUser.setJobType(techTalentDto.getJobType());
@@ -86,19 +85,20 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setLocation(techTalentDto.getLocation());
         techTalentUser.setState(techTalentDto.getState());
         techTalentUser.setResume(techTalentDto.getResume());
-        List<Skill<String>> skills = techTalentDto.getSkills();
-        if (skills != null) {
-            for (Skill<String> skill : skills) {
-                techTalentUser.addSkill(skill);
-            }
-        }
-        
+//        List<Skill<String>> skills = techTalentDto.getSkills();
+//        if (skills != null) {
+//            for (Skill<String> skill : skills) {
+//                techTalentUser.addSkill(skill);
+//            }
+//        }
+//
         techTalentUser.setCoverletter(techTalentDto.getCoverletter());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
+        loggedInUser.setUserType(UserType.TECHTALENT);
+        userRepo.save(loggedInUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.saveAndFlush(techTalentUser);
-
-        return techTalentDto;          
+        return "TechTalent User created successfully";
 
 
     }
@@ -107,17 +107,14 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     
   
     
+
+
     @Override
-    public Page<TechTalentDTO> getAllTechTalent(Pageable pageable) throws Exception {
-        Page<TechTalentUser> techTalentUser = techTalentRepository.findAll(pageable);
-        return techTalentUser.map(TechTalentDTO::new);
-       
-    }
-    @Override
-    public TechTalentDTO getTechTalentById(Long Id) throws Exception{
-        TechTalentUser user = techTalentRepository.findById(Id)
+    public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
+        User loggedInUser = helper.extractLoggedInUser(request);
+        TechTalentDTO user = techTalentRepository.findByEmail(loggedInUser.getEmail())
             .orElseThrow(() -> new NotFoundException("TechTalent Not Found!"));
-        return  new TechTalentDTO(user);
+        return  user ;
     }
 
     @Override
@@ -140,7 +137,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         user.setZipCode(userDto.getZipCode());
         user.setYearsOfExperience(userDto.getYearsOfExperience());
         user.setWorkMode(userDto.getWorkMode());
-        user.setSkills(userDto.getSkills());
+//        user.setSkills(userDto.getSkills());
         user.setResume(userDto.getResume());
         user.setProfessionalCert(userDto.getProfessionalCert());
         techTalentRepository.save(user);

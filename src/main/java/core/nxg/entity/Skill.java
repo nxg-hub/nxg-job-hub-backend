@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class Skill<E> {
             "C Sharp"
     );
     @ManyToOne
+    @JsonIgnore
     @PrimaryKeyJoinColumn(name = "techId")
     private TechTalentUser techTalentUser;
     
