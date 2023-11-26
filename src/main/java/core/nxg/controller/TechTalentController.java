@@ -10,7 +10,10 @@ import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import core.nxg.service.UserService;
 import core.nxg.utils.Helper;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Controller
+@Slf4j
 @RequestMapping("/api/v1/tech-talent")
+
 public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     private final Logger logger = LoggerFactory.getLogger(TechTalentController.class);
@@ -51,14 +56,16 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
 
 
+    @Operation(summary = "Create a new TechTalentUser",
+            description = "Create a techtalent account for logged-in user")
     @PostMapping("/register/")
     @ResponseBody
-    public ResponseEntity<String> createTechTalentUser (@RequestBody TechTalentDTO techTalentDTO, HttpServletRequest
-    request){
-
+    public ResponseEntity<?> createTechTalentUser (@Valid @RequestBody TechTalentDTO techTalentDTO,
+                                                        HttpServletRequest request){
         try {
-            techTalentService.createTechTalent(request, techTalentDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("TechTalent User created successfully");
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(techTalentService.createTechTalent( techTalentDTO,request));
         } catch (Exception e) {
             logger.error("Error creating TechTalentUser : {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -66,21 +73,12 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     }
 
 
-//    @GetMapping("/users/")
-//    @ResponseBody
-//    public ResponseEntity<Page<?>> getAllTechTalentUsers (Pageable pageable){
-//        try {
-//            Page<TechTalentDTO> users = techTalentService.getAllTechTalent(pageable);
-//            return new ResponseEntity<>(users, HttpStatus.OK);
-//        } catch (Exception e) {
-//            logger.error("Tried fetching TechTalentUser(s) but : {}", e.getMessage());
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-    @GetMapping("/get-{ID}")
+
+    @Operation(description = "Get logged-in techtalent user")
+    @GetMapping("/get-user")
     @ResponseBody
-    public ResponseEntity<?> getTechTalent (@PathVariable Long ID) throws Exception {
-        TechTalentDTO techtalent = techTalentService.getTechTalentById(ID);
+    public ResponseEntity<?> getTechTalent (HttpServletRequest request) throws Exception {
+        TechTalentDTO techtalent = techTalentService.getTechTalent(request);
         return ResponseEntity.ok(techtalent);
 
 
@@ -94,13 +92,20 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         return ResponseEntity.ok(techtalent);
     }
 
+
+    @Operation(description = "Get all applications for a logged-in techtalent")
     @GetMapping("/my-dashboard/my-applications")
     @ResponseBody
     public ResponseEntity<?> getJobApplicationsForUser (HttpServletRequest request, Pageable pageable) throws
     Exception {
+        try{
         return ResponseEntity.ok(applicationService.getMyApplications(request, pageable));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Oops! Something went wrong. Try again later.");
+        }
     }
 
+    @Operation(description = "Get all saved jobs for a logged-in techtalent")
     @GetMapping("/my-dashboard/saved")
     @ResponseBody
     public ResponseEntity<?> getSavedJobs (HttpServletRequest request, @PageableDefault(size = 10) Pageable pageable)
@@ -113,6 +118,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     }
 
+    @Operation(description = "Get a logged-in techtalent's profile")
     @GetMapping("/my-dashboard/profile")
     @ResponseBody
     public ResponseEntity<?> profile (HttpServletRequest request) throws Exception {
@@ -124,6 +130,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         }
     }
 
+    @Operation(description = "Get a logged-in techtalent's dashboard")
     @GetMapping("/my-dashboard")
     @ResponseBody
     public ResponseEntity<?> getTechTalentDashboard (HttpServletRequest request, Pageable pageable) throws Exception

@@ -30,6 +30,9 @@ public class TechTalentUser{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long techId;
 
+    @Column(name="email")
+    private String email;
+
     @Enumerated(EnumType.STRING)
     private Qualification highestQualification;
 
@@ -45,18 +48,16 @@ public class TechTalentUser{
     @Enumerated(EnumType.STRING)
     private ProfessionalCert professionalCert;
     
-    @OneToMany(mappedBy = "techTalentUser", cascade = CascadeType.PERSIST)
-    private List<Skill<String>> skills ;
+    private List<String> skills ;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
     private String resume;
     private String coverletter;
     private String linkedInUrl;
-    private Locale countryCode;
-    private String nationality;
+    private String countryCode;
     private String city;
     private String state;
     private String residentialAddress;
@@ -66,10 +67,10 @@ public class TechTalentUser{
     private int yearsOfExperience;
 
 
-     public void addSkill(Skill<String> skill) {
-        skills.add(skill);
-        skill.setTechTalentUser(this);
-    }
+//     public void addSkill(Skill<String> skill) {
+//        skills.add(skill);
+//        skill.setTechTalentUser(this);
+//    }
 
     
 }

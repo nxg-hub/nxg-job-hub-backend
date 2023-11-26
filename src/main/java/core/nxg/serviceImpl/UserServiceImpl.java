@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
             throw new EmailNotValidException("Invalid email address!");
         }
         if (existingUser.isPresent()) {
-            throw new UserAlreadyExistException("User with email already exists!.");
+            throw new UserAlreadyExistException("User with email already exists!");
         }
 
         User user = new User();
@@ -70,8 +70,9 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setGender(userDTO.getGender());
         user.setLastName(userDTO.getLastName());
-        user.setUserType(userDTO.getUsertype());
         user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setDateOfBirth(userDTO.getDateOfBirth());
+        user.setNationality(userDTO.getNationality());
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         VerificationCode verificationCode = new VerificationCode(user);
@@ -137,12 +138,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
-    public String deleteUser(Long id) throws Exception {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
-        userRepository.delete(user);
-        return "User deleted successfully";
-    }
 
 
     @Override

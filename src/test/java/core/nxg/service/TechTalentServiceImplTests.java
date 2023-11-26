@@ -31,8 +31,7 @@ public class TechTalentServiceImplTests {
         techTalentUser.setResume("/path/to/resume.pdf");
         techTalentUser.setCoverletter("/path/to/coverletter.pdf");
         techTalentUser.setLinkedInUrl("https://www.linkedin.com/in/john-doe");
-        techTalentUser.setCountryCode(Locale.US);
-        techTalentUser.setNationality("American");
+        techTalentUser.setCountryCode(Locale.US.getCountry());
         techTalentUser.setCity("San Francisco");
         techTalentUser.setState("CA");
         techTalentUser.setResidentialAddress("123 Main Street");
