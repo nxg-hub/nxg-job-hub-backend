@@ -16,7 +16,6 @@ public interface UserService {
     Page<UserResponseDto> getAllUsers(Pageable pageable);
     UserResponseDto getUserById(Long id) throws Exception;
     String updateUser(Long id, UserResponseDto userDto) throws Exception;
-    String deleteUser(Long id) throws Exception;
     String login(LoginDTO loginDTO) throws Exception;
 
     UserResponseDto getLoggedInUser(HttpServletRequest request) throws Exception;

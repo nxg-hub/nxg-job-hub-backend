@@ -11,11 +11,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface TechTalentService<T> {
 
-    TechTalentDTO createTechTalent(HttpServletRequest request, TechTalentDTO techTalentDto) throws Exception;
+    String createTechTalent(TechTalentDTO techTalentDto,HttpServletRequest request) throws Exception;
 
-    Page<TechTalentDTO> getAllTechTalent(Pageable pageable) throws Exception; //this should be  pageable and not list
     void  deleteTechTalentUser(Long techId) throws Exception;
-    TechTalentDTO getTechTalentById(Long Id)  throws Exception;
+    TechTalentDTO getTechTalent(HttpServletRequest request)  throws Exception;
     TechTalentDTO updateTechTalent(TechTalentDTO techTalentDto, Long techId) throws Exception;
     DashboardDTO getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception;
     UserResponseDto getMe(HttpServletRequest request) throws Exception;

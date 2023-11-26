@@ -16,19 +16,16 @@ import java.util.Locale;
 import java.util.Set;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class TechTalentDTO {
 
-    private String email;
-    private Set<Skill> skill;
-    private List<Skill<String>> skills;
+    private List<String> skills;
     private Qualification highestQualification;
     private Experience experienceLevel;
     private JobType jobType;
     private WorkMode workMode;
-    private Locale countryCode;
+    private String countryCode;
     private String resume;
-    private String nationality;
     private String coverletter;
     private String state;
     private ProfessionalCert professionalCert;    
@@ -40,27 +37,7 @@ public class TechTalentDTO {
     private String currentJob;
     private int yearsOfExperience;
 
-    public TechTalentDTO(TechTalentUser user) {
-        this.skills = user.getSkills();
-        this.highestQualification = user.getHighestQualification();
-        this.experienceLevel = user.getExperienceLevel();
-        this.jobType = user.getJobType();
-        this.workMode = user.getWorkMode();
-        this.countryCode = user.getCountryCode();
-        this.resume = user.getResume();
-        this.nationality = user.getNationality();
-        this.coverletter = user.getCoverletter();
-        this.state = user.getState();
-        this.professionalCert = user.getProfessionalCert();
-        this.linkedInUrl = user.getLinkedInUrl();
-        this.residentialAddress = user.getResidentialAddress();
-        this.city = user.getCity();
-        this.zipCode = user.getZipCode();
-        this.location = user.getLocation();
-        this.currentJob = user.getCurrentJob();
-        this.yearsOfExperience = user.getYearsOfExperience();
-        
-    }
+
 
 
     

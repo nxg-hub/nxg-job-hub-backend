@@ -48,6 +48,12 @@ public class UserController {
             }
 }
 
+
+
+    /**
+     * This endpoint is used to get the logged in user
+     * @param request - jwt token
+     */
     @GetMapping("/get-user")
     public ResponseEntity<UserResponseDto> getLoggedInUser(HttpServletRequest request){
         try {

@@ -53,6 +53,25 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Autowired
     private ModelMapper mapper;
 
+
+
+    @Override
+    public void saveJob(HttpServletRequest request, Long jobPostingId) throws Exception{
+        User user = helper.extractLoggedInUser(request);
+        Optional<JobPosting> job = jobRepo.findJobPostingByJobID(jobPostingId);
+        if (job.isEmpty()){
+            throw new NotFoundException("Cannot Save a Non-existing Job");
+        }
+        Optional<SavedJobs> savedJob = savedJobRepo.findByUserAndJobPosting(user, job.get());
+        if (savedJob.isPresent()){
+            throw new Exception("Job Already Saved!");
+        }
+
+        SavedJobs newSavedJob = new SavedJobs();
+        newSavedJob.setJobPosting(job.get());
+        newSavedJob.setUser(user);
+        savedJobRepo.saveAndFlush(newSavedJob);
+    }
     @Override
     public void createApplication(HttpServletRequest request, ApplicationDTO applicationDTO) throws Exception {
         User user = helper.extractLoggedInUser(request);

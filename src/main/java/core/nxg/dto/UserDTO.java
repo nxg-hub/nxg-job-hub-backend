@@ -21,7 +21,6 @@ public class UserDTO {
     private String password;
     private String phoneNumber;
     private Gender gender;
-    private UserType usertype;
     private LocalDate dateOfBirth;
     private String nationality;
 
