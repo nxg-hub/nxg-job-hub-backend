@@ -60,7 +60,6 @@ public class PushNotifications {
     // DO NOT TOUCH THIS METHOD EXCEPT YOU KNOW WHAT YOU'RE DOING!
 
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserInID(String userID) throws InterruptedException {
-        Thread.sleep(10000);
         if (userID != null && !userID.isBlank()) {
             return Flux.interval(Duration.ofSeconds(1))
                     .publishOn(Schedulers.boundedElastic())
