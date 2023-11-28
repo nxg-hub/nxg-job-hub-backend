@@ -19,9 +19,9 @@ public class NotificationController {
     PushNotifications service;
 
 
-    @GetMapping("/{userID}")
-    public ResponseEntity<List<Notification>> getNotificationsByUserID(@PathVariable String userID) {
-        return ResponseEntity.ok(service.getNotificationsByUserID(userID));
+    @GetMapping("/stream/{userID}")
+    public ResponseEntity<?> getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
+        return ResponseEntity.ok(service.getNotificationsByUserInID(userID));
     }
 
     @PatchMapping("/read/{notifID}")

@@ -2,12 +2,16 @@ package core.nxg.serviceImpl;
 
 
 import core.nxg.dto.EmailDTO;
+import core.nxg.dto.TechTalentDTO;
+import core.nxg.entity.JobPosting;
+import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.entity.VerificationCode;
 import core.nxg.exceptions.AccountExpiredException;
 import core.nxg.exceptions.TokenExpiredException;
 import core.nxg.exceptions.TokenNotFoundException;
 import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
@@ -19,12 +23,14 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -36,6 +42,10 @@ public class EmailServiceImpl implements EmailService {
     JavaMailSender mailSender;
 
 
+    @Autowired
+    TechTalentRepository TechTalentRepository;
+
+    
 
     @Autowired
     UserRepository userRepository;
@@ -49,38 +59,39 @@ public class EmailServiceImpl implements EmailService {
 
 
 
-@Override
-public void confirmReset(String verificationCode) throws Exception {
+    @Override
+    public void confirmReset(String verificationCode) throws Exception {
 
-    Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
-    if (verification.isEmpty()) {
-        throw new TokenNotFoundException("Invalid reset code!");}
+        Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
+        if (verification.isEmpty()) {
+            throw new TokenNotFoundException("Invalid reset code!");}
 
-    if (verification.get().isExpired()) {
-        throw new TokenExpiredException("Verification code has expired!");
-    } else {
-        userRepository.save(verification.get().getUser());
-        verificationRepo.deleteById(verification.get().getId());
-    }
-}
-
-
-@Override
-public void confirmVerification(String verificationCode) throws  Exception {
-
-    Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
-    if (verification.isEmpty()) {
-        throw new TokenNotFoundException("Invalid verification code");
-    } else {
         if (verification.get().isExpired()) {
-            throw new TokenExpiredException("Verification code has expired");
+            throw new TokenExpiredException("Verification code has expired!");
         } else {
-            verification.get().getUser().setEnabled(true);
             userRepository.save(verification.get().getUser());
             verificationRepo.deleteById(verification.get().getId());
         }
     }
-}
+
+
+    @Override
+    public void confirmVerification(String verificationCode) throws  Exception {
+
+        Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
+        if (verification.isEmpty()) {
+            throw new TokenNotFoundException("Invalid verification code");
+        } else {
+            if (verification.get().isExpired()) {
+                verificationRepo.deleteById(verification.get().getId());
+                throw new TokenExpiredException("Verification code has expired");
+            } else {
+                verification.get().getUser().setEnabled(true);
+                userRepository.save(verification.get().getUser());
+                verificationRepo.deleteById(verification.get().getId());
+            }
+        }
+    }
     @Override
     public void sendPasswordResetEmail(EmailDTO dto, String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
         User loggedInUser = helper.extractLoggedInUser(request);
@@ -168,14 +179,20 @@ public void confirmVerification(String verificationCode) throws  Exception {
 
     @Override
     public void reSendVerificationEmail(
-            VerificationCode code ,
-            String siteURL,
-            HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
+            String email, String siteURL) throws MessagingException, UnsupportedEncodingException, MailException {
 
 
-        User loggedInUser = helper.extractLoggedInUser(request);
+        Optional<User> user1 = userRepository.findByEmail(email);
+        if (user1.isEmpty()) throw new UserNotFoundException("User cant be found!");
+
+
+
+        User user = user1.get();
+        if (user.isEnabled()) return;
+
+
         String subject = "Almost there! Please verify your email address.";
-        String toAddress = loggedInUser.getEmail();
+        String toAddress = user.getEmail();
         String fromAddress = "josgolf3@gmail.com";
         String senderName = "NXG HUB DIGITECH";
         String content = VERIFICATION_EMAIL_CONTENT;
@@ -189,9 +206,11 @@ public void confirmVerification(String verificationCode) throws  Exception {
 
         helper.setSubject(subject);
 
-        String full_name = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
+        String full_name = user.getFirstName() + " " + user.getLastName();
 
         content = content.replace("[[name]]", full_name);
+
+        VerificationCode code = new VerificationCode(user);
 
         String verification = code.getCode();
 
@@ -202,10 +221,22 @@ public void confirmVerification(String verificationCode) throws  Exception {
 
         helper.setText(content, true);
 
+        verificationRepo.saveAndFlush(code);
+
         mailSender.send(message);
     }
 
 
+    @Override
+    public void sendJobPostingNotifEmail(String to, JobPosting job) throws MessagingException{
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setTo(to);
+        helper.setSubject("New job posted: " + job.getTitle());
+        helper.setText("A new job has been posted that matches your preferences: " + job.getDescription(), true);
+        mailSender.send(message);
 
 
+
+}
 }

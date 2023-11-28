@@ -44,6 +44,19 @@ public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 
+
+    @PostMapping("/resendverification-mail")
+    @ResponseBody
+    public ResponseEntity<String> resend(@RequestParam String email, HttpServletRequest request){
+        try{
+            emailService.reSendVerificationEmail(email, helper.getSiteURL(request));
+            return ResponseEntity.ok("Email resent successfully");
+        }catch(Exception e){
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
     @PostMapping("/login")
     @ResponseBody
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) throws Exception{

@@ -85,13 +85,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setLocation(techTalentDto.getLocation());
         techTalentUser.setState(techTalentDto.getState());
         techTalentUser.setResume(techTalentDto.getResume());
-//        List<Skill<String>> skills = techTalentDto.getSkills();
-//        if (skills != null) {
-//            for (Skill<String> skill : skills) {
-//                techTalentUser.addSkill(skill);
-//            }
-//        }
-//
+
         techTalentUser.setCoverletter(techTalentDto.getCoverletter());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
         loggedInUser.setUserType(UserType.TECHTALENT);
