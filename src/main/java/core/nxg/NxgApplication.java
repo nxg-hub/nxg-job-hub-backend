@@ -13,8 +13,8 @@ public class NxgApplication {
 	}
 
 	@Bean
-    public ModelMapper getModelMapper() { 
-        return new ModelMapper(); 
+    public ModelMapper getModelMapper() {
+        return new ModelMapper();
     } 
 
 

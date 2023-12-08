@@ -1,16 +1,17 @@
 package core.nxg.dto;
 
+import core.nxg.entity.Ratings;
+import core.nxg.enums.Rating;
 import jakarta.persistence.OneToOne;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import core.nxg.entity.User;
+
+import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class EmployerDto {
-    Long id;
-    //private Long employerId;
-    //private String email;
     private String companyName;
     private String companyDescription;
     private String position;
@@ -19,10 +20,7 @@ public class EmployerDto {
     private String country;
     private String industryType;
     private String companySize;
-    private String ratings;
 
-    @OneToOne(mappedBy = "employer")
-    private User user;
 
     }
    

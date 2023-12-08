@@ -48,7 +48,7 @@ public class EmailConstant {
     + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Verify Your Email</button>"
     + "   </a>"
     + " </div>"
-    + " <p style=\"margin-top: 50px;\">If you did not create an account using this address, please ignore this email.</p>"
+    + " <p style=\"margin-top: 50px;\"><strong> This email expires in 24 hrs. If you did not create an account using this address, please ignore it.<strong></p>"
     + " <p>Thanks,</p>"
     + " <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
     + "</body>"

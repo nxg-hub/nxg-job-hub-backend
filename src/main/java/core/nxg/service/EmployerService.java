@@ -3,22 +3,24 @@ package core.nxg.service;
 import core.nxg.dto.EmployerDto;
 import core.nxg.entity.Employer;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 public interface EmployerService {
-    List<EmployerDto> getAllEmployers();
 
-    // Employer createEmployer (EmployerDto employerDto);
 
-    Employer createEmployer(EmployerDto employerDto, HttpServletRequest request);
+    String createEmployer(EmployerDto employerDto, HttpServletRequest request) throws Exception;
 
-    EmployerDto getEmployerById(Long employerId);
+    EmployerDto getEmployer(HttpServletRequest request)throws Exception;
 
-    EmployerDto updateEmployer(Long employerId, EmployerDto employerDto);
+    Object updateEmployer(Long employerId, EmployerDto employerDto) throws Exception;
+    Employer patchEmployer(String employerId, Map<Object, Object> fields) throws Exception;
 
-    void deleteEmployer(Long employerId);
+
+        void deleteEmployer(Long employerId);
 }
 
 
