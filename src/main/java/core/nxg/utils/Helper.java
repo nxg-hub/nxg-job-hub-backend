@@ -7,12 +7,16 @@ import core.nxg.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.beans.FeatureDescriptor;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -57,6 +61,19 @@ public class Helper<K,V> {
 
     public boolean isPasswordValid(String password, String encodedPassword){
         return encoder.matches(password, encodedPassword);
+    }
+
+    public Object partialUpdate(Object dbObject, Object partialUpdateObject){
+        String[] ignoredProperties = getNullPropertyNames(partialUpdateObject);
+        BeanUtils.copyProperties(partialUpdateObject, dbObject, ignoredProperties);
+        return dbObject;
+    }
+    private static String[] getNullPropertyNames(Object object) {
+        final BeanWrapper wrappedSource = new BeanWrapperImpl(object);
+        return Stream.of(wrappedSource.getPropertyDescriptors())
+                .map(FeatureDescriptor::getName)
+                .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
+                .toArray(String[]::new);
     }
 
 }
