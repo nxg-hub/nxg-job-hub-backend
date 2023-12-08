@@ -94,7 +94,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
 
     @Operation(description = "Get all applications for a logged-in techtalent")
-    @GetMapping("/my-dashboard/my-applications")
+    @GetMapping("/my-applications")
     @ResponseBody
     public ResponseEntity<?> getJobApplicationsForUser (HttpServletRequest request, Pageable pageable) throws
     Exception {
@@ -106,7 +106,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     }
 
     @Operation(description = "Get all saved jobs for a logged-in techtalent")
-    @GetMapping("/my-dashboard/saved")
+    @GetMapping("/my-jobs")
     @ResponseBody
     public ResponseEntity<?> getSavedJobs (HttpServletRequest request, @PageableDefault(size = 10) Pageable pageable)
     {
@@ -118,17 +118,17 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     }
 
-    @Operation(description = "Get a logged-in techtalent's profile")
-    @GetMapping("/my-dashboard/profile")
-    @ResponseBody
-    public ResponseEntity<?> profile (HttpServletRequest request) throws Exception {
-        try {
-            UserResponseDto response = techTalentService.getMe(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid!");
-        }
-    }
+//    @Operation(description = "Get a logged-in techtalent's profile")
+//    @GetMapping("/my-dashboard/profile")
+//    @ResponseBody
+//    public ResponseEntity<?> profile (HttpServletRequest request) throws Exception {
+//        try {
+//            UserResponseDto response = techTalentService.getMe(request);
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid!");
+//        }
+//    }
 
     @Operation(description = "Get a logged-in techtalent's dashboard")
     @GetMapping("/my-dashboard")

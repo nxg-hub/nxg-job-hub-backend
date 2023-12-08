@@ -1,17 +1,16 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.*;
+import core.nxg.entity.*;
 import core.nxg.enums.UserType;
+import core.nxg.repository.EmployerRepository;
+import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import core.nxg.entity.SavedJobs;
-import core.nxg.entity.Skill;
-import core.nxg.entity.TechTalentUser;
-import core.nxg.entity.User;
 import core.nxg.controller.TechTalentController;
 
 import org.modelmapper.ModelMapper;
@@ -40,6 +39,12 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     @Autowired
     private final TechTalentRepository techTalentRepository;
 
+    @Autowired
+    private final TechTalentAgentRepository agentRepository;
+
+    @Autowired
+    private final EmployerRepository employerRepository;
+
 
     @Autowired
     private final UserRepository userRepo;
@@ -61,9 +66,19 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     public String createTechTalent(TechTalentDTO techTalentDto, HttpServletRequest request) throws Exception {
         User loggedInUser = helper.extractLoggedInUser(request);
 
+        Optional<EmployerDto> employer_account= employerRepository.findByEmail(loggedInUser.getEmail());
+        if (employer_account.isPresent()){            // an employer account does not exist
+            throw new UserAlreadyExistException("An Employer account already exists!");
+        }
+
+        Optional<TechTalentAgent> agent_account = agentRepository.findByUserEmail(loggedInUser.getEmail()); // confirm
+        if (agent_account.isPresent()){  // an agent account does not exist
+            throw new UserAlreadyExistException("An Agent account already exists!");
+        }
+
         Optional<TechTalentDTO> existingTechTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
         if (existingTechTalentUser.isPresent())
-            throw new UserAlreadyExistException("Techtalent Account Exists!");
+            throw new UserAlreadyExistException("Techtalent account already exists!");
 
         TechTalentUser techTalentUser = new TechTalentUser();
 
@@ -80,6 +95,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setCountryCode(techTalentDto.getCountryCode());
         techTalentUser.setWorkMode(techTalentDto.getWorkMode());
         techTalentUser.setCity(techTalentDto.getCity());
+        techTalentUser.setZipCode(techTalentDto.getZipCode());
         techTalentUser.setCurrentJob(techTalentDto.getCurrentJob());
         techTalentUser.setLinkedInUrl(techTalentDto.getLinkedInUrl());
         techTalentUser.setLocation(techTalentDto.getLocation());
@@ -106,9 +122,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     @Override
     public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
-        TechTalentDTO user = techTalentRepository.findByEmail(loggedInUser.getEmail())
+        return techTalentRepository.findByEmail(loggedInUser.getEmail())
             .orElseThrow(() -> new NotFoundException("TechTalent Not Found!"));
-        return  user ;
     }
 
     @Override
@@ -194,12 +209,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
                 .getSavedJobs(request, pageable))
             .withRel("saved_jobs");
 
-        Link profileLink  = linkTo(
-            methodOn(TechTalentController.class)
-                .profile(request))
-            .withRel("profile");
 
-        response.add(profileLink);
+
         response.add(myApplicationsLink);
         response.add(savedJobsLink);
         response.add(selfLink);

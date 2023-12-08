@@ -4,12 +4,17 @@ import core.nxg.dto.EmployerDto;
 import core.nxg.entity.Employer;
 import core.nxg.service.EmployerService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/employers")
 public class EmployerController {
@@ -23,25 +28,41 @@ public class EmployerController {
 //    }
 
     @PostMapping("/createEmployer")
-    public ResponseEntity<String> createEmployer(@RequestBody EmployerDto employerDTO, HttpServletRequest request) {
-        Employer message = employerService.createEmployer(employerDTO, request);
-        return ResponseEntity.ok("Employer created successfully");
+    public ResponseEntity<String> createEmployer(@Valid @RequestBody EmployerDto employerDTO, HttpServletRequest request) throws Exception {
+        try {
+            String message = employerService.createEmployer(employerDTO, request);
+            return ResponseEntity.ok(message);
+        }catch(Exception e){
+            log.error("Error while creating Employer: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("You have made an invalid request");
+        }
     }
 
-    @GetMapping("/{Id}")
-    public ResponseEntity<EmployerDto> getEmployerById(@PathVariable Long Id) {
-        EmployerDto employer = employerService.getEmployerById(Id);
-        return ResponseEntity.ok(employer);
+    @GetMapping("/get-employer")
+    public ResponseEntity<EmployerDto> getEmployerById(HttpServletRequest request) throws Exception{
+        try{
+            EmployerDto employer = employerService.getEmployer(request);
+            return ResponseEntity.ok(employer);
+        }catch(Exception e){
+            log.error("Error while getting Employer: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
-    @PutMapping("/{Id}")
-    public ResponseEntity<String> updateEmployer(@PathVariable Long Id, @RequestBody EmployerDto employerDto) {
-        EmployerDto updatedEmployer = employerService.updateEmployer(Id, employerDto);
-        return ResponseEntity.ok("Done!");
+    @PatchMapping("/{Id}")
+    public ResponseEntity<?> updateEmployer(@PathVariable String Id, @RequestBody Map<Object, Object> fields)
+            throws Exception {
+        try {
+            Employer updatedEmployer = employerService.patchEmployer(Id, fields);
+            return ResponseEntity.ok(updatedEmployer);
+        } catch (Exception e) {
+            log.error("Error while updating Employer: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{Id}")
-    public ResponseEntity<Void> deleteEmployer(@PathVariable Long Id) {
+    public ResponseEntity<Void> deleteEmployer(@Valid @PathVariable Long Id) {
         employerService.deleteEmployer(Id);
         return ResponseEntity.noContent().build();
     }
