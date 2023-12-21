@@ -37,11 +37,7 @@ public class CommentsServiceImpl implements CommentsService {
     }
 
 
-//    @Override
-//    public List<CommentsDto> getAllComments() {
-//        List<Comments> comments = commentsRepository.findAll();
-//        return comments.stream().map(this::mapToDto).collect(Collectors.toList());
-//    }
+
 
     @Override
     public List<CommentsDto> getAllCommentsByJobId(Long JobId) {
@@ -62,12 +58,6 @@ public class CommentsServiceImpl implements CommentsService {
         return mapToDto(comments);
     }
 
-//    @Override
-//    public CommentsDto getCommentById(Long Id) {
-//        Comments comments = commentsRepository.findById(Id)
-//                .orElseThrow(() -> new NotFoundException("Comments with ID " + Id + " not found"));
-//        return mapToDto(comments);
-//    }
 
     @Override
     public void deleteCommentById(Long Id) {

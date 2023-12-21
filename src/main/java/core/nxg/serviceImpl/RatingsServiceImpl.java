@@ -75,7 +75,7 @@ public RatingsDto createRatings(Long Id, RatingsDto ratingsDto) {
 
     private RatingsDto mapToDto(Ratings ratings) {
         RatingsDto ratingsDto = new RatingsDto();
-        ratingsDto.setId(String.valueOf(ratings.getEmployer().getId()));
+        ratingsDto.setId(String.valueOf(ratings.getEmployer().getEmployerID()));
         ratingsDto.setRating(ratings.getRating().name());
         return ratingsDto;
     }

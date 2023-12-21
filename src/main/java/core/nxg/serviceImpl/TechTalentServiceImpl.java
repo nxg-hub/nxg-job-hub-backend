@@ -7,6 +7,7 @@ import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
+import core.nxg.response.EmployerResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +28,11 @@ import core.nxg.exceptions.NotFoundException;
 import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.utils.Helper;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -66,7 +70,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     public String createTechTalent(TechTalentDTO techTalentDto, HttpServletRequest request) throws Exception {
         User loggedInUser = helper.extractLoggedInUser(request);
 
-        Optional<EmployerDto> employer_account= employerRepository.findByEmail(loggedInUser.getEmail());
+        Optional<EmployerResponse> employer_account= employerRepository.findByEmail(loggedInUser.getEmail());
         if (employer_account.isPresent()){            // an employer account does not exist
             throw new UserAlreadyExistException("An Employer account already exists!");
         }
@@ -114,9 +118,6 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     }
             
 
-    
-  
-    
 
 
     @Override
@@ -127,35 +128,29 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     }
 
     @Override
-    public TechTalentDTO updateTechTalent(TechTalentDTO userDto, Long id ) throws Exception {
-        TechTalentUser user = techTalentRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws Exception {
+        if (techId == null) {
+            throw new NotFoundException("Tech ID is required");}
+        Optional<TechTalentUser> techtalent = techTalentRepository.findById(Long.valueOf(techId));
+        if (techtalent.isPresent()) {
+            fields.forEach((key, value) -> {
+                        Field field = ReflectionUtils.findField(TechTalentUser.class, (String) key);
+                        field.setAccessible(true);
+                        ReflectionUtils.setField(field, techtalent.get(), value);
 
-//        TechTalentUser user1 = (TechTalentUser) helper.copyFromDto(userDto, user1);// TODO: YET TO BE TESTED
+                    }
+            );
+             return techTalentRepository.save(techtalent.get());
+        }else
+        {
+            throw new NotFoundException("Tech Talent not found. Can't be updated!");
+        }
 
-        user.setCity(userDto.getCity());
-        user.setCountryCode(userDto.getCountryCode());        
-        user.setCoverletter(userDto.getCoverletter());
-        user.setCurrentJob(userDto.getCurrentJob());
-        user.setExperienceLevel(userDto.getExperienceLevel());
-        user.setHighestQualification(userDto.getHighestQualification());
-        user.setJobType(userDto.getJobType());
-        user.setLinkedInUrl(userDto.getLinkedInUrl());
-        user.setLocation(userDto.getLocation());
-        user.setState(userDto.getState());
-        user.setZipCode(userDto.getZipCode());
-        user.setYearsOfExperience(userDto.getYearsOfExperience());
-        user.setWorkMode(userDto.getWorkMode());
-//        user.setSkills(userDto.getSkills());
-        user.setResume(userDto.getResume());
-        user.setProfessionalCert(userDto.getProfessionalCert());
-        techTalentRepository.save(user);
-        return userDto;
+    }
 
 
-    
 
-}
+
     @Override
     public void deleteTechTalentUser(Long ID){
         TechTalentUser user = techTalentRepository.findById(ID)

@@ -52,6 +52,7 @@ public class TechTalentUser{
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     private String resume;

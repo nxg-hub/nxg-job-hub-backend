@@ -1,5 +1,7 @@
 package core.nxg.dto;
 
+import io.jsonwebtoken.io.SerializationException;
+import io.jsonwebtoken.io.Serializer;
 import lombok.*;
 import core.nxg.enums.Experience;
 import core.nxg.enums.JobType;
@@ -9,6 +11,7 @@ import core.nxg.enums.WorkMode;
 import core.nxg.entity.Skill;
 import core.nxg.entity.TechTalentUser;
 
+import java.io.Serializable;
 import java.util.List;
 
 //import java.util.List;
@@ -17,7 +20,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class TechTalentDTO {
+public class TechTalentDTO implements Serializable {
 
     private List<String> skills;
     private Qualification highestQualification;
@@ -39,9 +42,4 @@ public class TechTalentDTO {
 
 
 
-
-    
-
-
-    
 }

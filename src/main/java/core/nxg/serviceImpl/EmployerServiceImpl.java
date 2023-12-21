@@ -2,17 +2,16 @@ package core.nxg.serviceImpl;
 
 import core.nxg.dto.EmployerDto;
 import core.nxg.dto.TechTalentDTO;
-import core.nxg.entity.Employer;
-import core.nxg.entity.TechTalentAgent;
-import core.nxg.entity.TechTalentUser;
-import core.nxg.entity.User;
+import core.nxg.entity.*;
+import core.nxg.enums.ApplicationStatus;
 import core.nxg.enums.UserType;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.exceptions.UserAlreadyExistException;
-import core.nxg.repository.EmployerRepository;
-import core.nxg.repository.UserRepository;
-import core.nxg.repository.TechTalentAgentRepository;
+import core.nxg.repository.*;
 
+import core.nxg.response.EmployerResponse;
+import core.nxg.response.EngagementForEmployer;
+import core.nxg.response.JobPostingResponse;
 import core.nxg.service.EmployerService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +29,10 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.beans.FeatureDescriptor;
 import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import core.nxg.repository.TechTalentRepository;
 import org.springframework.util.ReflectionUtils;
 
 @Service
@@ -46,7 +42,9 @@ public class EmployerServiceImpl implements EmployerService {
 
     private final EmployerRepository employerRepository;
     private final UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
     private final Helper helper;
+    private final JobPostingRepository jobPostingRepository;
     private final TechTalentRepository techTalentRepository;
     private final TechTalentAgentRepository agentRepository;
     private final ModelMapper mapper;
@@ -61,7 +59,7 @@ public class EmployerServiceImpl implements EmployerService {
 
             String loggedInUserEmail = loggedInUser.getEmail();
 
-            Optional<EmployerDto >user = employerRepository.findByEmail(loggedInUserEmail);
+            Optional<EmployerResponse >user = employerRepository.findByEmail(loggedInUserEmail);
             if (user.isPresent()){ // an employer account already exists
                 throw new UserAlreadyExistException("An Employer account already exists!");
             }
@@ -78,7 +76,7 @@ public class EmployerServiceImpl implements EmployerService {
 
 
             Employer employer = new Employer();
-            //TODO refactor code
+            //TODO refactor code to use beanutils to copy properties
             //helper.copyFromDto(employerDto,employer);
             employer.setCompanyName(employerDto.getCompanyName());
             employer.setEmail(loggedInUser.getEmail());
@@ -102,7 +100,7 @@ public class EmployerServiceImpl implements EmployerService {
         }
 
     @Override
-    public EmployerDto getEmployer(HttpServletRequest request) throws Exception{
+    public EmployerResponse getEmployer(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
 
         return employerRepository.findByEmail(loggedInUser.getEmail())
@@ -115,14 +113,18 @@ public class EmployerServiceImpl implements EmployerService {
 
     @Override
     public ResponseEntity<Employer> updateEmployer(Long id, EmployerDto employerdto) {
-    // Find the employer with the given id
     Optional<Employer> employer = employerRepository.findById(id);
-
-
-
-    // Return null as the response
+// TODO: refactor code
     return null;
 }
+
+//    public JobPostingResponse getJobPostingsByEmployerId(Long employerId){
+//        JobPosting jobPosting = jobPostingRepository.findJobPostingByEmployerID(employerId)
+//                .orElseThrow(() -> new NotFoundException("No job postings found for the employer!"));
+//        JobPostingResponse jobPostings = new JobPostingResponse();
+//        mapper.map(jobPosting, jobPostings);
+//        return jobPostings;
+//    }
 
 
 
@@ -138,6 +140,9 @@ public class EmployerServiceImpl implements EmployerService {
             if (employer.isPresent()) {
                 fields.forEach((key, value) -> {
                     Field field = ReflectionUtils.findField(Employer.class, String.valueOf(key));
+                    if (field == null) {
+                        throw new IllegalArgumentException("Null fields cannot be updated! Kindly check the fields you are trying to update");
+                    }
                     field.setAccessible(true);
                     ReflectionUtils.setField(field, employer.get(), value);
 
@@ -153,20 +158,50 @@ public class EmployerServiceImpl implements EmployerService {
 
 
 
-    // You can implement other methods for managing employers here
-//    private EmployerDto mapToDto(Employer employer) {
-//        EmployerDto employerDto = new EmployerDto();
-//        BeanUtils.copyProperties(employer, employerDto);
-//        return employerDto;
-//    }
 
-
-    //TODO return a response
     @Override
     public void deleteEmployer(Long employerId) {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new NotFoundException("Employer with ID " + employerId + " not found"));
+        //TODO return a response
+
         employerRepository.delete(employer);
+    }
+
+    public EngagementForEmployer getEngagements(Long employerId) throws Exception {
+        Employer employer = employerRepository.findById(employerId)
+                .orElseThrow(() -> new NotFoundException("Employer was not found!"));
+
+        JobPosting existingJobPostings = jobPostingRepository.findJobPostingByEmployerID(employerId)
+                .orElseThrow(() -> new NotFoundException("Job Postings were not found!"));
+
+
+        List<JobPosting> jobPostings = Collections.singletonList(existingJobPostings);
+
+        List<Application> applications = applicationRepository.findByJobPosting((JobPosting) jobPostings.stream(), Pageable.unpaged())
+                .orElseThrow(() -> new NotFoundException("Applications were not found!"));
+
+
+        int applicants = applications.stream().map(Application::getApplicant).toList().size();
+        int numberOfJobs = jobPostings.size();
+        int noOfApprovedJobs = applications.stream()
+                .filter(x -> x.getApplicationStatus()
+                        .equals(ApplicationStatus.APPROVED)).toList().size();
+        EngagementForEmployer engagements = new EngagementForEmployer();
+        engagements.setNoOfApplicants(applicants);
+        engagements.setNoOfJobPostings(numberOfJobs);
+        engagements.setNoOfApprovedApplications(noOfApprovedJobs);
+        return engagements;
+    }
+
+
+    @Override
+    public JobPostingResponse getJobPostings(Long employerId) throws Exception{
+            JobPosting jobPosting = jobPostingRepository.findJobPostingByEmployerID(employerId)
+                    .orElseThrow(() -> new NotFoundException("No job postings found for the employer!"));
+            JobPostingResponse jobPostings = new JobPostingResponse();
+            mapper.map(jobPosting, jobPostings);
+            return jobPostings;
     }
 }
 

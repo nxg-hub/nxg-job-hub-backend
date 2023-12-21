@@ -7,7 +7,7 @@ import java.util.List;
 public interface JobPostingService {
     List<JobPostingDto> getAllJobPostings();
 
-    JobPostingDto createJobPosting(JobPostingDto jobPostingDto);
+    JobPostingDto createJobPosting(JobPostingDto jobPostingDto) throws Exception;
 
     JobPostingDto getJobPostingById(Long jobId);
 

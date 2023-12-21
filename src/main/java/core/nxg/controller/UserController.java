@@ -37,7 +37,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register/")
-    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
+    public ResponseEntity<String> register(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
         try {
             String response = userService.createUser(userDTO, helper.getSiteURL(request));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -50,10 +50,7 @@ public class UserController {
 
 
 
-    /**
-     * This endpoint is used to get the logged in user
-     * @param request - jwt token
-     */
+
     @GetMapping("/get-user")
     public ResponseEntity<UserResponseDto> getLoggedInUser(HttpServletRequest request){
         try {
@@ -62,15 +59,8 @@ public class UserController {
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
     }
-//    @GetMapping("/users/")
-//    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) throws Exception{
-//     try {
-//            Page<UserResponseDto> response = userService.getAllUsers(pageable);
-//            return ResponseEntity.status(HttpStatus.OK).body(response);}
-//        catch (Exception e) {
-//            logError.error("Error getting all Users: {}", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
-//    }
+
+
+
 
 }

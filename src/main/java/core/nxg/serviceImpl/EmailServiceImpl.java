@@ -19,16 +19,22 @@ import core.nxg.utils.Helper;
 import static core.nxg.utils.constants.EmailConstant.PASSWORD_RESET_CONTENT;
 import static core.nxg.utils.constants.EmailConstant.VERIFICATION_EMAIL_CONTENT;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +43,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
-
+    private static final String GENERAL_FROM_ADDRESS = "josgolf3@gmail.com";
+    private static final String GENERAL_FROM_NAME = "NXG HUB DIGITECH";
     @Autowired
     JavaMailSender mailSender;
 
@@ -107,15 +114,13 @@ public class EmailServiceImpl implements EmailService {
 
             String subject = "Password Reset";
             String toAddress = loggedInUser.getEmail();
-            String fromAddress = "josgolf3@@gmail.com";
-            String senderName = "NXG HUB DIGITECH";
             String content  = PASSWORD_RESET_CONTENT;
 
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
 
-            helper.setFrom(fromAddress, senderName);
+            helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
             helper.setTo(toAddress);
 
             helper.setSubject(subject);
@@ -142,22 +147,33 @@ public class EmailServiceImpl implements EmailService {
     public void sendVerificationEmail(
     VerificationCode code , 
     String siteURL
-   ) throws MessagingException, UnsupportedEncodingException, MailException {
+   ) throws MessagingException, IOException, MailException {
+
+        MimeBodyPart imgBodyPart = new MimeBodyPart();
+        imgBodyPart.attachFile("Image.png");
+        imgBodyPart.setContentID('<'+"i01@example.com"+'>');
+        imgBodyPart.setDisposition(MimeBodyPart.INLINE);
+        imgBodyPart.setHeader("Content-Type", "image/png");
+
 
 
         User user = code.getUser();
         String subject = "Almost there! Please verify your email address.";
         String toAddress = user.getEmail();
-        String fromAddress = "josgolf3@gmail.com";
-        String senderName = "NXG HUB DIGITECH";
         String content = VERIFICATION_EMAIL_CONTENT;
 
 
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setFrom(fromAddress, senderName);
+        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(toAddress);
+
+        // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
+
+        helper.addInline("my_logo", new ClassPathResource("images/mylogo.png"));
+
+
 
         helper.setSubject(subject);
 
@@ -188,20 +204,19 @@ public class EmailServiceImpl implements EmailService {
 
 
         User user = user1.get();
-        if (user.isEnabled()) return;
+        if (user.isEnabled()) return; //no email sent if user is already verified
 
 
         String subject = "Almost there! Please verify your email address.";
         String toAddress = user.getEmail();
-        String fromAddress = "josgolf3@gmail.com";
-        String senderName = "NXG HUB DIGITECH";
         String content = VERIFICATION_EMAIL_CONTENT;
 
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        helper.setFrom(fromAddress, senderName);
+
+        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(toAddress);
 
         helper.setSubject(subject);
@@ -228,12 +243,13 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void sendJobPostingNotifEmail(String to, JobPosting job) throws MessagingException{
+    public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException{
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(to);
-        helper.setSubject("New job posted: " + job.getTitle());
-        helper.setText("A new job has been posted that matches your preferences: " + job.getDescription(), true);
+        helper.setSubject("New job posted: " + job.getJob_title());
+        helper.setText("A new job has been posted that matches your preferences: " + job.getJob_description(), true);
         mailSender.send(message);
 
 

@@ -10,6 +10,11 @@ import core.nxg.service.EmailService;
 import core.nxg.service.PasswordReset;
 import core.nxg.serviceImpl.UserServiceImpl;
 import core.nxg.utils.Helper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +28,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Book;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
+    private static final String LOGIN_URL = "http://localhost:3000/login";
 
     @Autowired
     private final PasswordReset passwordReset;
@@ -44,7 +51,11 @@ public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 
-
+    @Operation(summary = "Register a new user",
+            description = "Resend a verification email " +
+                    "to an unverified user. Could be a NEW user or an" +
+                    " EXISTING user who has not verified their email. Email will not be delivered if user is already verified " +
+                    "or does not EXIST.")
     @PostMapping("/resendverification-mail")
     @ResponseBody
     public ResponseEntity<String> resend(@RequestParam String email, HttpServletRequest request){
@@ -57,6 +68,14 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Login a user with email and password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully logged in, " +
+                    "returned a jwt token. Check header for token",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoginDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid login parameters",
+                    content = @Content)})
     @PostMapping("/login")
     @ResponseBody
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) throws Exception{
@@ -79,8 +98,10 @@ public class AuthController {
 
     @GetMapping("/confirm-email")
     public String verifyUser(@Nonnull @RequestParam("code") String code, Model model) throws Exception{
+        model.addAttribute("loginUrl", LOGIN_URL);
         try {
             emailService.confirmVerification(code);
+
             return "EmailVerified";
         } catch (Exception e) {
             logger.error("Error while verifying email: " + e.getMessage());
@@ -88,7 +109,9 @@ public class AuthController {
         }
     }
 
-
+    @Operation(summary = "Send a password reset email",
+    description = "Send a password reset email to a user with the email address provided. " +
+            "Email will not be delivered if user does not EXIST.")
     @PostMapping("/reset-password-email")
     @ResponseBody
     /*  SEND A PASSWORD RESET EMAIL */
@@ -116,7 +139,14 @@ public class AuthController {
 
     }
 
-
+    @Operation(summary = "Reset password with old, new and confirm password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully reset password",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = passwordResetDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid reset parameters or conditions.",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")})
     @PostMapping("/update-password/")
     @ResponseBody
     /* RESET THE PASSWORD WITH OLD , NEW AND A CONFIRM PASSWORD */
