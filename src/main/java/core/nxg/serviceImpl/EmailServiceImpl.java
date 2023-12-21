@@ -252,7 +252,7 @@ public class EmailServiceImpl implements EmailService {
 
         content = content.replace("[[job_title]]", job.getJob_title());
         content = content.replace("[[job_description]]", job.getJob_description());
-        content = content.replace("[[job_location]]", job.getLocation());
+        content = content.replace("[[job_location]]", job.getJob_location());
         content = content.replace("[[company_bio]]", job.getCompany_bio());
 
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);

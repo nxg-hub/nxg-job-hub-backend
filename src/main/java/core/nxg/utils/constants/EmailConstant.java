@@ -37,8 +37,8 @@ public class EmailConstant {
     + "  font-size: 1rem;"
     + "  line-height: 1.6;"
     + "  color: #000;"
-    + "  background-image: url('http://localhost:8383/static/images/mylogo.png');" // Add this line
-     + "  background-image: [[my_logo]]" // Add this line
+    + "  background-image: url('http://localhost:8383/static/images/mylogo.png');" //TODO change this to the actual url
+     + "  background-image: [[my_logo]]" //todo make it work
 
     + "  background-repeat: no-repeat;"
     + "  background-size: cover;"
@@ -77,11 +77,11 @@ public class EmailConstant {
             + "   <h1 style=\"font-weight: bold;\">New Job Posting at NXG-JOB HUB</h1>"
             + "   <p>Dear [[name]],</p>"
             + "   <p>We are excited to inform you about a new job posting that might interest you.</p>"
-            + "   <h2 style=\"font-weight: bold;\">[[jobTitle]]</h2>"
-            + "   <p><strong>Company:</strong> [[companyName]]</p>"
-            + "   <p><strong>Location:</strong> [[location]]</p>"
+            + "   <h2 style=\"font-weight: bold;\">[[job_title]]</h2>"
+            + "   <p><strong>Company:</strong> [[company_bio]]</p>"
+            + "   <p><strong>Location:</strong> [[job_location]]</p>"
             + "   <p><strong>Job Description:</strong></p>"
-            + "   <p style=\"text-indent: 50px; text-align: justify;\">[[jobDescription]]</p>"
+            + "   <p style=\"text-indent: 50px; text-align: justify;\">[[job_description]]</p>"
             + "   <p>For more details and to apply, please click the button below.</p>"
             + "   <a href=\"[[jobURL]]\" style=\"text-decoration: none;\">"
             + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Apply Now</button>"
