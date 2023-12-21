@@ -60,5 +60,36 @@ public class EmailConstant {
     + "</html>";
 
 
-    
+
+    public static final String JOBPOSTING_NOTIFICATION_CONTENT = "<html>"
+            + "<head>"
+            + "<style>"
+            + "body {"
+            + "  font-family: Arial, Helvetica, sans-serif;"
+            + "  font-size: 1rem;"
+            + "  line-height: 1.6;"
+            + "  color: #000;"
+            + "}"
+            + "</style>"
+            + "</head>"
+            + "<body>"
+            + " <div style=\"margin: 0 auto; width: 50%;\">"
+            + "   <h1 style=\"font-weight: bold;\">New Job Posting at NXG-JOB HUB</h1>"
+            + "   <p>Dear [[name]],</p>"
+            + "   <p>We are excited to inform you about a new job posting that might interest you.</p>"
+            + "   <h2 style=\"font-weight: bold;\">[[jobTitle]]</h2>"
+            + "   <p><strong>Company:</strong> [[companyName]]</p>"
+            + "   <p><strong>Location:</strong> [[location]]</p>"
+            + "   <p><strong>Job Description:</strong></p>"
+            + "   <p style=\"text-indent: 50px; text-align: justify;\">[[jobDescription]]</p>"
+            + "   <p>For more details and to apply, please click the button below.</p>"
+            + "   <a href=\"[[jobURL]]\" style=\"text-decoration: none;\">"
+            + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Apply Now</button>"
+            + "   </a>"
+            + " </div>"
+            + " <p style=\"margin-top: 50px;\">If you have any questions, please feel free to contact us.</p>"
+            + " <p>Thanks,</p>"
+            + " <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
+            + "</body>"
+            + "</html>";
 }

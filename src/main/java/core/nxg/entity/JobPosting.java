@@ -39,7 +39,7 @@ public class JobPosting {
         this.created_at = LocalDate.now();
     }
 
-    private String location;
+    private String job_location;
     private String tags;
     private String reaction;
 

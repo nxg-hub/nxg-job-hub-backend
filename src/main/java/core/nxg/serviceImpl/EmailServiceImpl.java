@@ -18,6 +18,8 @@ import core.nxg.service.EmailService;
 import core.nxg.utils.Helper;
 import static core.nxg.utils.constants.EmailConstant.PASSWORD_RESET_CONTENT;
 import static core.nxg.utils.constants.EmailConstant.VERIFICATION_EMAIL_CONTENT;
+import static core.nxg.utils.constants.EmailConstant.JOBPOSTING_NOTIFICATION_CONTENT;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
@@ -246,6 +248,13 @@ public class EmailServiceImpl implements EmailService {
     public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException{
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
+        String content = JOBPOSTING_NOTIFICATION_CONTENT.replace("[[name]]", to);
+
+        content = content.replace("[[job_title]]", job.getJob_title());
+        content = content.replace("[[job_description]]", job.getJob_description());
+        content = content.replace("[[job_location]]", job.getLocation());
+        content = content.replace("[[company_bio]]", job.getCompany_bio());
+
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(to);
         helper.setSubject("New job posted: " + job.getJob_title());
