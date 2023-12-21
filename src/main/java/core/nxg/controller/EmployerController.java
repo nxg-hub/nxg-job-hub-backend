@@ -53,7 +53,7 @@ public class EmployerController {
             return ResponseEntity.status(HttpStatus.CREATED).body(message);
         }catch(Exception e){
             log.error("Error while creating Employer: {}", e.getMessage());
-            return ResponseEntity.badRequest().body("You have made an invalid request");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

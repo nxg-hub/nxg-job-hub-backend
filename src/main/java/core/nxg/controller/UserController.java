@@ -4,9 +4,15 @@ import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserAlreadyExistException;
+import core.nxg.response.JobPostingResponse;
 import core.nxg.service.UserService;
 import core.nxg.serviceImpl.UserServiceImpl;
 import core.nxg.utils.Helper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -36,6 +42,15 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
+
+    @Operation(summary = "REGISTER A NEW USER. THIS IS THE POINT OF ENTRY OF THE APPLICATION")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully created the User instance",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+             })
     @PostMapping("/register/")
     public ResponseEntity<String> register(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception{
         try {
@@ -50,7 +65,8 @@ public class UserController {
 
 
 
-
+    @Operation(summary = "GET THE LOGGED IN USER INSTANCE .", description ="THIS CONTAINS ONLY COMMON ATTRIBUTES AMONGST EVERY " +
+            "USER INSTANCE IN THE APPLICATION")
     @GetMapping("/get-user")
     public ResponseEntity<UserResponseDto> getLoggedInUser(HttpServletRequest request){
         try {

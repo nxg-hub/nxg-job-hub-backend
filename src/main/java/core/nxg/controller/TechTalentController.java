@@ -91,8 +91,11 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     @GetMapping("/get-user")
     @ResponseBody
     public ResponseEntity<?> getTechTalent (HttpServletRequest request) throws Exception {
-        TechTalentDTO techtalent = techTalentService.getTechTalent(request);
-        return ResponseEntity.ok(techtalent);
+        try {TechTalentDTO techtalent = techTalentService.getTechTalent(request);
+        return ResponseEntity.ok(techtalent);}
+        catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
 
     }

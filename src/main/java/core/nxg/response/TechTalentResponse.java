@@ -1,26 +1,13 @@
-package core.nxg.dto;
+package core.nxg.response;
 
-import io.jsonwebtoken.io.SerializationException;
-import io.jsonwebtoken.io.Serializer;
-import lombok.*;
-import core.nxg.enums.Experience;
-import core.nxg.enums.JobType;
-import core.nxg.enums.ProfessionalCert;
-import core.nxg.enums.Qualification;
-import core.nxg.enums.WorkMode;
-import core.nxg.entity.Skill;
-import core.nxg.entity.TechTalentUser;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-import java.io.Serializable;
 import java.util.List;
 
-//import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 @Data
-@AllArgsConstructor
-public class TechTalentDTO implements Serializable {
+@RequiredArgsConstructor
+public class TechTalentResponse {
     private Long techId;
     private List<String> skills;
     private String highestQualification;
@@ -39,7 +26,4 @@ public class TechTalentDTO implements Serializable {
     private String location;
     private String currentJob;
     private int yearsOfExperience;
-
-
-
 }
