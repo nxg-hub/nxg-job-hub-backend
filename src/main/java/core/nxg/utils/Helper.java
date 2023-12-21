@@ -2,7 +2,9 @@ package core.nxg.utils;
 
 import core.nxg.configs.JwtService;
 import core.nxg.entity.User;
+import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.exceptions.NotFoundException;
+import core.nxg.exceptions.TokenExpiredException;
 import core.nxg.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +32,14 @@ public class Helper<K,V> {
 
     public User extractLoggedInUser(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
+
+        if ( authHeader == null || !authHeader.startsWith("Bearer"))
+            throw new ExpiredJWTException("Empty header or invalid jwt");
+
+
         String jwt = authHeader.substring(7);
         String email = jwtService.extractUsername(jwt);
+
         return userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
     }
 

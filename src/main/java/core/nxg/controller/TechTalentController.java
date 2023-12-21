@@ -5,6 +5,7 @@ import core.nxg.dto.DashboardDTO;
 import core.nxg.dto.TechTalentDTO;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.TechTalentUser;
+import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.repository.ApplicationRepository;
 import core.nxg.repository.SavedJobRepository;
 import core.nxg.service.ApplicationService;
@@ -31,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -69,14 +71,15 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @PostMapping("/register/")
     @ResponseBody
-    public ResponseEntity<?> createTechTalentUser (@Valid @RequestBody TechTalentDTO techTalentDTO,
-                                                        HttpServletRequest request){
+    public ResponseEntity<String> createTechTalentUser (@Valid @RequestBody TechTalentDTO techTalentDTO,
+                                                        HttpServletRequest request) throws ExpiredJWTException, Exception{
         try {
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(techTalentService.createTechTalent( techTalentDTO,request));
         } catch (Exception e) {
-            logger.error("Error creating TechTalentUser : {}", e.getMessage());
+//            logger.error("Error creating TechTalentUser : {}", e.getMessage());
+            logger.debug("Found error is", e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -135,17 +138,17 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     }
 
-//    @Operation(description = "Get a logged-in techtalent's profile")
-//    @GetMapping("/my-dashboard/profile")
-//    @ResponseBody
-//    public ResponseEntity<?> profile (HttpServletRequest request) throws Exception {
-//        try {
-//            UserResponseDto response = techTalentService.getMe(request);
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid!");
-//        }
-//    }
+    @Operation(description = "Get a logged-in techtalent's profile")
+    @GetMapping("/my-dashboard/profile")
+    @ResponseBody
+    public ResponseEntity<?> profile (HttpServletRequest request) throws Exception {
+        try {
+            UserResponseDto response = techTalentService.getMe(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid!");
+        }
+    }
 
     @Operation(description = "Get a logged-in techtalent's dashboard",
             summary = "Get a logged-in techtalent's dashboard via the bearer token. A Pageable response.")
@@ -163,18 +166,22 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
+
+
     }
 
-    // @GetMapping("/profile/{ID}")
-    // public String getProfilePage(@PathVariable Long ID, HttpServletRequest request, Model model) {
-    //     User user = helper.extractLoggedInUser(request);
-    //     if (user.getId().equals(ID) ) {
-    //         return "redirect:/api/v1/auth/tech-talent/my-dashboard";
-    //     }
-    //     else {
-    //         return "error";
-    //     }
-    //     return "profile";
+    @Operation(description = "Update the TechTalent skills. Or add more skills",
+            summary = "Get a logged-in techtalent's dashboard via the bearer token. A Pageable response.")
+
+    @PostMapping("/add-skills")
+    public ResponseEntity<String> updateSkills(@RequestBody List<String> skills, HttpServletRequest request){
+        try{
+            techTalentService.addNewSkills(request, skills);
+            return ResponseEntity.ok().body("New skills added successfully");
+        }catch(Exception e){
+            return  ResponseEntity.badRequest().body("You have made an Invalid request!");
+        }
+    }
 
 
 }

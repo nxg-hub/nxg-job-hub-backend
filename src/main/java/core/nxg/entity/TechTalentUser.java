@@ -33,20 +33,19 @@ public class TechTalentUser{
     @Column(name="email")
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    private Qualification highestQualification;
+    private String highestQualification;
 
-    @Enumerated(EnumType.STRING)
-    private Experience experienceLevel; 
+
+    private String experienceLevel;
     
-    @Enumerated(EnumType.STRING)
-    private JobType jobType;
 
-    @Enumerated(EnumType.STRING)
-    private WorkMode workMode;
+    private String jobType;
 
-    @Enumerated(EnumType.STRING)
-    private ProfessionalCert professionalCert;
+
+    private String workMode;
+
+
+    private String professionalCert;
     
     private List<String> skills ;
 

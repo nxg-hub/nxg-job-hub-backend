@@ -3,6 +3,7 @@ package core.nxg.serviceImpl;
 import core.nxg.dto.*;
 import core.nxg.entity.*;
 import core.nxg.enums.UserType;
+import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
@@ -135,6 +136,10 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         if (techtalent.isPresent()) {
             fields.forEach((key, value) -> {
                         Field field = ReflectionUtils.findField(TechTalentUser.class, (String) key);
+
+                        if (field == null){
+                            throw new IllegalArgumentException("Fields cannot be null");
+                        }
                         field.setAccessible(true);
                         ReflectionUtils.setField(field, techtalent.get(), value);
 
@@ -210,6 +215,17 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         response.add(savedJobsLink);
         response.add(selfLink);
         return response;
+    }
+
+    @Override
+    public void addNewSkills(HttpServletRequest request, List<String> skills){
+        User loggedInUser = helper.extractLoggedInUser(request);
+        Optional<TechTalentDTO> techTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
+        if (techTalentUser.isPresent()){
+            techTalentUser.get().setSkills(skills);
+            ;
+            techTalentRepository.save(mapper.map(techTalentUser.get(), TechTalentUser.class));
+        }
     }
     
 

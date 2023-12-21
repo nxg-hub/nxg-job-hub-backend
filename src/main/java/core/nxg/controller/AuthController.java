@@ -51,7 +51,7 @@ public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 
-    @Operation(summary = "Register a new user",
+    @Operation(summary = "Resend a verification email to user",
             description = "Resend a verification email " +
                     "to an unverified user. Could be a NEW user or an" +
                     " EXISTING user who has not verified their email. Email will not be delivered if user is already verified " +
@@ -114,7 +114,6 @@ public class AuthController {
             "Email will not be delivered if user does not EXIST.")
     @PostMapping("/reset-password-email")
     @ResponseBody
-    /*  SEND A PASSWORD RESET EMAIL */
     public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailDTO dto, HttpServletRequest request) throws Exception {
         try {
             emailService.sendPasswordResetEmail(dto, helper.getSiteURL(request), request);
@@ -127,7 +126,6 @@ public class AuthController {
 
 
     @GetMapping("/reset-password")
-    /*  CONFIRM THE RESET PASSWORD REQUEST */
     public String resetPassword(@Nonnull @RequestParam("code") String code, Model model) throws Exception{
         try {
             emailService.confirmReset(code);
@@ -149,7 +147,6 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")})
     @PostMapping("/update-password/")
     @ResponseBody
-    /* RESET THE PASSWORD WITH OLD , NEW AND A CONFIRM PASSWORD */
     public ResponseEntity<String> forgotPassword(@RequestBody passwordResetDTO dto, HttpServletRequest request) throws Exception {
         try {passwordReset.updatePassword(dto, request);
             return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");

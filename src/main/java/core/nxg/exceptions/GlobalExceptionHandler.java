@@ -75,6 +75,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.of(Optional.of(errorResponseDto));
     }
 
+    @ExceptionHandler(ExpiredJWTException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ErrorResponseDto> handleTokenExpiredException(final ExpiredJWTException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+        errorResponseDto.setMessage(ex.getMessage());
+        errorResponseDto.setDebugMessage("Invalid JWT Expired");
+
+        return ResponseEntity.of(Optional.of(errorResponseDto));
+    }
+
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.ALREADY_REPORTED)

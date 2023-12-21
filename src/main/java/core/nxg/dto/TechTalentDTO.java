@@ -23,15 +23,15 @@ import java.util.Set;
 public class TechTalentDTO implements Serializable {
 
     private List<String> skills;
-    private Qualification highestQualification;
-    private Experience experienceLevel;
-    private JobType jobType;
-    private WorkMode workMode;
+    private String highestQualification;
+    private String experienceLevel;
+    private String jobType;
+    private String workMode;
     private String countryCode;
     private String resume;
     private String coverletter;
     private String state;
-    private ProfessionalCert professionalCert;    
+    private String professionalCert;
     private String linkedInUrl;
     private String residentialAddress;
     private String city;
