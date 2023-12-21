@@ -258,7 +258,8 @@ public class EmailServiceImpl implements EmailService {
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(to);
         helper.setSubject("New job posted: " + job.getJob_title());
-        helper.setText("A new job has been posted that matches your preferences: " + job.getJob_description(), true);
+
+        helper.setText(content, true);
         mailSender.send(message);
 
 
