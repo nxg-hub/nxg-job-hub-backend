@@ -17,7 +17,7 @@ public class JobPostingDto {
     private String job_description;
     private String company_bio;
     private String salary;
-    private String jobType;
+    private String job_type;
     private LocalDate deadline;
     private String requirements;
     private String job_location;

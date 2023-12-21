@@ -11,9 +11,10 @@ public class JobPostingResponse {
     private Long jobID;
     private String employerID;
     private String title;
-    private String description;
+    private String job_description;
+    private String company_bio;
     private String salary;
-    private String jobType;
+    private String job_type;
     private String deadline;
     private String location;
     private String tags;
