@@ -1,11 +1,13 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.LoginDTO;
+import core.nxg.dto.TechTalentDTO;
 import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.Employer;
+import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.VerificationCode;
-import core.nxg.exceptions.EmailNotValidException;
-import core.nxg.exceptions.IncorrectDetailsException;
-import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.enums.Provider;
+import core.nxg.exceptions.*;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
@@ -22,11 +24,13 @@ import org.springframework.stereotype.Service;
 import core.nxg.configs.JwtService;
 import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
-import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
+import org.springframework.util.ReflectionUtils;
 
 
 @Service
@@ -73,6 +77,7 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setDateOfBirth(userDTO.getDateOfBirth());
         user.setNationality(userDTO.getNationality());
+        user.setProvider(Provider.LOCAL);
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         VerificationCode verificationCode = new VerificationCode(user);
@@ -85,7 +90,19 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void createOAuthUSer(String username, String password, String provider) {
+        User existinguser = userRepository.findByEmailAndProvider(username,Provider.valueOf(provider.toUpperCase() ))
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
+        User user = new User();
+        user.setEmail(username);
+        user.setProvider(Provider.valueOf(provider.toUpperCase()));
+        user.setPassword(helper.encodePassword(password));
+        //TODO: SEND SUCCESS EMAIL FOR OAUTH REGISTRATION
+        userRepository.save(user);
+
+    }
 
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
@@ -126,17 +143,8 @@ public class UserServiceImpl implements UserService {
     return modelMapper.map(user, UserResponseDto.class);
     }
 
-    @Override
-    public String updateUser(Long id, UserResponseDto userDto) throws Exception {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
 
 
-//        User user = (User) helper.copyFromDto(userDto, user1); //TODO: YET TO BE TESTED
-
-        userRepository.save(user);
-        return "User updated successfully";
-
-    }
 
 
 

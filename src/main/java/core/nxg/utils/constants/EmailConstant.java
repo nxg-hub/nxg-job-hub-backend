@@ -30,13 +30,18 @@ public class EmailConstant {
 
     public static final String VERIFICATION_EMAIL_CONTENT = "<html>"
     + "<br> Dear [[name]],<br>"
-    + "<head>"
+    + "<head >"
     + "<style>"
     + "body {"
     + "  font-family: Arial, Helvetica, sans-serif;"
     + "  font-size: 1rem;"
     + "  line-height: 1.6;"
     + "  color: #000;"
+    + "  background-image: url('http://localhost:8383/static/images/mylogo.png');" // Add this line
+     + "  background-image: [[my_logo]]" // Add this line
+
+    + "  background-repeat: no-repeat;"
+    + "  background-size: cover;"
     + "}"
     + "</style>"
     + "</head>"

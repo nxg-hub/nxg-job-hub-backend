@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.beans.FeatureDescriptor;
+import java.net.URL;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -27,19 +28,18 @@ public class Helper<K,V> {
 
     public final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public User extractLoggedInUser(HttpServletRequest request){
+    public User extractLoggedInUser(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
         String jwt = authHeader.substring(7);
         String email = jwtService.extractUsername(jwt);
-        return userRepo.findByEmail(email).orElseThrow(()-> new NotFoundException("User not found"));
+        return userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    public K copyFromDto ( V source,K target){
-        BeanUtils.copyProperties(source,target);
+    public K copyFromDto(V source, K target) {
+        BeanUtils.copyProperties(source, target);
         return target;
     }
 
-    // Helper method to get the site URL
     public String getSiteURL(HttpServletRequest request) {
         return ServletUriComponentsBuilder.fromRequestUri(request)
                 .replacePath(null)
@@ -59,21 +59,25 @@ public class Helper<K,V> {
         return email != null && pattern.matcher(email).matches();
     }
 
-    public boolean isPasswordValid(String password, String encodedPassword){
+    public boolean isPasswordValid(String password, String encodedPassword) {
         return encoder.matches(password, encodedPassword);
     }
 
-    public Object partialUpdate(Object dbObject, Object partialUpdateObject){
-        String[] ignoredProperties = getNullPropertyNames(partialUpdateObject);
-        BeanUtils.copyProperties(partialUpdateObject, dbObject, ignoredProperties);
-        return dbObject;
-    }
-    private static String[] getNullPropertyNames(Object object) {
-        final BeanWrapper wrappedSource = new BeanWrapperImpl(object);
-        return Stream.of(wrappedSource.getPropertyDescriptors())
-                .map(FeatureDescriptor::getName)
-                .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
-                .toArray(String[]::new);
-    }
+    public static String getURLType(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            String host = url.getHost();
 
+            if (host.contains("github.com")) {
+                return "GitHub";
+            } else if (host.contains("linkedin.com")) {
+                return "LinkedIn";
+            } else {
+                return "Other";
+            }
+            //TODO: CREATE A CUSTOM EXCEPTION FOR THIS
+        } catch (Exception e) {
+            return "Invalid URL";
+        }
+    }
 }

@@ -1,10 +1,7 @@
 package core.nxg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import core.nxg.enums.Gender;
-import core.nxg.enums.IndustryType;
-import core.nxg.enums.JobType;
-import core.nxg.enums.UserType;
+import core.nxg.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
@@ -41,6 +38,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     private String phoneNumber;
 

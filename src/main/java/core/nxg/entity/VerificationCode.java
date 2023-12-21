@@ -31,6 +31,7 @@ public class VerificationCode {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
     private Instant expiryDate;
  
 

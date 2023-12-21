@@ -43,6 +43,7 @@ public class PushNotifications {
         pushNotification(notification.build());
     }
     private void pushNotification(Notification notification) {
+
         notificationRepository.save(notification);
     }
 

@@ -1,18 +1,13 @@
-package core.nxg.dto;
+package core.nxg.response;
 
-import core.nxg.entity.Ratings;
-import core.nxg.enums.Rating;
-import jakarta.persistence.OneToOne;
-import lombok.*;
-import core.nxg.entity.User;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class EmployerDto {
-
+public class EmployerResponse {
+    private String employerID;
     private String companyName;
     private String companyDescription;
     private String position;
@@ -25,8 +20,4 @@ public class EmployerDto {
     private String companySize;
 
     private String jobBoard;
-
-
-    }
-   
-
+}

@@ -19,7 +19,7 @@ import java.util.Set;
 public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long employerID;
 
     @Column(name="email")
     private String email;
@@ -27,10 +27,14 @@ public class Employer {
     private String companyName;
     private String companyDescription;
     private String position;
+    private String companyPhone;
     private String companyAddress;
     private String companyWebsite;
     private String country;
+
     private String industryType;
+
+    private String jobBoard;
     
     @OneToOne
     @JoinColumn(name = "user_id")
