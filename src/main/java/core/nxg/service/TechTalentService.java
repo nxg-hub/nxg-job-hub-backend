@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -21,6 +22,8 @@ public interface TechTalentService<T> {
     TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws Exception;
     DashboardDTO getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception;
     UserResponseDto getMe(HttpServletRequest request) throws Exception;
+
+    void addNewSkills(HttpServletRequest request, List<String> skill) throws Exception;
 
         
 }

@@ -1,13 +1,16 @@
 package core.nxg.response;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class EmployerResponse {
-    private String employerID;
+    private Long employerID;
     private String companyName;
     private String companyDescription;
     private String position;

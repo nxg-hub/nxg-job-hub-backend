@@ -1,5 +1,7 @@
 package core.nxg.configs;
 
+import core.nxg.exceptions.ExpiredJWTException;
+import core.nxg.exceptions.TokenExpiredException;
 import jakarta.servlet.FilterChain;
 //import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 filterChain.doFilter(request, response);
-                return;
+                return ;
             }
             jwt = authHeader.substring(7);
             userId = jwtService.extractUsername(jwt);
@@ -55,11 +57,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                }else{
+                    throw new ExpiredJWTException("Expired or Invalid JWT");
                 }
             }
             filterChain.doFilter(request, response);
         }
         catch (Exception e){
+            logger.error(e.getCause());
             System.out.println(e.getMessage());
         }
     }
