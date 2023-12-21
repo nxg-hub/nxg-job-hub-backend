@@ -27,7 +27,7 @@ public class TechTalentUser{
 
     @Id
     @Column(name = "techId")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long techId;
 
     @Column(name="email")
