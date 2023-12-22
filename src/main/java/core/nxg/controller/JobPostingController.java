@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +53,8 @@ public class JobPostingController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied",
                     content = @Content)})
     @GetMapping("/all")
-    public ResponseEntity<List<JobPostingDto>> getAllJobPosting() {
-        List<JobPostingDto> jobPostings = jobPostingService.getAllJobPostings();
+    public ResponseEntity<List<JobPostingDto>> getAllJobPosting(@PageableDefault(size = 10) Pageable page){
+        List<JobPostingDto> jobPostings = jobPostingService.getAllJobPostings(page);
         return ResponseEntity.ok(jobPostings);
     }
 

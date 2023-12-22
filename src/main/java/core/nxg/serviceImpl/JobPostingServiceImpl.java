@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     private final UserService userService;
 
     @Override
-    public List<JobPostingDto> getAllJobPostings() {
+    public List<JobPostingDto> getAllJobPostings(Pageable pageable){
         List<JobPosting> jobPostings = jobPostingRepository.findAll();
         return jobPostings.stream().map(this::mapToDto).collect(Collectors.toList());
     }

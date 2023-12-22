@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class EngagementForEmployer {
-    private int noOfApplicants;
-    private int noOfApprovedApplications;
+    private AtomicInteger noOfApplicants;
+    private AtomicInteger noOfApprovedApplications;
 
-    private int noOfJobPostings;
+    private AtomicInteger noOfJobPostings;
 }

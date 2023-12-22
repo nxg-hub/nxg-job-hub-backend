@@ -15,7 +15,6 @@ public class EmployerResponse {
     private String companyDescription;
     private String position;
     private String companyAddress;
-
     private String companyPhone;
     private String companyWebsite;
     private String country;

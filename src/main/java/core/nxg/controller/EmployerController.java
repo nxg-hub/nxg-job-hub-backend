@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -109,7 +110,7 @@ public class EmployerController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get engagements for an employer by its id")
+    @Operation(summary = "Get engagements for an employer by its id", description ="This endpoint returns engagements for an employer. Its a Pageable response")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found engagements",
                     content = { @Content(mediaType = "application/json",
@@ -119,16 +120,16 @@ public class EmployerController {
             @ApiResponse(responseCode = "404", description = "Employer not found",
                     content = @Content) })
     @GetMapping("engagements/{employerId}")
-    public ResponseEntity<?> getEngagements(@PathVariable Long employerId) throws Exception {
+    public ResponseEntity<?> getEngagements(@PathVariable Long employerId, Pageable pageable) throws Exception {
         try {
-            return ResponseEntity.ok(employerService.getEngagements(employerId));
+            return ResponseEntity.ok(employerService.getEngagements(employerId, pageable));
         } catch (Exception e) {
             log.error("Error while getting engagements: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @Operation(summary = "Get all job postings by an employer via its id")
+    @Operation(summary = "Get all job postings by an employer via its id,Its a Pageable response")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found some job postings. Might be null. Check the response body for more details",
                     content = { @Content(mediaType = "application/json",
@@ -138,9 +139,9 @@ public class EmployerController {
             @ApiResponse(responseCode = "404", description = "Not found",
                     content = @Content) })
     @GetMapping("postings/{employerId}")
-    public ResponseEntity<?> getJobPostings(@PathVariable Long employerId) throws Exception {
+    public ResponseEntity<?> getJobPostings(@PathVariable Long employerId, Pageable pageable) throws Exception {
         try {
-            return ResponseEntity.ok(employerService.getJobPostings(employerId));
+            return ResponseEntity.ok(employerService.getJobPostings(employerId,pageable));
         } catch (NotFoundException | NullPointerException e) {
             log.error("Error while getting job postings: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());

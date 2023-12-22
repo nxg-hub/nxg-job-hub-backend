@@ -7,6 +7,7 @@ import core.nxg.response.EmployerResponse;
 import core.nxg.response.EngagementForEmployer;
 import core.nxg.response.JobPostingResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.security.Principal;
@@ -23,9 +24,9 @@ public interface EmployerService {
     Object updateEmployer(Long employerId, EmployerDto employerDto) throws Exception;
     Employer patchEmployer(String employerId, Map<Object, Object> fields) throws Exception;
 
-    EngagementForEmployer getEngagements(Long employerId) throws Exception;
+    EngagementForEmployer getEngagements(Long employerId,Pageable pageable) throws Exception;
 
-    JobPostingResponse getJobPostings(Long employerId) throws Exception;
+    JobPostingResponse getJobPostings(Long employerId, Pageable pageable) throws Exception;
 
 
         void deleteEmployer(Long employerId);

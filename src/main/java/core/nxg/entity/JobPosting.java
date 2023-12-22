@@ -32,10 +32,8 @@ public class JobPosting {
     private LocalDate deadline;
 
     @Temporal(TemporalType.DATE)
-    @Getter
     private LocalDate created_at;
-
-    public void SetCreatedAt(){
+    public void setCreated_at(LocalDate created_at){
         this.created_at = LocalDate.now();
     }
 
