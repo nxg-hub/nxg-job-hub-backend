@@ -12,13 +12,14 @@ import java.time.LocalDateTime;
 @Setter
 @RequiredArgsConstructor
 public class JobPostingDto {
-    private Long employerID;
+    private String employerID;
     private String job_title;
     private String job_description;
     private String company_bio;
     private String salary;
     private String job_type;
     private LocalDate deadline;
+    private LocalDate created_at;
     private String requirements;
     private String job_location;
     private String tags;

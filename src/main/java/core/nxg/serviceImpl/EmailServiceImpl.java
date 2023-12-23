@@ -7,10 +7,7 @@ import core.nxg.entity.JobPosting;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.entity.VerificationCode;
-import core.nxg.exceptions.AccountExpiredException;
-import core.nxg.exceptions.TokenExpiredException;
-import core.nxg.exceptions.TokenNotFoundException;
-import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.exceptions.*;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.repository.VerificationCodeRepository;
@@ -102,7 +99,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
     @Override
-    public void sendPasswordResetEmail(EmailDTO dto, String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException {
+    public void sendPasswordResetEmail(EmailDTO dto, String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
         User loggedInUser = helper.extractLoggedInUser(request);
         Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
         if(user.isEmpty()){
@@ -248,14 +245,15 @@ public class EmailServiceImpl implements EmailService {
     public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException{
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        String content = JOBPOSTING_NOTIFICATION_CONTENT.replace("[[name]]", to);
+        String firstName = userRepository.findByEmail(to).get().getFirstName();
+        String content = JOBPOSTING_NOTIFICATION_CONTENT.replace("[[name]]", firstName);
 
         content = content.replace("[[job_title]]", job.getJob_title());
         content = content.replace("[[job_description]]", job.getJob_description());
         content = content.replace("[[job_location]]", job.getJob_location());
         content = content.replace("[[company_bio]]", job.getCompany_bio());
 
-        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
+        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + "Job Posting Notification");
         helper.setTo(to);
         helper.setSubject("New job posted: " + job.getJob_title());
 

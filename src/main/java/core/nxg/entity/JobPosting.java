@@ -14,10 +14,11 @@ import java.util.List;
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long jobID;
 
-    private Long employerID;
+    @Column(name = "employer_id")
+    private String employerID;
+
     private String job_title;
     private String job_description;
     private String salary;
@@ -29,6 +30,7 @@ public class JobPosting {
 
     @Temporal(TemporalType.DATE)
     private LocalDate created_at;
+
     public void setCreated_at(LocalDate created_at){
         this.created_at = LocalDate.now();
     }

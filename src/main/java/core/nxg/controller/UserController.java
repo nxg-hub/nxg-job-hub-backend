@@ -46,7 +46,7 @@ public class UserController {
     @Operation(summary = "REGISTER A NEW USER. THIS IS THE POINT OF ENTRY OF THE APPLICATION")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Successfully created the User instance",
-                    content = { @Content(mediaType = "application/json",
+                    content = { @Content(
                             schema = @Schema(implementation = UserDTO.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied",
                     content = @Content),

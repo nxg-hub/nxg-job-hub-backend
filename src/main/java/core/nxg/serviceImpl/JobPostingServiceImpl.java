@@ -44,10 +44,11 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
         JobPosting jobPosting = new JobPosting();
-        Long empoyerId = jobPostingDto.getEmployerID();
+        jobPosting.setCreated_at(LocalDate.now());
+        String employerId = jobPostingDto.getEmployerID();
         BeanUtils.copyProperties(jobPostingDto, jobPosting);
         JobPosting savedJobPosting = jobPostingRepository.save(jobPosting);
-        onJobPosted(empoyerId, savedJobPosting);
+        onJobPosted(Long.valueOf(employerId), savedJobPosting);
         return mapToDto(savedJobPosting);
     }
     private void onJobPosted(Long employerId, JobPosting jobPosting)throws Exception{
@@ -64,7 +65,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
                 emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
 
-                log.atTrace().log("Email sent to {}", user.getEmail());
+                log.info("Email sent to {}", user.getEmail());
             } catch (Exception e) {
                 throw new RuntimeException("Error sending email to {}" + user.getEmail() );
         }});

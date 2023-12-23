@@ -218,7 +218,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     }
 
     @Override
-    public void addNewSkills(HttpServletRequest request, List<String> skills){
+    public void addNewSkills(HttpServletRequest request, List<String> skills) throws ExpiredJWTException {
         User loggedInUser = helper.extractLoggedInUser(request);
         Optional<TechTalentDTO> techTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
         if (techTalentUser.isPresent()){

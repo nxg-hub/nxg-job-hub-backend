@@ -30,7 +30,7 @@ public class Helper<K,V> {
 
     public final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public User extractLoggedInUser(HttpServletRequest request) {
+    public User extractLoggedInUser(HttpServletRequest request) throws ExpiredJWTException {
         final String authHeader = request.getHeader("Authorization");
 
         if ( authHeader == null || !authHeader.startsWith("Bearer"))

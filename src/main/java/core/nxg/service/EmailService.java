@@ -5,6 +5,7 @@ import core.nxg.dto.EmailDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.entity.JobPosting;
 import core.nxg.entity.VerificationCode;
+import core.nxg.exceptions.ExpiredJWTException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -23,7 +24,7 @@ public interface EmailService {
             String email,
             String siteURL)throws MessagingException, UnsupportedEncodingException, MailException;
     public void sendVerificationEmail( VerificationCode code , String siteURL ) throws MessagingException, IOException, MailException;
-    public void sendPasswordResetEmail(EmailDTO dto ,String siteURL , HttpServletRequest request ) throws MessagingException, UnsupportedEncodingException, MailException ;
+    public void sendPasswordResetEmail(EmailDTO dto ,String siteURL , HttpServletRequest request ) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException;
     public void confirmVerification(String verificationCode) throws Exception;
     public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException ,MessagingException;
     public void confirmReset(String verificationCode) throws Exception;

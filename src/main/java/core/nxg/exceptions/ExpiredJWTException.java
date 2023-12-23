@@ -1,6 +1,8 @@
 package core.nxg.exceptions;
 
-public class ExpiredJWTException extends RuntimeException{
+import jakarta.servlet.ServletException;
+
+public class ExpiredJWTException extends ServletException {
 
     private String message = "Invalid or Expired JWT Token";
     public ExpiredJWTException(String message) {

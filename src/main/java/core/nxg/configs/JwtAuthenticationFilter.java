@@ -2,8 +2,11 @@ package core.nxg.configs;
 
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.exceptions.TokenExpiredException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 //import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +15,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 
 @Component
@@ -30,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-    )  {
+    ) throws ServletException, IOException, ExpiredJwtException{
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
@@ -57,15 +63,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                }else{
-                    throw new ExpiredJWTException("Expired or Invalid JWT");
                 }
             }
             filterChain.doFilter(request, response);
         }
-        catch (Exception e){
-            logger.error(e.getCause());
+        catch (ExpiredJwtException e){
+            logger.error(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Expired JWT token!");
+        }
+        catch (UsernameNotFoundException e){
+            logger.error(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             System.out.println(e.getMessage());
+
         }
     }
 }

@@ -16,8 +16,8 @@ import core.nxg.service.EmployerService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +26,9 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 import org.springframework.util.ReflectionUtils;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployerServiceImpl implements EmployerService {
@@ -42,8 +40,10 @@ public class EmployerServiceImpl implements EmployerService {
     private final ApplicationRepository applicationRepository;
     @Autowired
     private final Helper helper;
+
     @Autowired
     private final JobPostingRepository jobPostingRepository;
+
     @Autowired
     private final TechTalentRepository techTalentRepository;
     @Autowired
@@ -168,20 +168,23 @@ public class EmployerServiceImpl implements EmployerService {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
-        List<JobPosting> existingJobPostings = jobPostingRepository.findByEmployerID(employerId,pageable)
-                .orElseThrow(() -> new NotFoundException("Job Postings were not found!"));
+        Optional<List<JobPosting>> existingJobPostings = jobPostingRepository.findByEmployerID(String.valueOf(employerId));
+        if(existingJobPostings.isEmpty()){
+            throw new NotFoundException("Job Postings were not found!");
+        };
 
 
         EngagementForEmployer engagements = new EngagementForEmployer();
         AtomicInteger applications = new AtomicInteger();
-        AtomicInteger numberOfJobs = new AtomicInteger(existingJobPostings.size());
+        AtomicInteger numberOfJobs = new AtomicInteger(existingJobPostings.get().size());
         AtomicInteger noOfApprovedJobs = new AtomicInteger();
 
 
         //FOR JOBS BY THE EMPLOYER WE FIND THE APPLICATIONS FOR EACH JOB. ADD THE SIZE OF THE APPLICATIONS TO THE ATOMIC INTEGER. WE HAVE NUMBER OF APPLICATIONS
-        existingJobPostings.forEach(jobPosting -> {
+        existingJobPostings.get().forEach((jobPosting -> {
             try{
-            List<Application> applicationsForJob = applicationRepository.findByJobPosting(jobPosting, Pageable.unpaged())
+            List<Application> applicationsForJob = applicationRepository.findByJobPosting(
+                    mapper.map(jobPosting,JobPosting.class), pageable)
                     .orElseThrow(() -> new NotFoundException("Applications were not found!"));
             applications.addAndGet(applicationsForJob.size());
             // FOR EACH JOB WE FIND THE APPLICATIONS THAT ARE APPROVED. WE ADD THE SIZE OF THE APPROVED APPLICATIONS TO THE ATOMIC INTEGER. WE HAVE NUMBER OF APPROVED APPLICATIONS
@@ -190,10 +193,10 @@ public class EmployerServiceImpl implements EmployerService {
                                 .equals(ApplicationStatus.APPROVED)).toList().size());}
             catch (Exception e){
 
-                log.error("Error getting applications for job posting:" + jobPosting.getJobID(), e);
+//                log.error("Error getting applications for job posting:" + jobPosting.getJobID(), e);
                 return;
             }
-        });
+        }));
         
         engagements.setNoOfApplicants(applications);
         engagements.setNoOfJobPostings(numberOfJobs);
@@ -203,12 +206,19 @@ public class EmployerServiceImpl implements EmployerService {
 
 
     @Override
-    public JobPostingResponse getJobPostings(Long employerId, Pageable pageable) throws Exception{
-            List<JobPosting> jobPosting = jobPostingRepository.findByEmployerID(employerId,pageable)
-                    .orElseThrow(() -> new NotFoundException("No job postings found for the employer!"));
-            JobPostingResponse jobPostings = new JobPostingResponse();
-            mapper.map(jobPosting, jobPostings);
-            return jobPostings;
-    }
+    public JobPostingResponse getJobPostings(String employerId, Pageable pageable) throws Exception{
+        Optional<List<JobPosting>> jobPosting = jobPostingRepository.findByEmployerID(employerId);
+
+        if (jobPosting.isEmpty()){
+            return null;
+        }else{
+            JobPostingResponse jobPostingResponse = new JobPostingResponse();
+
+            BeanUtils.copyProperties(jobPosting, jobPostingResponse);
+            return jobPostingResponse;
+        }
+
+
+}
 }
 

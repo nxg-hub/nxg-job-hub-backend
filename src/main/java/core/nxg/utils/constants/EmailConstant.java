@@ -72,9 +72,8 @@ public class EmailConstant {
             + "}"
             + "</style>"
             + "</head>"
-            + "<body>"
-            + " <div style=\"margin: 0 auto; width: 50%;\">"
-            + "   <h1 style=\"font-weight: bold;\">New Job Posting at NXG-JOB HUB</h1>"
+            + "<body style=\"text-align:justify;\">"
+            + "  <h1 style=\"font-weight: bold;\">New Job Posting at NXG-JOB HUB</h1>"
             + "   <p>Dear [[name]],</p>"
             + "   <p>We are excited to inform you about a new job posting that might interest you.</p>"
             + "   <h2 style=\"font-weight: bold;\">[[job_title]]</h2>"
@@ -86,10 +85,10 @@ public class EmailConstant {
             + "   <a href=\"[[jobURL]]\" style=\"text-decoration: none;\">"
             + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Apply Now</button>"
             + "   </a>"
-            + " </div>"
-            + " <p style=\"margin-top: 50px;\">If you have any questions, please feel free to contact us.</p>"
-            + " <p>Thanks,</p>"
-            + " <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
+            + "   <p style=\"margin-top: 50px;\">If you have any questions, please feel free to contact us.</p>"
+            + "   <p>Thanks,</p>"
+            + "   <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
+
             + "</body>"
             + "</html>";
 }
