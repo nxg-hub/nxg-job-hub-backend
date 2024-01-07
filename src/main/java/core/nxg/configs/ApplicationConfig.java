@@ -1,7 +1,7 @@
 package core.nxg.configs;
 
 
-import core.nxg.entity.User;
+
 import core.nxg.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 

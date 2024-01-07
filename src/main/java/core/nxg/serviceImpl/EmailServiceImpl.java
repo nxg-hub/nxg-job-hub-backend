@@ -99,7 +99,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
     @Override
-    public void sendPasswordResetEmail(EmailDTO dto, String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+    public void sendPasswordResetEmail(String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
         User loggedInUser = helper.extractLoggedInUser(request);
         Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
         if(user.isEmpty()){
