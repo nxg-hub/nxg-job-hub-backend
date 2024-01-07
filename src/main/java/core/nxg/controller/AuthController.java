@@ -116,7 +116,7 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailDTO dto, HttpServletRequest request) throws Exception {
         try {
-            emailService.sendPasswordResetEmail(dto, helper.getSiteURL(request), request);
+            emailService.sendPasswordResetEmail(helper.getSiteURL(request), request);
             return ResponseEntity.status(HttpStatus.OK).body("Reset password link sent successfully");
         } catch (Exception e) {
             logger.error("Error while sending reset password email: " + e.getMessage());
