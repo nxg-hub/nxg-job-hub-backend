@@ -1,24 +1,25 @@
 package core.nxg.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
 @Entity
 @Data
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, OAuth2User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -32,6 +33,9 @@ public class User implements UserDetails {
 
     private String lastName;
 
+    @Column(name = "username")
+    private String username;
+
     private String profilePicture;
 
 
@@ -39,7 +43,10 @@ public class User implements UserDetails {
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    private Provider provider;
+    private OAuth2Provider provider;
+
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long providerId;
 
     private String phoneNumber;
 
@@ -61,6 +68,21 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @Transient
+    private Map<String, Object> attributes;
+    @Transient
+    private Collection<? extends GrantedAuthority> authorities;
+
+
+    @Override
+    public <A> A getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -102,4 +124,8 @@ public class User implements UserDetails {
     }
 
 
+    @Override
+    public String getName() {
+        return getFirstName();
+    }
 }
