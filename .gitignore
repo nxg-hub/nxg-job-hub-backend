@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=spark,maven
 
 ### Maven ###
+target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup=
