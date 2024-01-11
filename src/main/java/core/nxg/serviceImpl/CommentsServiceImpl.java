@@ -27,7 +27,7 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     public Comments createComments(CommentsDto commentsDto) {
-        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(commentsDto.getJobID())
+        JobPosting jobPosting = jobPostingRepository.findById(Long.parseLong(String.valueOf(commentsDto.getJobID())))
                 .orElseThrow(() -> new NotFoundException("Job posting with Id " + commentsDto.getJobID() + " not found"));
 
         Comments comments = new Comments();

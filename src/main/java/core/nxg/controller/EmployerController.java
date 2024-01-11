@@ -92,11 +92,11 @@ public class EmployerController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Employer not found",
                     content = @Content) })
-    @PatchMapping("/{employerId}")
-    public ResponseEntity<?> updateEmployer(@PathVariable String Id, @RequestBody Map<Object, Object> fields)
+    @RequestMapping("/{employerId}")
+    public ResponseEntity<?> updateEmployer(@PathVariable String employerId, @RequestBody Map<Object, Object> fields)
             throws IllegalArgumentException, Exception {
         try {
-            Employer updatedEmployer = employerService.patchEmployer(Id, fields);
+            Employer updatedEmployer = employerService.patchEmployer(employerId, fields);
             return ResponseEntity.ok(updatedEmployer);
         } catch (Exception e) {
             log.error("Error while updating Employer: {}", e.getMessage());
@@ -105,8 +105,8 @@ public class EmployerController {
     }
 
     @DeleteMapping("/{employerId}")
-    public ResponseEntity<Void> deleteEmployer(@Valid @PathVariable Long Id) {
-        employerService.deleteEmployer(Id);
+    public ResponseEntity<Void> deleteEmployer(@Valid @PathVariable Long employerId) {
+        employerService.deleteEmployer(employerId);
         return ResponseEntity.noContent().build();
     }
 
