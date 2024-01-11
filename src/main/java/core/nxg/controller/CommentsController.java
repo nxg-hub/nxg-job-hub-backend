@@ -3,6 +3,7 @@ package core.nxg.controller;
 import core.nxg.dto.CommentsDto;
 import core.nxg.entity.Comments;
 import core.nxg.service.CommentsService;
+import core.nxg.serviceImpl.CommentsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ import java.util.List;
 public class CommentsController {
 
     @Autowired
-    private final CommentsService commentsService;
+    private final CommentsServiceImpl commentsService;
 
     @PostMapping
     public Comments createComments(@RequestBody CommentsDto commentsDto) {
