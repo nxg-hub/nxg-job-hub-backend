@@ -122,7 +122,6 @@ spark-warehouse/
 
 *#
 *.env
-*.jar
 *.sw?
 .#*
 
