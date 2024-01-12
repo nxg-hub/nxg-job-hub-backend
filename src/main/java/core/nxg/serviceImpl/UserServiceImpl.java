@@ -100,13 +100,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public String login( LoginDTO loginDTO) throws Exception {
 
-        Optional<User> user = userRepository.findByEmail(loginDTO.getEmail());
-
-        if (helper.EmailIsInvalid(loginDTO.getEmail())){
-            throw new EmailNotValidException("Invalid email address");
-    }
+        var user = userRepository.findByEmail(loginDTO.getEmail());
+//
+//        if (helper.EmailIsInvalid(loginDTO.getEmail())){
+//            throw new EmailNotValidException("Invalid email address");
+//    }
         if (user.isEmpty()) {
-            throw new UsernameNotFoundException( "Wrong username or password!");
+            throw new UserNotFoundException( "Wrong username or password!");
 
          }
 
