@@ -26,6 +26,8 @@ public class SubscriptionService {
     public void create(CustomerDTO customerdto) throws Exception{
         User user = userRepo.findByEmail(customerdto.getEmail()).
                 orElseThrow(() -> new UserNotFoundException("User not found! Please register first"));
+
+
         Customers customers = new Customers();
         JSONObject request = customers.createCustomer(
                 customerdto.getEmail(),
