@@ -47,8 +47,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Successfully created the User instance",
                     content = { @Content(
-                            schema = @Schema(implementation = UserDTO.class)) }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                            schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content),
              })
     @PostMapping("/register/")

@@ -8,6 +8,7 @@ import core.nxg.exceptions.AccountExpiredException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.service.EmailService;
 import core.nxg.service.PasswordReset;
+import core.nxg.service.UserService;
 import core.nxg.serviceImpl.UserServiceImpl;
 import core.nxg.utils.Helper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Book;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,7 +48,7 @@ public class AuthController {
     private final EmailService emailService;
 
     @Autowired
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
@@ -56,6 +58,14 @@ public class AuthController {
                     "to an unverified user. Could be a NEW user or an" +
                     " EXISTING user who has not verified their email. Email will not be delivered if user is already verified " +
                     "or does not EXIST.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Email resent successfully",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid email",
+                    content = @Content)})
+    @RequestBody(description = "Email of user to resend verification email to", required = true,
+            content = @Content(schema = @Schema(implementation = String.class)))
     @PostMapping("/resendverification-mail")
     @ResponseBody
     public ResponseEntity<String> resend(@RequestParam String email, HttpServletRequest request){
@@ -69,25 +79,24 @@ public class AuthController {
     }
 
     @Operation(summary = "Login a user with email and password")
+////    @RequestBody(description = "Login credentials", required = true,
+////            content = @Content(schema = @Schema(implementation = LoginDTO.class)))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully logged in, " +
                     "returned a jwt token. Check header for token",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = LoginDTO.class)) }),
+                            schema = @Schema(implementation = String.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid login parameters",
                     content = @Content)})
     @PostMapping("/login")
-    @ResponseBody
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) throws Exception{
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) throws Exception{
         try {
             String token = userService.login(loginDTO);
-           return ResponseEntity.ok()
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " 
+           return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer "
             + token)
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,
             "Authorization")
             .build();
-            // return ResponseEntity.status(HttpStatus.OK).body("Login successful");
 
         } catch (Exception e) {
             logger.error("Error while logging in: " + e.getMessage());
