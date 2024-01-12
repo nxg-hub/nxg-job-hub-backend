@@ -7,6 +7,7 @@ import lombok.*;
 import core.nxg.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -26,7 +27,17 @@ public class EmployerDto {
 
     private String jobBoard;
 
+    private String CACCertificate;
 
-    }
+    private String taxClearanceCertificate;
+    private String TIN;
+
+    private List<String> namesOfDirectors;
+
+    private String companyMemorandum;
+
+
+
+}
    
 

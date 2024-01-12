@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Setter
@@ -42,6 +43,17 @@ public class Employer {
     private User user;
 
     private String companySize;
+
+    private String CACCertificate;
+
+    private String taxClearanceCertificate;
+    private String TIN;
+
+    private List<String> namesOfDirectors;
+
+    private String companyMemorandum;
+
+
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Ratings> ratings;

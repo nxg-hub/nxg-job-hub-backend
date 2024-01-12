@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     public String createUser(UserDTO userDTO, String siteURL) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (!helper.isEmailValid(userDTO.getEmail())) {
+        if (helper.EmailIsInvalid(userDTO.getEmail())) {
             throw new EmailNotValidException("Invalid email address!");
         }
         if (existingUser.isPresent()) {
@@ -62,7 +62,6 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
-//        User user = (User) helper.copyFromDto(userDTO, user1);// TODO: YET TO BE TESTED
 
 
         user.setEmail(userDTO.getEmail());
@@ -107,13 +106,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(LoginDTO loginDTO) throws Exception {
+    public String login( LoginDTO loginDTO) throws Exception {
 
-        Optional<User> user = userRepository.findByEmail(loginDTO.getEmail()) ;
+        Optional<User> user = userRepository.findByEmail(loginDTO.getEmail());
 
-        if(!helper.isEmailValid(loginDTO.getEmail())){
+        if (helper.EmailIsInvalid(loginDTO.getEmail())){
             throw new EmailNotValidException("Invalid email address");
-        }
+    }
         if (user.isEmpty()) {
             throw new UsernameNotFoundException( "Wrong username or password!");
 

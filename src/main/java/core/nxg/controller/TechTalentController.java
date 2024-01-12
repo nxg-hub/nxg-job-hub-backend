@@ -1,9 +1,7 @@
 package core.nxg.controller;
 
-import core.nxg.dto.ApplicationDTO;
-import core.nxg.dto.DashboardDTO;
-import core.nxg.dto.TechTalentDTO;
-import core.nxg.dto.UserResponseDto;
+import core.nxg.dto.*;
+import core.nxg.entity.TechTalentAgent;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.repository.ApplicationRepository;
@@ -13,10 +11,17 @@ import core.nxg.service.TechTalentService;
 import core.nxg.service.UserService;
 import core.nxg.utils.Helper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecuritySchemes;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +93,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @Operation(description = "Get logged-in techtalent user",
             summary = "Get logged-in techtalent user using the bearer token")
+
     @GetMapping("/get-user")
     @ResponseBody
     public ResponseEntity<?> getTechTalent (HttpServletRequest request) throws Exception {
@@ -100,18 +106,31 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     }
 
-//    @PatchMapping("/{ID}")
-//    @ResponseBody
-//    public ResponseEntity<?> updateTechTalent (@PathVariable Long ID, @RequestBody Map<Object,Object> fields) throws Exception {
-//        try {
-//            TechTalentUser techtalent = techTalentService.updateTechTalent(String.valueOf(ID), fields);
-//
-//            return ResponseEntity.ok(techtalent);
-//        }catch(Exception e){
-//            log.error("Error updating:{}", e.getMessage());
-//            return ResponseEntity.badRequest().body("You have made an invalid request!");
-//        }
-//    }
+    @Operation(summary = "Update a Tech Talent ",
+            description = "This endpoint updates an existing Tech Talent")
+
+    @RequestBody(description = "Tech Talent object that needs to be updated", required = true,
+            content = @Content(schema = @Schema(implementation = TechTalentDTO.class)))
+
+    @ApiResponses(value= {
+            @ApiResponse(responseCode = "200", description = "Tech Talent updated successfully",
+                    content = @Content
+                            (schema = @Schema
+                                    (implementation = TechTalentDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Tech Talent not found")
+    })
+    @RequestMapping("/{techID}")
+    public ResponseEntity<?> updateTechTalent (@PathVariable String techID, @RequestBody Map<Object,Object> fields) throws Exception {
+        try {
+            TechTalentUser techtalent = techTalentService.updateTechTalent(techID, fields);
+
+            return ResponseEntity.ok(techtalent);
+        }catch(Exception e){
+            log.error("Error updating:{}", e.getMessage());
+            return ResponseEntity.badRequest().body("You have made an invalid request!");
+        }
+    }
 
 
     @Operation(description = "Get all applications for a logged-in techtalent",
@@ -129,6 +148,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @Operation(description = "Get all saved jobs for a logged-in techtalent",
             summary = "Get all saved jobs for a logged-in techtalent via the bearer token. A Pageable response.")
+
     @GetMapping("/my-jobs")
     @ResponseBody
     public ResponseEntity<?> getSavedJobs (HttpServletRequest request, @PageableDefault(size = 10) Pageable pageable)
