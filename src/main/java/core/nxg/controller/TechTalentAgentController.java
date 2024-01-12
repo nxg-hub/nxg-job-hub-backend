@@ -1,61 +1,101 @@
 package core.nxg.controller;
 
 import core.nxg.dto.TechTalentAgentDto;
-import core.nxg.response.PaginatedResponse;
+import core.nxg.entity.TechTalentAgent;
+import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.service.TechTalentAgentService;
+import core.nxg.serviceImpl.TechTalentAgentServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+import java.util.Map;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/agents")
 public class TechTalentAgentController {
-    private final TechTalentAgentService techTalentAgentService;
 
-    @GetMapping("/verify")
-    public ResponseEntity<String> verifyTechTalentAgent(HttpServletRequest request, @RequestParam("email") String email) {
-        String message = techTalentAgentService.verifyTechTalentAgent(email, request);
-        return ResponseEntity.ok(message);
-    }
+    @Autowired
+    private final TechTalentAgentServiceImpl techTalentAgentService;
 
+
+    @Operation(summary = "Create a new Tech Talent Agent",
+    description = "This endpoint creates a new Tech Talent Agent")
+    @RequestBody(description = "Tech Talent Agent object that needs to be created",
+    required = true,content = @Content(schema = @Schema(implementation = TechTalentAgentDto.class)))
+
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "201", description = "Tech Talent Agent created successfully",
+                    content = @Content(schema = @Schema(implementation = String.class)) ),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     @PostMapping("/createAgent")
-    public ResponseEntity<String> createAgent(@RequestBody TechTalentAgentDto agentDTO) {
-        String message = techTalentAgentService.createAgent(agentDTO);
+    public ResponseEntity<String> createAgent(@RequestBody TechTalentAgentDto agentDTO, HttpServletRequest request) throws ExpiredJWTException {
+        String message = techTalentAgentService.createAgent(agentDTO, request);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
 
-    @PutMapping("/{agentId}")
-    public ResponseEntity<TechTalentAgentDto> updateTechTalentAgent(@RequestBody TechTalentAgentDto techTalentAgentDto) {
-        TechTalentAgentDto updatedTechTalentAgent = techTalentAgentService.updateTechTalentAgent(techTalentAgentDto);
+
+    @Operation(summary = "Update a Tech Talent Agent",
+    description = "This endpoint updates an existing Tech Talent Agent")
+
+    @RequestBody(description = "Tech Talent Agent object that needs to be updated", required = true,
+    content = @Content(schema = @Schema(implementation = TechTalentAgentDto.class)))
+
+    @ApiResponses(value= {
+            @ApiResponse(responseCode = "200", description = "Tech Talent Agent updated successfully",
+                    content = @Content
+                            (schema = @Schema
+                                    (implementation = TechTalentAgent.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Tech Talent Agent not found")
+    })
+    @RequestMapping("/{agentId}")
+    public ResponseEntity<?> updateTechTalentAgent(@RequestParam String agentID, @RequestBody Map<Object,Object> fields) {
+        TechTalentAgent updatedTechTalentAgent = techTalentAgentService.patchAgent(agentID, fields);
         return ResponseEntity.ok(updatedTechTalentAgent);
     }
 
 
-    @GetMapping
-    public PaginatedResponse<TechTalentAgentDto> getAllTechTalentAgent(@RequestParam(value = "page", defaultValue = "1")int page,
-                                                                       @RequestParam(value = "size", defaultValue = "10")int size) {
-        return techTalentAgentService.getAllTechTalentAgent(page, size);
-    }
 
 
+    @Operation(summary = "Get a Tech Talent Agent by Id",
+    description = "This endpoint gets a Tech Talent Agent by Id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tech Talent Agent found",
+                    content = @Content(schema = @Schema(implementation = TechTalentAgentDto.class))),
+            @ApiResponse(responseCode = "404", description = "Tech Talent Agent not found")
+    })
     @GetMapping("/{Id}")
     public ResponseEntity<TechTalentAgentDto> getTechTalentAgentById(@PathVariable Long Id) {
         TechTalentAgentDto techTalentAgent = techTalentAgentService.getTechTalentAgentById(Id);
         return ResponseEntity.ok(techTalentAgent);
     }
 
+    @Operation(summary = "Delete a Tech Talent Agent")
     @DeleteMapping("/{agentId}")
     public ResponseEntity<Void> deleteTechTalentAgent(@PathVariable Long agentId) {
         techTalentAgentService.deleteTechTalentAgent(agentId);
         return ResponseEntity.noContent().build();
     }
+
+    //    @GetMapping
+//    public PaginatedResponse<TechTalentAgentDto> getAllTechTalentAgent(@RequestParam(value = "page", defaultValue = "1")int page,
+//                                                                       @RequestParam(value = "size", defaultValue = "10")int size) {
+//        return techTalentAgentService.getAllTechTalentAgent(page, size);
+//    }
+
 }
 
 

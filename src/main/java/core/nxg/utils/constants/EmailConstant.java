@@ -37,12 +37,13 @@ public class EmailConstant {
     + "  font-size: 1rem;"
     + "  line-height: 1.6;"
     + "  color: #000;"
-    + "  background-image: url('http://localhost:8383/static/images/mylogo.png');" //TODO change this to the actual url
-     + "  background-image: [[my_logo]]" //todo make it work
+    + "  background-image: url(cid:${mylogo});"
+     + "  background-image: [[my_logo]]"
 
     + "  background-repeat: no-repeat;"
     + "  background-size: cover;"
     + "}"
+            + "<img src =cid:${mylogo} />"
     + "</style>"
     + "</head>"
     + "<body style=\"text-align: center;\">"

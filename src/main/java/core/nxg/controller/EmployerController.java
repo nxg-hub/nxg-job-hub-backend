@@ -10,8 +10,10 @@ import core.nxg.service.EmployerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.persistence.Id;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,8 +66,6 @@ public class EmployerController {
             @ApiResponse(responseCode = "200", description = "Found the employer",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = EmployerResponse.class)) }),
-            @ApiResponse(responseCode = "200", description = "Expired bearer token ",
-                    content = @Content),
             @ApiResponse(responseCode = "400", description = "An Invalid request was sent",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found",
@@ -84,10 +84,17 @@ public class EmployerController {
 
 
     @Operation(summary = "Update an employer instance with the employer ID ")
+    @RequestBody( description = "Fields to update", required = true,
+            content =
+            @Content(mediaType = "application/json",
+            schema =
+            @Schema(implementation = EmployerDto.class)))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful update of employer instance",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = EmployerDto.class)) }),
+                    content = {
+                    @Content(mediaType = "application/json",
+                            schema =
+                            @Schema(implementation = String.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid request. Null values or empty fields not allowed",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Employer not found",
@@ -110,7 +117,8 @@ public class EmployerController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get engagements for an employer by its id", description ="This endpoint returns engagements for an employer. Its a Pageable response")
+    @Operation(summary = "Get engagements for an employer by its id",
+            description ="This endpoint returns engagements for an employer. Its a Pageable response")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found engagements",
                     content = { @Content(mediaType = "application/json",

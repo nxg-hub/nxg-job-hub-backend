@@ -78,8 +78,7 @@ public class EmployerServiceImpl implements EmployerService {
 
 
             Employer employer = new Employer();
-            //TODO refactor code to use beanutils to copy properties
-            //helper.copyFromDto(employerDto,employer);
+
             employer.setCompanyName(employerDto.getCompanyName());
             employer.setEmail(loggedInUser.getEmail());
             employer.setCompanyDescription(employerDto.getCompanyDescription());
@@ -88,6 +87,11 @@ public class EmployerServiceImpl implements EmployerService {
             employer.setCompanyWebsite(employerDto.getCompanyWebsite());
             employer.setCountry(employerDto.getCountry());
             employer.setIndustryType(employerDto.getIndustryType());
+            employer.setCACCertificate(employerDto.getCACCertificate());
+            employer.setCompanyMemorandum(employerDto.getCompanyMemorandum());
+            employer.setNamesOfDirectors(employerDto.getNamesOfDirectors());
+            employer.setTIN(employerDto.getTIN());
+            employer.setTaxClearanceCertificate(employerDto.getTaxClearanceCertificate());
             employer.setCompanySize(employerDto.getCompanySize());
             loggedInUser.setRoles(UserType.EMPLOYER.toString());
             loggedInUser.setUserType(UserType.EMPLOYER);
@@ -136,9 +140,9 @@ public class EmployerServiceImpl implements EmployerService {
             if (employer.isPresent()) {
                 fields.forEach((key, value) -> {
                     Field field = ReflectionUtils.findField(Employer.class, String.valueOf(key));
-                    if (field == null) {
+                    if (field == null)
                         throw new IllegalArgumentException("Null fields cannot be updated! Kindly check the fields you are trying to update");
-                    }
+
                     field.setAccessible(true);
                     ReflectionUtils.setField(field, employer.get(), value);
 
@@ -159,7 +163,6 @@ public class EmployerServiceImpl implements EmployerService {
     public void deleteEmployer(Long employerId) {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new NotFoundException("Employer with ID " + employerId + " not found"));
-        //TODO return a response
 
         employerRepository.delete(employer);
     }

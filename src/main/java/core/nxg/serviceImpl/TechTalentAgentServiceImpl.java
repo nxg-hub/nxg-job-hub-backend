@@ -2,92 +2,115 @@ package core.nxg.serviceImpl;
 
 import core.nxg.configs.JwtService;
 import core.nxg.dto.TechTalentAgentDto;
+import core.nxg.dto.TechTalentDTO;
+import core.nxg.entity.Employer;
 import core.nxg.entity.TechTalentAgent;
 import core.nxg.entity.User;
+import core.nxg.enums.UserType;
 import core.nxg.exceptions.AlreadyExistException;
+import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.exceptions.NotFoundException;
+import core.nxg.exceptions.UserAlreadyExistException;
+import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.TechTalentAgentRepository;
+import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
+import core.nxg.response.EmployerResponse;
 import core.nxg.response.PaginatedResponse;
 import core.nxg.service.TechTalentAgentService;
+import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class TechTalentAgentServiceImpl implements TechTalentAgentService {
 
-
+    private final EmployerRepository employerRepository;
+    private final TechTalentRepository techTalentRepository;
     private final TechTalentAgentRepository techTalentAgentRepository;
-    private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final Helper helper;
+
+    private final ModelMapper mapper;
+
+
 
 
     @Override
-    public String verifyTechTalentAgent(String email, HttpServletRequest request) {
-        try {
-            User user = extractLoggedInUser(request, email);
-            if (user != null) {
-                TechTalentAgent techTalentAgent = new TechTalentAgent();
-                techTalentAgent.setEmail(email);
-                techTalentAgentRepository.save(techTalentAgent);
-                return "Tech Talent Agent verified and created";
-            } else {
-                throw new NotFoundException("Email not found in the user repository");
-            }
-        } catch (Exception e) {
-            return "Error verifying Tech Talent Agent: " + e.getMessage();
+    public String createAgent(TechTalentAgentDto agentDTO, HttpServletRequest request) throws ExpiredJWTException {
+
+        User loggedInUser = helper.extractLoggedInUser(request);
+
+
+        Optional<EmployerResponse> employer_account = employerRepository.findByEmail(loggedInUser.getEmail());
+        if (employer_account.isPresent()) {            // an employer account does not exist
+            throw new UserAlreadyExistException("An Employer account already exists!");
         }
+
+
+        Optional<TechTalentDTO> techtalent_account = techTalentRepository.findByEmail(loggedInUser.getEmail());
+        if (techtalent_account.isPresent()) // techtalent account does not exist
+            throw new UserAlreadyExistException("Tech talent account already exists!");
+
+
+        Optional<TechTalentAgent> agent_account = techTalentAgentRepository.findByUserEmail(loggedInUser.getEmail()); // confirm
+        if (agent_account.isPresent()) {
+            throw new AlreadyExistException("An Agent account already exists!");}
+
+
+        TechTalentAgent techTalentAgent = new TechTalentAgent();
+        techTalentAgent.setIndustryType(agentDTO.getIndustryType());
+        techTalentAgent.setEmail(loggedInUser.getEmail());
+        techTalentAgent.setAddress(agentDTO.getAddress());
+        techTalentAgent.setZipCode(agentDTO.getZipCode());
+        loggedInUser.setUserType(UserType.AGENT);
+        userRepository.save(loggedInUser);
+        techTalentAgent.setUser(loggedInUser);
+
+
+        return "Agent successfully registered";
+
     }
+
+
+
 
     @Override
-    public String createAgent(TechTalentAgentDto agentDTO) {
-            TechTalentAgent techTalentAgent = techTalentAgentRepository.findByEmail(agentDTO.getEmail())
-                    .orElseThrow(() -> new AlreadyExistException("Tech Talent Agent already exists"));
+    public TechTalentAgent patchAgent(String agentId, Map<Object, Object> fields) {
+        if (agentId == null) {
+            throw new NotFoundException("Agent ID is required");}
+        Optional<TechTalentAgent> agent = techTalentAgentRepository.findById(Long.valueOf(agentId));
+        if (agent.isPresent()) {
+            fields.forEach((key, value) -> {
+                        Field field = ReflectionUtils.findField(TechTalentAgent.class, String.valueOf(key));
+                        if (field == null)
+                            throw new IllegalArgumentException("Null fields cannot be updated! Kindly check the fields you are trying to update");
 
-            TechTalentAgent agent = new TechTalentAgent();
-            agent.setZipCode(agentDTO.getZipCode());
-            agent.setJobType(agentDTO.getJobType());
-            agent.setIndustryType(agentDTO.getIndustryType());
-            agent.setAddress(agentDTO.getAddress());
+                        field.setAccessible(true);
+                        ReflectionUtils.setField(field, agent.get(), value);
 
-            User user = userRepository.findByEmail(techTalentAgent.getEmail())
-                    .orElseThrow(() -> new NotFoundException("Tech Talent Agent not verified"));
-            agent.setUser(user);
-            techTalentAgentRepository.save(agent);
-            return "Agent successfully registered";
-    }
-
-    private User extractLoggedInUser(HttpServletRequest request, String email) {
-        // ... (extractLoggedInUser logic)
-        final String authHeader = request.getHeader("Authorization");
-        String jwt = authHeader.substring(7);
-        String extractedEmail = jwtService.extractUsername(jwt);
-        if (email.equals(extractedEmail)) {
-            return userRepository.findByEmail(email).orElse(null);
-        } else {
-            return null;
+                    }
+            );
+            return techTalentAgentRepository.save(agent.get());
+        }else
+        {
+            throw new NotFoundException("Agent not found");
         }
-    }
 
-    @Override
-    public TechTalentAgentDto updateTechTalentAgent(TechTalentAgentDto techTalentAgentDto) {
-        TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(techTalentAgentDto.getId())
-                .orElseThrow(() -> new NotFoundException("TechTalentAgent with ID " + techTalentAgentDto.getId() + " not found"));
-        techTalentAgent.setIndustryType(techTalentAgentDto.getIndustryType());
-        techTalentAgent.setAddress(techTalentAgentDto.getAddress());
-        techTalentAgent.setZipCode(techTalentAgentDto.getZipCode());
-        techTalentAgent.setIndustryType(techTalentAgentDto.getIndustryType());
-        techTalentAgent = techTalentAgentRepository.save(techTalentAgent);
-        return mapToDto(techTalentAgent);
     }
 
 
@@ -103,33 +126,33 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
     public TechTalentAgentDto getTechTalentAgentById(Long Id) {
         TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("TechTalentAgent with ID " + Id + " not found"));
-        return mapToDto(techTalentAgent);
+        return mapper.map(techTalentAgent, TechTalentAgentDto.class);
     }
 
-    @Override
-    public PaginatedResponse<TechTalentAgentDto> getAllTechTalentAgent(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<TechTalentAgent> agentPages = techTalentAgentRepository.findAll(pageable);
-        return PaginatedResponse.<TechTalentAgentDto>builder()
-                .content(agentPages.getContent().stream().map(this::mapToDto).collect(Collectors.toList()))
-                .currentPage(agentPages.getNumber()+1)
-                .pageSize(agentPages.getSize())
-                .totalPages(agentPages.getTotalPages())
-                .totalItems(agentPages.getTotalElements())
-                .isFirstPage(agentPages.isFirst())
-                .isLastPage(agentPages.isLast())
-                .build();
-    }
+//    @Override
+//    public PaginatedResponse<TechTalentAgentDto> getAllTechTalentAgent(int page, int size) {
+//        Pageable pageable = PageRequest.of(page - 1, size);
+//        Page<TechTalentAgent> agentPages = techTalentAgentRepository.findAll(pageable);
+//        return PaginatedResponse.<TechTalentAgentDto>builder()
+//                .content(agentPages.getContent().stream().map(this::mapToDto).collect(Collectors.toList()))
+//                .currentPage(agentPages.getNumber()+1)
+//                .pageSize(agentPages.getSize())
+//                .totalPages(agentPages.getTotalPages())
+//                .totalItems(agentPages.getTotalElements())
+//                .isFirstPage(agentPages.isFirst())
+//                .isLastPage(agentPages.isLast())
+//                .build();
+//    }
 
-    private TechTalentAgentDto mapToDto(TechTalentAgent techTalentAgent) {
-        TechTalentAgentDto techTalentAgentDto = new TechTalentAgentDto();
-        techTalentAgentDto.setAddress(techTalentAgent.getAddress());
-        techTalentAgentDto.setEmail(techTalentAgent.getUser().getEmail());
-        techTalentAgentDto.setIndustryType(techTalentAgent.getIndustryType());
-        techTalentAgentDto.setJobType(techTalentAgent.getJobType());
-        techTalentAgentDto.setZipCode(techTalentAgent.getZipCode());
-        return techTalentAgentDto;
-    }
+//    private TechTalentAgentDto mapToDto(TechTalentAgent techTalentAgent) {
+//        TechTalentAgentDto techTalentAgentDto = new TechTalentAgentDto();
+//        techTalentAgentDto.setAddress(techTalentAgent.getAddress());
+//        techTalentAgentDto.setEmail(.getEmail());
+//        techTalentAgentDto.setIndustryType(techTalentAgent.getIndustryType());
+//        techTalentAgentDto.setJobType(techTalentAgent.getJobType());
+//        techTalentAgentDto.setZipCode(techTalentAgent.getZipCode());
+//        return techTalentAgentDto;
+//    }
 
     }
 

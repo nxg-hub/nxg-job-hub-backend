@@ -1,10 +1,7 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.LoginDTO;
-import core.nxg.dto.TechTalentDTO;
 import core.nxg.dto.UserResponseDto;
-import core.nxg.entity.Employer;
-import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.VerificationCode;
 import core.nxg.enums.Provider;
 import core.nxg.exceptions.*;
@@ -26,11 +23,8 @@ import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
-import org.springframework.util.ReflectionUtils;
 
 
 @Service
@@ -59,7 +53,7 @@ public class UserServiceImpl implements UserService {
     public String createUser(UserDTO userDTO, String siteURL) throws Exception {
 
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
-        if (!helper.isEmailValid(userDTO.getEmail())) {
+        if (helper.EmailIsInvalid(userDTO.getEmail())) {
             throw new EmailNotValidException("Invalid email address!");
         }
         if (existingUser.isPresent()) {
@@ -67,7 +61,6 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
-//        User user = (User) helper.copyFromDto(userDTO, user1);// TODO: YET TO BE TESTED
 
 
         user.setEmail(userDTO.getEmail());
@@ -105,15 +98,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(LoginDTO loginDTO) throws Exception {
+    public String login( LoginDTO loginDTO) throws Exception {
 
-        Optional<User> user = userRepository.findByEmail(loginDTO.getEmail()) ;
-
-        if(!helper.isEmailValid(loginDTO.getEmail())){
-            throw new EmailNotValidException("Invalid email address");
-        }
+        var user = userRepository.findByEmail(loginDTO.getEmail());
+//
+//        if (helper.EmailIsInvalid(loginDTO.getEmail())){
+//            throw new EmailNotValidException("Invalid email address");
+//    }
         if (user.isEmpty()) {
-            throw new UsernameNotFoundException( "Wrong username or password!");
+            throw new UserNotFoundException( "Wrong username or password!");
 
          }
 

@@ -4,22 +4,17 @@ import core.nxg.configs.JwtService;
 import core.nxg.entity.User;
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.exceptions.NotFoundException;
-import core.nxg.exceptions.TokenExpiredException;
 import core.nxg.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.beans.FeatureDescriptor;
 import java.net.URL;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -61,10 +56,10 @@ public class Helper<K,V> {
         return encoder.encode(password);
     }
 
-    public boolean isEmailValid(String email) {
+    public boolean EmailIsInvalid(String email) {
         Pattern pattern = Pattern.compile("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
 
-        return email != null && pattern.matcher(email).matches();
+        return email == null || !pattern.matcher(email).matches();
     }
 
     public boolean isPasswordValid(String password, String encodedPassword) {

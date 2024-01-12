@@ -24,10 +24,12 @@ import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -47,6 +49,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     JavaMailSender mailSender;
 
+    @Value("classpath:images/mylogo.png")
+    Resource mylogo;
 
     @Autowired
     TechTalentRepository TechTalentRepository;
@@ -99,7 +103,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
     @Override
-    public void sendPasswordResetEmail(EmailDTO dto, String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+    public void sendPasswordResetEmail(String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
         User loggedInUser = helper.extractLoggedInUser(request);
         Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
         if(user.isEmpty()){
@@ -148,13 +152,6 @@ public class EmailServiceImpl implements EmailService {
     String siteURL
    ) throws MessagingException, IOException, MailException {
 
-        MimeBodyPart imgBodyPart = new MimeBodyPart();
-        imgBodyPart.attachFile("Image.png");
-        imgBodyPart.setContentID('<'+"i01@example.com"+'>');
-        imgBodyPart.setDisposition(MimeBodyPart.INLINE);
-        imgBodyPart.setHeader("Content-Type", "image/png");
-
-
 
         User user = code.getUser();
         String subject = "Almost there! Please verify your email address.";
@@ -170,7 +167,7 @@ public class EmailServiceImpl implements EmailService {
 
         // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
 
-        helper.addInline("my_logo", new ClassPathResource("images/mylogo.png"));
+        helper.addInline("mylogo", mylogo);
 
 
 
