@@ -2,9 +2,7 @@ package core.nxg.dto;
 
 
 import core.nxg.enums.Gender;
-import core.nxg.enums.UserType;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -33,8 +33,9 @@ public class SubscriptionService {
                 customerdto.getLastName(),
                 customerdto.getPhone(),
                 customerdto.getMetadata());
-        if (request.getBoolean("status")) {
 
+
+        if (request.getBoolean("status")) {
 
             Subscriber subscriber = new Subscriber();
             subscriber.setCustomerId(request.getJSONObject("data").getString("customer_code"));

@@ -4,17 +4,15 @@ package core.nxg.controller;
 import core.nxg.dto.EmailDTO;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.passwordResetDTO;
-import core.nxg.exceptions.AccountExpiredException;
-import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.service.EmailService;
 import core.nxg.service.PasswordReset;
 import core.nxg.service.UserService;
-import core.nxg.serviceImpl.UserServiceImpl;
+
 import core.nxg.utils.Helper;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import org.springframework.web.bind.annotation.*;
+
+
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,12 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Book;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -64,7 +64,7 @@ public class AuthController {
                             schema = @Schema(implementation = String.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid email",
                     content = @Content)})
-    @RequestBody(description = "Email of user to resend verification email to", required = true,
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Email of user to resend verification email to", required = true,
             content = @Content(schema = @Schema(implementation = String.class)))
     @PostMapping("/resendverification-mail")
     @ResponseBody
