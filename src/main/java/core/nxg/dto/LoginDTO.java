@@ -1,6 +1,6 @@
 package core.nxg.dto;
 
-import lombok.Data;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @RequiredArgsConstructor
 public class LoginDTO {
-
     private String email;
     private String password;
 
