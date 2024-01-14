@@ -1,10 +1,8 @@
 package core.nxg.serviceImpl;
 
+import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.dto.LoginDTO;
-import core.nxg.dto.TechTalentDTO;
 import core.nxg.dto.UserResponseDto;
-import core.nxg.entity.Employer;
-import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.VerificationCode;
 import core.nxg.enums.Provider;
 import core.nxg.exceptions.*;
@@ -26,11 +24,8 @@ import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
-import org.springframework.util.ReflectionUtils;
 
 
 @Service
@@ -77,7 +72,7 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setDateOfBirth(userDTO.getDateOfBirth());
         user.setNationality(userDTO.getNationality());
-        user.setProvider(Provider.LOCAL);
+        user.setProvider(OAuth2Provider.LOCAL);
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
         VerificationCode verificationCode = new VerificationCode(user);
@@ -89,19 +84,26 @@ public class UserServiceImpl implements UserService {
 
 
     }
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 
     @Override
-    public void createOAuthUSer(String username, String password, String provider) {
+    public void createOAuthUSer(String username, String provider) {
         User existinguser = userRepository.findByEmailAndProvider(username,Provider.valueOf(provider.toUpperCase() ))
                 .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         User user = new User();
         user.setEmail(username);
-        user.setProvider(Provider.valueOf(provider.toUpperCase()));
-        user.setPassword(helper.encodePassword(password));
+        user.setProvider(OAuth2Provider.LOCAL);
+//        user.setPassword(helper.encodePassword(password));
         //TODO: SEND SUCCESS EMAIL FOR OAUTH REGISTRATION
         userRepository.save(user);
 
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
@@ -142,9 +144,6 @@ public class UserServiceImpl implements UserService {
     User user  = helper.extractLoggedInUser(request);
     return modelMapper.map(user, UserResponseDto.class);
     }
-
-
-
 
 
 

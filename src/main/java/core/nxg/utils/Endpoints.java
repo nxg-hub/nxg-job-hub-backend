@@ -20,7 +20,8 @@ public final class Endpoints {
             "/api/ratings/**",
             "/api/job-postings/**",
             "/api/comments/**",
-            "/api/employers/**"
+            "/api/employers/**",
+            "/api/oauth/**"
 // =======
 //             "/h2-console/**",
 //             "/h2/**",

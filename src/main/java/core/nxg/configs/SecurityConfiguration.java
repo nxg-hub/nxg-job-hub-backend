@@ -1,5 +1,7 @@
 package core.nxg.configs;
 
+import core.nxg.configs.oauth2.CustomAuthenticationSuccessHandler;
+import core.nxg.configs.oauth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 //import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +21,12 @@ import static core.nxg.utils.Endpoints.UNSECURED_ENDPOINT;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
+
+    private final CustomOAuth2UserService customOauth2UserService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final JwtService jwtService;
 
 
 
@@ -33,7 +39,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         auth -> auth.requestMatchers(UNSECURED_ENDPOINT ).permitAll()
                                 .anyRequest().authenticated()
-                )
+                ).oauth2Login(oauth2Login -> oauth2Login
+                                .userInfoEndpoint().userService(customOauth2UserService)
+                                .and()
+                                .successHandler(customAuthenticationSuccessHandler))
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authenticationProvider(authenticationProvider)
@@ -43,6 +52,8 @@ public class SecurityConfiguration {
 
                 return http.build();
     }
+
+    public static final String USER = "USER";
 
 
 
