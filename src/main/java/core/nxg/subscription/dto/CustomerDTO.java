@@ -1,6 +1,7 @@
 package core.nxg.subscription.dto;
 
 
+import core.nxg.subscription.PlanType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,4 +19,6 @@ public class CustomerDTO {
     private String phone;
 
     private Object metadata;
+
+    private PlanType planType;
 }
