@@ -1,208 +1,93 @@
-package core.nxg.subscription;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import core.nxg.entity.User;
-import core.nxg.exceptions.UserNotFoundException;
-import core.nxg.repository.UserRepository;
-import core.nxg.subscription.dto.CustomerDTO;
-import core.nxg.subscription.dto.SubscribeDTO;
-import core.nxg.subscription.dto.TransactionDTO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class SubscriptionService {
-
-    @Autowired
-    private final UserRepository userRepo;
-
-    @Autowired
-    private final SubscriptionRepository subscriptionRepo;
-
-    @Autowired
-    private final APIService apiService;
-
-
-    public JsonNode createSubscriber(CustomerDTO customerdto) throws HttpClientErrorException, JsonProcessingException {
-        try {
-            User user = userRepo.findByEmail(customerdto.getEmail()).
-                    orElseThrow(() -> new UserNotFoundException("User not found! Please register first"));
-
-
-            ResponseEntity<JsonNode> response = apiService.createCustomer(customerdto);
-
-            if (response.hasBody() && response.getBody().get("status").booleanValue()) {
-
-                Subscriber subscriber = new Subscriber();
-                subscriber.setCustomerId(response.getBody().get("data").get("customer_code").toString());
-                subscriber.setEmail(response.getBody().get("data").get("email").toString());
-                subscriber.setPlanType(customerdto.getPlanType());
-                subscriber.setUser(user);
-                userRepo.save(user);
-                subscriptionRepo.saveAndFlush(subscriber);
-                return response.getBody();
-
-            } else {
-                Logger.getLogger(SubscriptionService.class.getName())
-                        .log(
-                                Level.SEVERE, "Could not create account for " + customerdto.getEmail());
-                throw new Exception("Could not create account for " + customerdto.getEmail());
-
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(SubscriptionService.class.getName())
-                    .log(
-                            Level.SEVERE, null, ex);
-            throw new RuntimeException(ex.getMessage());
-        }
-
-    }
-
-
-    public JsonNode initializeTransaction(TransactionDTO dto) throws Exception {
-        try {
-            return apiService.initialize(dto);
-        } catch (Exception e) {
-            Logger.getLogger(SubscriptionService.class.getName())
-                    .log(
-                            Level.SEVERE, "Could not initialize transaction for " + dto.getEmail());
-            throw new Exception(e.getMessage());
-
-        }
-    }
-
-    private JsonNode createPlan(Map<String, Object> query) throws Exception {
-        try {
-            return apiService.plan(query).getBody();
-        } catch (Exception e) {
-            Logger.getLogger(SubscriptionService.class.getName())
-                    .log(
-                            Level.SEVERE, "Could not create  " + query.get("name") + " plan");
-            throw new Exception(e.getMessage());
-
-        }
-
-    }
-
-
-    public JsonNode subscribe(SubscribeDTO dto) throws Exception {
-        JsonNode response;
-        try {
-
-            if (dto.getPlanType().equals(PlanType.PLATINUM)) {
-                log.info("Creating a PLATINUM plan...");
-                response = createPlan(setPlatinum(dto.getPlanType()));
-                log.info("Created a PLATINUM plan..." );
-                System.out.println(response);
-
-
-            } else if (dto.getPlanType().equals(PlanType.GOLD)) {
-                log.info("Creating a GOLD plan...");
-                response = createPlan(setGold(dto.getPlanType()));
-                log.info("Created a GOLD plan...");
-                System.out.println(response);
-
-            } else if (dto.getPlanType().equals(PlanType.SILVER)) {
-                log.info("Creating a SILVER plan...");
-                response = createPlan(setSilver(dto.getPlanType()));
-                log.info("Created a SILVER plan...");
-                System.out.println(response);
-
-            } else {
-                log.warn("Invalid plan type");
-                throw new Exception("Invalid plan type");
-            }
-            TransactionDTO transactionDTO = new TransactionDTO();
-            transactionDTO.setEmail(dto.getEmail());
-            log.info("Initializing transaction...");
-            transactionDTO.setPlan(response.get("data").get("plan_code").toString());
-            log.info("Initialized transaction..." + transactionDTO.getPlan());
-//            transactionDTO.setCallback_url(dto.getCallback_url());
-            transactionDTO.setAmount(response.get("data").get("amount").asInt());
-            log.info("Initialized transaction..." + transactionDTO.getAmount());
-
-            return this.initializeTransaction(transactionDTO);
-        } catch (Exception e) {
-            Logger.getLogger(SubscriptionService.class.getName())
-                    .log(
-                            Level.SEVERE, "Could not initialize transaction @subscription " + dto.getEmail());
-            throw new Exception(e.getMessage());
-
-        }
-
-    }
-
-    private Map<String, Object> setPlatinum(PlanType planType) {
-        if (planType == PlanType.PLATINUM) {
-            int amount = 10000; //todo: change to an immutable value and use correct values
-            String name = "Platinum";
-            String interval = "yearly";
-            String currency = "NGN";
-            String description = "Platinum Subscription Plan";
-            Map<String, Object> query = new HashMap<>();
-            query.put("name", name);
-            query.put("amount", amount);
-            query.put("interval", interval);
-            query.put("currency", currency);
-            query.put("description", description);
-            return query;
-        } else {
-            throw new RuntimeException("Invalid plan type");
-        }
-    }
-
-    private Map<String, Object> setSilver(PlanType planType) {
-        if (planType == PlanType.SILVER) {
-            int amount = 10000; //todo: change to an immutable value and use correct values
-            String name = "Silver";
-            String interval = "monthly";
-            String currency = "NGN";
-            String description = "Silver Subscription Plan";
-            Map<String, Object> query = new HashMap<>();
-            query.put("name", name);
-            query.put("amount", amount);
-            query.put("interval", interval);
-            query.put("currency", currency);
-            query.put("description", description);
-            return query;
-        } else {
-            throw new RuntimeException("Invalid plan type");
-        }
-    }
-
-    private Map<String, Object> setGold(PlanType planType) {
-        if (planType == PlanType.GOLD) {
-            int amount = 10000; //todo: change to an immutable value and use correct values
-            String name = "Gold";
-            String interval = "quarterly";
-            String currency = "NGN";
-            String description = "Gold Subscription Plan";
-            Map<String, Object> query = new HashMap<>();
-            query.put("name", name);
-            query.put("amount", amount);
-            query.put("interval", interval);
-            query.put("currency", currency);
-            query.put("description", description);
-
-            return query;
-        } else {
-            throw new RuntimeException("Invalid plan type");
-        }
-    }
-}
+//package core.nxg.subscription;
+//
+//import com.fasterxml.jackson.databind.JsonNode;
+//import core.nxg.entity.User;
+//import core.nxg.exceptions.UserNotFoundException;
+//import core.nxg.repository.UserRepository;
+//import core.nxg.subscription.dto.CustomerDTO;
+//import lombok.RequiredArgsConstructor;
+//
+//import org.json.JSONObject;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.http.HttpEntity;
+//import org.springframework.http.HttpHeaders;
+//import org.springframework.http.HttpMethod;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.stereotype.Service;
+//import org.springframework.web.client.RestTemplate;
+//
+//import java.util.HashMap;
+//import java.util.Map;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+//
+//@Service
+//@RequiredArgsConstructor
+//public class SubscriptionService {
+//
+//    @Autowired
+//    private final UserRepository userRepo;
+//
+//    @Autowired
+//    private final SubscriptionRepository subscriptionRepo;
+//
+//    @Value("${paystack.secret.active}")
+//    private String API_SECRET_KEY;
+//
+//
+//    public JSONObject createSubscriber(CustomerDTO customerdto) throws Exception {
+//        try{
+//            User user = userRepo.findByEmail(customerdto.getEmail()).
+//                orElseThrow(() -> new UserNotFoundException("User not found! Please register first"));
+//
+//
+//            Map<String, Object> query = new HashMap<>();
+//        query.put("email", customerdto.getEmail());
+//        query.put("first_name", customerdto.getFirstName());
+//        query.put("last_name", customerdto.getLastName());
+//        query.put("phone", customerdto.getPhone());
+//        query.put("metadata", customerdto.getMetadata());
+//        RestTemplate restTemplate = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Bearer " + API_SECRET_KEY);
+//        HttpEntity<Map<String,Object>> request = new HttpEntity<>(query, headers);
+//
+//
+//        ResponseEntity<JSONObject> response = restTemplate.exchange(
+//                APIConstants.CUSTOMER_URL,
+//                HttpMethod.POST,
+//                request,
+//                JSONObject.class);
+//
+//            if (response.hasBody()) {
+//                if (response.getBody().getBoolean("status")) {
+//
+//                    Subscriber subscriber = new Subscriber();
+//                    subscriber.setCustomerId(response.getBody().getJSONObject("data").get("customer_code").toString());
+//                    subscriber.setEmail(response.getBody().getJSONObject("data").get("email").toString());
+//                    subscriber.setUser(user);
+//                    userRepo.save(user);
+//                    subscriptionRepo.saveAndFlush(subscriber);
+//                    return response.getBody();
+//                }
+//            } else{
+//                return new JSONObject().append("message", "Attempt to create subscriber unsuccessful!");}
+//
+//        } catch (Exception ex) {
+//            Logger.getLogger(SubscriptionService.class.getName()).log(Level.SEVERE, null, ex);
+//            throw new RuntimeException(ex.getMessage());
+//        }
+//
+//        return new JSONObject();
+//    }
+//
+//
+//
+//
+//
+////    public void createSubscription(String customer, String plan, String authorization){
+////        Subscriptions subscriptions = new Subscriptions();
+////        subscriptions.createSubscription(customer, plan, authorization);
+////    }
+//}
