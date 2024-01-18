@@ -1,22 +1,23 @@
 package core.nxg.subscription;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.nimbusds.jose.shaded.gson.JsonObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.dto.CustomerDTO;
+import core.nxg.subscription.dto.TransactionDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Slf4j
 @Controller
@@ -26,7 +27,6 @@ public class PayemntController {
 
     @Autowired
     private final SubscriptionService paymentService;
-
 
 
     @Operation(summary = "Create a subscription account for a user")
@@ -45,6 +45,30 @@ public class PayemntController {
         } catch (Exception e) {
             log.error("Could not create account for  " + customerdto.getEmail(), e);
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+//    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody CustomerDTO customerdto) {
+//
+//        try {
+//            return ResponseEntity.ok().body(paymentService.(customerdto));
+
+
+    @PostMapping("/initialize-transaction")
+    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
+
+        try {
+            return ResponseEntity.ok().body(paymentService.
+                    initializeTransaction(dto.getReference(),
+                            dto.getAmount(),
+                            dto.getEmail(),
+                            dto.getPlan(),
+                            dto.getCallback_url()));
+        } catch (HttpClientErrorException| JsonProcessingException e) {
+            log.error("Could not initialize transaction for  " + dto.getEmail(), e);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode error = mapper.readTree(e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 }
