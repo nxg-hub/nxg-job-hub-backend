@@ -48,27 +48,24 @@ public class PayemntController {
         }
     }
 
-//    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody CustomerDTO customerdto) {
-//
-//        try {
-//            return ResponseEntity.ok().body(paymentService.(customerdto));
-
 
     @PostMapping("/initialize-transaction")
     public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
-
+        JsonNode error = null;
+        JsonNode response = null;
         try {
-            return ResponseEntity.ok().body(paymentService.
-                    initializeTransaction(dto.getReference(),
-                            dto.getAmount(),
-                            dto.getEmail(),
-                            dto.getPlan(),
-                            dto.getCallback_url()));
-        } catch (HttpClientErrorException| JsonProcessingException e) {
+            response = paymentService.
+                    initializeTransaction(dto);
+
+
+            return ResponseEntity.ok().body(response);
+        } catch (HttpClientErrorException | JsonProcessingException e) {
             log.error("Could not initialize transaction for  " + dto.getEmail(), e);
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode error = mapper.readTree(e.getMessage());
-            return ResponseEntity.badRequest().body(error);
+            error = mapper.readTree(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
+
+
     }
 }
