@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubscriptionRepository  extends JpaRepository<Subscriber, String> {
 
+    Subscriber findByCustomerId(String customerId);
+
 
 
 
