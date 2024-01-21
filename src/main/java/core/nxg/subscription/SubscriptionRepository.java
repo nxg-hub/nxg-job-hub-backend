@@ -11,6 +11,4 @@ public interface SubscriptionRepository  extends JpaRepository<Subscriber, Strin
 
 
 
-
-
 }
