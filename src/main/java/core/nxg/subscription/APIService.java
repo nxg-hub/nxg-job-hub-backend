@@ -16,8 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 @Service
@@ -28,27 +26,33 @@ public class APIService {
     @Value("${paystack.secret.active}")
     private String API_KEY;
 
-    private <T> ResponseEntity<JsonNode> connect(T body,
-                                                 String url,
-                                                 HttpMethod method) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + API_KEY);
-        HttpEntity<T> request = new HttpEntity<>(body, headers);
-        return restTemplate.exchange(
-                url,
-                method,
-                request,
-                JsonNode.class);
+    public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
+
+        return post(dto, APIConstants.PAYSTACK_CUSTOMER_URL);
 
     }
+
+
+    public ResponseEntity<JsonNode> plan(Map<String, Object> query) throws JsonProcessingException, HttpClientErrorException {
+
+        return post(query, APIConstants.PAYSTACK_PLANS_CREATE_PLAN);
+
+    }
+    public ResponseEntity<JsonNode> createSubscription(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
+
+        return post(dto, APIConstants.PAYSTACK_SUBSCRIPTIONS_CREATE_SUBSCRIPTION);
+
+    }
+
+
 
     public JsonNode initialize(TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
         String reference = "txID" + System.currentTimeMillis();
+        dto.setPlan(null);
         dto.setReference(reference);
 
-        return connect(dto, APIConstants.PAYSTACK_INIT_TRANSACTIONS, HttpMethod.POST).getBody();
+        return post(dto, APIConstants.PAYSTACK_INIT_TRANSACTIONS).getBody();
 
 
     }
@@ -56,16 +60,37 @@ public class APIService {
     public JsonNode verifyTransaction(String reference) throws JsonProcessingException {
 
         Map<String, Object> content = new HashMap<>();
-        return connect(content,
-                APIConstants.PAYSTACK_VERIFY_TRANSACTIONS + reference,
-                HttpMethod.GET
-        ).getBody();
+        return get(content,
+                APIConstants.PAYSTACK_VERIFY_TRANSACTIONS + reference).getBody();
 
 
     }
-    public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
-        return connect(dto, APIConstants.PAYSTACK_CUSTOMER_URL, HttpMethod.POST);
+    private <T> ResponseEntity<JsonNode> get(T body,
+                                             String url) {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new APIErrorHandler());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + API_KEY);
+        HttpEntity<T> request = new HttpEntity<>(body, headers);
+        return restTemplate.getForEntity(
+                url,
+                JsonNode.class,
+                request);
+    }
+
+    private <T> ResponseEntity<JsonNode> post(T body,
+                                              String url) {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new APIErrorHandler());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + API_KEY);
+        HttpEntity<T> request = new HttpEntity<>(body, headers);
+        return restTemplate.postForEntity(
+                url,
+                request,
+                JsonNode.class);
 
     }
 }

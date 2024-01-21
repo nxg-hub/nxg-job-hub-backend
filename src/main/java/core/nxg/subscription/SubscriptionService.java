@@ -78,7 +78,7 @@ public class SubscriptionService {
 
 
 
-    public JsonNode initializeTransaction(TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException{
+    public JsonNode initializeTransaction(TransactionDTO dto) throws Exception {
         try{
 
             return apiService.initialize(dto);}
@@ -86,10 +86,38 @@ public class SubscriptionService {
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
                             Level.SEVERE, "Could not initialize transaction for " + dto.getEmail());
-            throw new RuntimeException("Could not initialize transaction for " + dto.getEmail());
+            throw new Exception(e.getMessage());
 
         }
+
+
+
+
     }
+    public JsonNode createPlan(Map<String, Object> query) throws Exception {
+        try {
+            return apiService.plan(query).getBody();
+        } catch(Exception e){
+                Logger.getLogger(SubscriptionService.class.getName())
+                        .log(
+                                Level.SEVERE, "Could not create  " + query.get("name") + " plan");
+                throw new Exception(e.getMessage());
+
+            }
+
+        }
+
+    public JsonNode subscribe(TransactionDTO dto) throws Exception {
+        try{
+
+            return apiService.initialize(dto);}
+        catch (Exception e){
+            Logger.getLogger(SubscriptionService.class.getName())
+                    .log(
+                            Level.SEVERE, "Could not initialize transaction for " + dto.getEmail());
+            throw new Exception(e.getMessage());
+
+        }
 
 
 
@@ -97,4 +125,5 @@ public class SubscriptionService {
 
 
 
+    }
 }

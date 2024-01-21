@@ -1,7 +1,7 @@
 package core.nxg.subscription;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.dto.CustomerDTO;
@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -39,33 +42,54 @@ public class PayemntController {
     public ResponseEntity<JsonNode> createAccount(@RequestBody CustomerDTO customerdto) {
 
         try {
-            return ResponseEntity.ok().body(paymentService.createSubscriber(customerdto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.createSubscriber(customerdto));
 
 
         } catch (Exception e) {
             log.error("Could not create account for  " + customerdto.getEmail(), e);
-            return ResponseEntity.badRequest().body(null);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode err = mapper.convertValue(e.getMessage(), JsonNode.class);
+            return ResponseEntity.badRequest().body(err);
         }
     }
 
 
     @PostMapping("/initialize-transaction")
-    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
-        JsonNode error = null;
-        JsonNode response = null;
+    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws Exception{
+
         try {
-            response = paymentService.
+           JsonNode response = paymentService.
                     initializeTransaction(dto);
 
-
             return ResponseEntity.ok().body(response);
-        } catch (HttpClientErrorException | JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("Could not initialize transaction for  " + dto.getEmail(), e);
             ObjectMapper mapper = new ObjectMapper();
-            error = mapper.readTree(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            JsonNode err = mapper.convertValue(e.getMessage(), JsonNode.class);
+
+            return ResponseEntity.badRequest().body(err);
         }
 
 
     }
+
+    @PostMapping("/plan")
+    public ResponseEntity<JsonNode> createPlan(@RequestBody Map<String,Object> dto) throws Exception{
+
+        try {
+            JsonNode response = paymentService.
+                    createPlan(dto);
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            log.error("Could not initialize transaction for  " + dto.get("name"), e);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode err = mapper.convertValue(e.getMessage(), JsonNode.class);
+
+            return ResponseEntity.badRequest().body(err);
+        }
+
+
+    }
+
 }
