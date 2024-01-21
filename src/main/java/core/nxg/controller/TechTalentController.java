@@ -1,6 +1,7 @@
 package core.nxg.controller;
 
 import core.nxg.dto.*;
+import core.nxg.entity.TechTalentAgent;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.repository.ApplicationRepository;
@@ -10,21 +11,25 @@ import core.nxg.service.TechTalentService;
 import core.nxg.service.UserService;
 import core.nxg.utils.Helper;
 import io.swagger.v3.oas.annotations.Operation;
-
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 
-
-import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
