@@ -1,8 +1,9 @@
 package core.nxg.subscription;
 
 public enum PlanType {
-    GOLD,
-    SILVER,
+    PLATINUM, // yearly
 
+    GOLD, // quarterly
+    SILVER, // monthly
     FREE
 }

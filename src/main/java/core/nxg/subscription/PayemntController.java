@@ -5,6 +5,7 @@ package core.nxg.subscription;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.dto.CustomerDTO;
+import core.nxg.subscription.dto.SubscribeDTO;
 import core.nxg.subscription.dto.TransactionDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -65,28 +66,27 @@ public class PayemntController {
         } catch (Exception e) {
             log.error("Could not initialize transaction for  " + dto.getEmail(), e);
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode err = mapper.convertValue(e.getMessage(), JsonNode.class);
+            JsonNode error = mapper.convertValue(e.getMessage(), JsonNode.class);
 
-            return ResponseEntity.badRequest().body(err);
+            return ResponseEntity.badRequest().body(error);
         }
 
 
     }
 
-    @PostMapping("/plan")
-    public ResponseEntity<JsonNode> createPlan(@RequestBody Map<String,Object> dto) throws Exception{
+    @PostMapping("/subscribe")
+    public ResponseEntity<JsonNode> subscribe(@RequestBody SubscribeDTO dto) throws Exception{
 
         try {
-            JsonNode response = paymentService.
-                    createPlan(dto);
+            JsonNode response = paymentService.subscribe(dto);
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            log.error("Could not initialize transaction for  " + dto.get("name"), e);
+            log.error("Could not initialize subscription for  " + dto.getEmail(), e);
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode err = mapper.convertValue(e.getMessage(), JsonNode.class);
+            JsonNode error = mapper.convertValue(e.getMessage(), JsonNode.class);
 
-            return ResponseEntity.badRequest().body(err);
+            return ResponseEntity.badRequest().body(error);
         }
 
 

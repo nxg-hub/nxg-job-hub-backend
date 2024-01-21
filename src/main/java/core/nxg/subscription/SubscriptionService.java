@@ -6,6 +6,7 @@ import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
 import core.nxg.subscription.dto.CustomerDTO;
+import core.nxg.subscription.dto.SubscribeDTO;
 import core.nxg.subscription.dto.TransactionDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,6 @@ public class SubscriptionService {
 
     public JsonNode initializeTransaction(TransactionDTO dto) throws Exception {
         try{
-
             return apiService.initialize(dto);}
         catch (Exception e){
             Logger.getLogger(SubscriptionService.class.getName())
@@ -89,12 +89,8 @@ public class SubscriptionService {
             throw new Exception(e.getMessage());
 
         }
-
-
-
-
     }
-    public JsonNode createPlan(Map<String, Object> query) throws Exception {
+    private JsonNode createPlan(Map<String, Object> query) throws Exception {
         try {
             return apiService.plan(query).getBody();
         } catch(Exception e){
@@ -107,10 +103,28 @@ public class SubscriptionService {
 
         }
 
-    public JsonNode subscribe(TransactionDTO dto) throws Exception {
+
+
+    public JsonNode subscribe(SubscribeDTO dto) throws Exception {
+        JsonNode response = null;
         try{
 
-            return apiService.initialize(dto);}
+            //TODO: Add plan creation logic here
+            if (dto.getPlanType().equals(PlanType.PLATINUM)){
+                 response =  createPlan(setPlatinum(dto.getPlanType()));
+            } else if (dto.getPlanType().equals(PlanType.GOLD)){
+                 response =  createPlan(setGold(dto.getPlanType()));
+            } else if (dto.getPlanType().equals(PlanType.SILVER)){
+                 response =  createPlan(setSilver(dto.getPlanType()));
+            } else {
+                throw new Exception("Invalid plan type");
+            }
+            TransactionDTO transactionDTO = new TransactionDTO();
+            transactionDTO.setEmail(dto.getEmail());
+            transactionDTO.setPlan(response.get("data").get("plan_code").asText());
+//            transactionDTO.setCallback_url(dto.getCallback_url());
+
+            return this.initializeTransaction(transactionDTO);}
         catch (Exception e){
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
@@ -125,5 +139,51 @@ public class SubscriptionService {
 
 
 
+    }
+    private Map<String, Object> setPlatinum(PlanType planType) {
+        planType = PlanType.PLATINUM;
+        String amount = "700000";
+        String name = "Platinum";
+        String interval = "yearly";
+        String currency = "NGN";
+        String description = "Platinum Subscription Plan";
+        Map<String, Object> query = new HashMap<>();
+        query.put("name", name);
+        query.put("amount", amount);
+        query.put("interval", interval);
+        query.put("currency", currency);
+        query.put("description", description);
+        return query;
+    }
+    private Map<String, Object> setSilver(PlanType planType) {
+        planType = PlanType.SILVER;
+        String amount = "450000";
+        String name = "Silver";
+        String interval = "monthly";
+        String currency = "NGN";
+        String description = "Silver Subscription Plan";
+        Map<String, Object> query = new HashMap<>();
+        query.put("name", name);
+        query.put("amount", amount);
+        query.put("interval", interval);
+        query.put("currency", currency);
+        query.put("description", description);
+        return query;
+    }
+
+    private Map<String, Object> setGold(PlanType planType) {
+        planType = PlanType.GOLD;
+        String amount = "700000";
+        String name = "Gold";
+        String interval = "quarterly";
+        String currency = "NGN";
+        String description = "Gold Subscription Plan";
+        Map<String, Object> query = new HashMap<>();
+        query.put("name", name);
+        query.put("amount", amount);
+        query.put("interval", interval);
+        query.put("currency", currency);
+        query.put("description", description);
+        return query;
     }
 }
