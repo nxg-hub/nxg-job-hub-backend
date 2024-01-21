@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -109,7 +109,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     @Operation(summary = "Update a Tech Talent ",
             description = "This endpoint updates an existing Tech Talent")
 
-    @RequestBody(description = "Tech Talent object that needs to be updated", required = true,
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tech Talent object that needs to be updated", required = true,
             content = @Content(schema = @Schema(implementation = TechTalentDTO.class)))
 
     @ApiResponses(value= {
