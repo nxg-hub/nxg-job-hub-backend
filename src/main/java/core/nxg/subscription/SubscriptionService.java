@@ -36,14 +36,10 @@ public class SubscriptionService {
     private final APIService apiService;
 
 
-
-
-
     public JsonNode createSubscriber(CustomerDTO customerdto) throws HttpClientErrorException, JsonProcessingException {
         try {
             User user = userRepo.findByEmail(customerdto.getEmail()).
                     orElseThrow(() -> new UserNotFoundException("User not found! Please register first"));
-
 
 
             ResponseEntity<JsonNode> response = apiService.createCustomer(customerdto);
@@ -76,13 +72,10 @@ public class SubscriptionService {
     }
 
 
-
-
-
     public JsonNode initializeTransaction(TransactionDTO dto) throws Exception {
-        try{
-            return apiService.initialize(dto);}
-        catch (Exception e){
+        try {
+            return apiService.initialize(dto);
+        } catch (Exception e) {
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
                             Level.SEVERE, "Could not initialize transaction for " + dto.getEmail());
@@ -90,42 +83,43 @@ public class SubscriptionService {
 
         }
     }
+
     private JsonNode createPlan(Map<String, Object> query) throws Exception {
         try {
             return apiService.plan(query).getBody();
-        } catch(Exception e){
-                Logger.getLogger(SubscriptionService.class.getName())
-                        .log(
-                                Level.SEVERE, "Could not create  " + query.get("name") + " plan");
-                throw new Exception(e.getMessage());
-
-            }
+        } catch (Exception e) {
+            Logger.getLogger(SubscriptionService.class.getName())
+                    .log(
+                            Level.SEVERE, "Could not create  " + query.get("name") + " plan");
+            throw new Exception(e.getMessage());
 
         }
 
+    }
 
 
     public JsonNode subscribe(SubscribeDTO dto) throws Exception {
-        JsonNode response = null;
-        try{
+        JsonNode response;
+        try {
 
-            //TODO: Add plan creation logic here
-            if (dto.getPlanType().equals(PlanType.PLATINUM)){
-                 response =  createPlan(setPlatinum(dto.getPlanType()));
-            } else if (dto.getPlanType().equals(PlanType.GOLD)){
-                 response =  createPlan(setGold(dto.getPlanType()));
-            } else if (dto.getPlanType().equals(PlanType.SILVER)){
-                 response =  createPlan(setSilver(dto.getPlanType()));
+            if (dto.getPlanType().equals(PlanType.PLATINUM)) {
+                response = createPlan(setPlatinum(dto.getPlanType()));
+            } else if (dto.getPlanType().equals(PlanType.GOLD)) {
+                response = createPlan(setGold(dto.getPlanType()));
+            } else if (dto.getPlanType().equals(PlanType.SILVER)) {
+                response = createPlan(setSilver(dto.getPlanType()));
             } else {
+
                 throw new Exception("Invalid plan type");
             }
             TransactionDTO transactionDTO = new TransactionDTO();
             transactionDTO.setEmail(dto.getEmail());
-            transactionDTO.setPlan(response.get("data").get("plan_code").asText());
+            transactionDTO.setPlan(response.get("data").get("plan_code").toString());
 //            transactionDTO.setCallback_url(dto.getCallback_url());
+            transactionDTO.setAmount(response.get("data").get("amount").asInt());
 
-            return this.initializeTransaction(transactionDTO);}
-        catch (Exception e){
+            return this.initializeTransaction(transactionDTO);
+        } catch (Exception e) {
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
                             Level.SEVERE, "Could not initialize transaction for " + dto.getEmail());
@@ -133,57 +127,62 @@ public class SubscriptionService {
 
         }
 
-
-
-
-
-
-
     }
+
     private Map<String, Object> setPlatinum(PlanType planType) {
-        planType = PlanType.PLATINUM;
-        String amount = "700000";
-        String name = "Platinum";
-        String interval = "yearly";
-        String currency = "NGN";
-        String description = "Platinum Subscription Plan";
-        Map<String, Object> query = new HashMap<>();
-        query.put("name", name);
-        query.put("amount", amount);
-        query.put("interval", interval);
-        query.put("currency", currency);
-        query.put("description", description);
-        return query;
+        if (planType == PlanType.PLATINUM) {
+            int amount = 10000; //todo: change to an immutable value
+            String name = "Platinum";
+            String interval = "yearly";
+            String currency = "NGN";
+            String description = "Platinum Subscription Plan";
+            Map<String, Object> query = new HashMap<>();
+            query.put("name", name);
+            query.put("amount", amount);
+            query.put("interval", interval);
+            query.put("currency", currency);
+            query.put("description", description);
+            return query;
+        } else {
+            throw new RuntimeException("Invalid plan type");
+        }
     }
+
     private Map<String, Object> setSilver(PlanType planType) {
-        planType = PlanType.SILVER;
-        String amount = "450000";
-        String name = "Silver";
-        String interval = "monthly";
-        String currency = "NGN";
-        String description = "Silver Subscription Plan";
-        Map<String, Object> query = new HashMap<>();
-        query.put("name", name);
-        query.put("amount", amount);
-        query.put("interval", interval);
-        query.put("currency", currency);
-        query.put("description", description);
-        return query;
+        if (planType == PlanType.SILVER) {
+            int amount = 10000; //todo: change to an immutable value
+            String name = "Silver";
+            String interval = "monthly";
+            String currency = "NGN";
+            String description = "Silver Subscription Plan";
+            Map<String, Object> query = new HashMap<>();
+            query.put("name", name);
+            query.put("amount", amount);
+            query.put("interval", interval);
+            query.put("currency", currency);
+            query.put("description", description);
+            return query;
+        } else {
+            throw new RuntimeException("Invalid plan type");
+        }
     }
 
     private Map<String, Object> setGold(PlanType planType) {
-        planType = PlanType.GOLD;
-        String amount = "700000";
-        String name = "Gold";
-        String interval = "quarterly";
-        String currency = "NGN";
-        String description = "Gold Subscription Plan";
-        Map<String, Object> query = new HashMap<>();
-        query.put("name", name);
-        query.put("amount", amount);
-        query.put("interval", interval);
-        query.put("currency", currency);
-        query.put("description", description);
-        return query;
+        if (planType == PlanType.GOLD) {
+            int amount = 10000; //todo: change to an immutable value
+            String name = "Gold";
+            String interval = "quarterly";
+            String currency = "NGN";
+            String description = "Gold Subscription Plan";
+            Map<String, Object> query = new HashMap<>();
+            query.put("name", name);
+            query.put("amount", amount);
+            query.put("interval", interval);
+            query.put("currency", currency);
+            query.put("description", description);
+            return query;
+        } else {
+            throw new RuntimeException("Invalid plan type");
+        }
     }
 }

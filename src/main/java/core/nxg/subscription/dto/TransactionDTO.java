@@ -9,7 +9,7 @@ import lombok.Setter;
 public class TransactionDTO {
 
    private String reference;
-   private String amount;
+   private int amount;
     private  String email;
     private String plan;
     private String callback_url;
