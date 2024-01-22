@@ -108,19 +108,20 @@ public class SubscriptionService {
             if (dto.getPlanType().equals(PlanType.PLATINUM)) {
                 log.info("Creating a PLATINUM plan...");
                 response = createPlan(setPlatinum(dto.getPlanType()));
-                System.out.println("Created a PLATINUM plan..." + response);
+                log.info("Created a PLATINUM plan..." );
+                System.out.println(response);
 
 
             } else if (dto.getPlanType().equals(PlanType.GOLD)) {
                 log.info("Creating a GOLD plan...");
                 response = createPlan(setGold(dto.getPlanType()));
-                log.info("Created a GOLD plan..." + response);
+                log.info("Created a GOLD plan...");
                 System.out.println(response);
 
             } else if (dto.getPlanType().equals(PlanType.SILVER)) {
                 log.info("Creating a SILVER plan...");
                 response = createPlan(setSilver(dto.getPlanType()));
-                log.info("Created a SILVER plan..." + response);
+                log.info("Created a SILVER plan...");
                 System.out.println(response);
 
             } else {
