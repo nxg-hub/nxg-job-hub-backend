@@ -7,12 +7,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.NonNullApi;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Book;
@@ -34,7 +37,7 @@ public class JobPostingController {
             @ApiResponse(responseCode = "400", description = "An unrecognised or invalid request was sent",
                     content = @Content)})
     @PostMapping("/post")
-    public ResponseEntity<?> createJobPosition(@RequestBody JobPostingDto jobPostingDto) throws Exception{
+    public ResponseEntity<?> createJobPosition(@Valid @NonNull @RequestBody JobPostingDto jobPostingDto) throws Exception{
         try{
             JobPostingDto jobPosting = jobPostingService.createJobPosting(jobPostingDto);
 
