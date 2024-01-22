@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/agents")
@@ -31,7 +30,7 @@ public class TechTalentAgentController {
 
     @Operation(summary = "Create a new Tech Talent Agent",
     description = "This endpoint creates a new Tech Talent Agent")
-    @RequestBody(description = "Tech Talent Agent object that needs to be created",
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tech Talent Agent object that needs to be created",
     required = true,content = @Content(schema = @Schema(implementation = TechTalentAgentDto.class)))
 
     @ApiResponses(value={
@@ -50,7 +49,7 @@ public class TechTalentAgentController {
     @Operation(summary = "Update a Tech Talent Agent",
     description = "This endpoint updates an existing Tech Talent Agent")
 
-    @RequestBody(description = "Tech Talent Agent object that needs to be updated", required = true,
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tech Talent Agent object that needs to be updated", required = true,
     content = @Content(schema = @Schema(implementation = TechTalentAgentDto.class)))
 
     @ApiResponses(value= {
