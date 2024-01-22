@@ -10,7 +10,7 @@ import core.nxg.service.EmployerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.Id;
@@ -50,7 +50,7 @@ public class EmployerController {
             @ApiResponse(responseCode = "405", description = "Method not allowed",
                     content = @Content) })
     @PostMapping("/createEmployer")
-    public ResponseEntity<String> createEmployer(@Valid @RequestBody EmployerDto employerDTO, HttpServletRequest request) throws Exception {
+    public ResponseEntity<String> createEmployer(@Valid @RequestBody  EmployerDto employerDTO, HttpServletRequest request) throws Exception {
         try {
             String message = employerService.createEmployer(employerDTO, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(message);
@@ -84,7 +84,7 @@ public class EmployerController {
 
 
     @Operation(summary = "Update an employer instance with the employer ID ")
-    @RequestBody( description = "Fields to update", required = true,
+    @io.swagger.v3.oas.annotations.parameters.RequestBody( description = "Fields to update", required = true,
             content =
             @Content(mediaType = "application/json",
             schema =
