@@ -36,7 +36,7 @@ import org.springframework.ui.Model;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-    private static final String LOGIN_URL = "http://localhost:3000/login";
+    private static final String LOGIN_URL = "https://nxgjobhub.netlify.app/login";
 
     @Autowired
     private final PasswordReset passwordReset;
