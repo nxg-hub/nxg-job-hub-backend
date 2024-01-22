@@ -74,6 +74,12 @@ public class PayemntController {
 
     }
 
+
+    @Operation(summary = "Subscribe a user to a plan. Based on the plan type, the user will be charged accordingly")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Subscribe a user with " +
+            "email address, planType(PLATINUM, GOLD, SILVER, FREE ) and a callback_url", required = true, content =
+    @Content(mediaType = "application/json",
+            schema = @Schema(implementation = SubscribeDTO.class)))
     @PostMapping("/subscribe")
     public ResponseEntity<JsonNode> subscribe(@RequestBody SubscribeDTO dto) throws Exception{
 
