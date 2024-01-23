@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 public class Subscriber {
 
     @Id
-
     private String customerId;
 
     private String email;

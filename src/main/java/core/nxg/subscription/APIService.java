@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.TransactionDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,11 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@Service
+
 @RequiredArgsConstructor
+@Service
 public class APIService {
 
-
+    @Autowired
     @Value("${paystack.secret.active}")
     private String API_KEY;
 
