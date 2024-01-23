@@ -20,11 +20,11 @@ import java.util.Map;
 
 
 
-@RequiredArgsConstructor
+
 @Service
 public class APIService {
 
-    @Autowired
+
     @Value("${paystack.secret.active}")
     private String API_KEY;
 
