@@ -11,7 +11,7 @@ public class PingServiceImpl  {
 
     @Value("${server.url}")
     private String serverUrl;  // Use your server URL here
-    @Scheduled(fixedRate = 100000)  // 10 minutes in milliseconds
+    @Scheduled(fixedRate = 1000000)  // 10 minutes in milliseconds
     public void pingServer() {
         try {
             RestTemplate restTemplate = new RestTemplate();
