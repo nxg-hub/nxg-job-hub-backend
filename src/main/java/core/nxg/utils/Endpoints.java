@@ -21,7 +21,8 @@ public final class Endpoints {
             "/api/job-postings/**",
             "/api/comments/**",
             "/api/employers/**",
-            "/api/oauth/**"
+            "/api/oauth/**",
+            "/api/v1/auth/notifications/**"
 // =======
 //             "/h2-console/**",
 //             "/h2/**",
