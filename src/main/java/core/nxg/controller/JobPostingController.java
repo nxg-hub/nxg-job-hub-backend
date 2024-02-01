@@ -14,9 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.NonNullApi;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.awt.print.Book;
 import java.util.List;
@@ -88,4 +90,12 @@ public class JobPostingController {
         jobPostingService.deleteJobPosting(jobID);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/stream")
+    public Flux<ServerSentEvent<List<JobPostingDto>>> streamJobPostings() throws InterruptedException {
+        return jobPostingService.sendJobPostingEvents();
+    }
 }
+
+
