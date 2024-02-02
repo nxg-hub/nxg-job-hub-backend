@@ -11,13 +11,11 @@ import core.nxg.repository.*;
 
 import core.nxg.response.EmployerResponse;
 import core.nxg.response.EngagementForEmployer;
-import core.nxg.response.JobPostingResponse;
 import core.nxg.service.EmployerService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +30,7 @@ import org.springframework.util.ReflectionUtils;
 @Service
 @RequiredArgsConstructor
 public class EmployerServiceImpl implements EmployerService {
+
     @Autowired
     private final EmployerRepository employerRepository;
     @Autowired
@@ -209,19 +208,18 @@ public class EmployerServiceImpl implements EmployerService {
 
 
     @Override
-    public JobPostingResponse getJobPostings(String employerId, Pageable pageable) throws Exception{
-        Optional<List<JobPosting>> jobPosting = jobPostingRepository.findByEmployerID(employerId);
+    public List<JobPosting> getJobPostings(String employerId) throws Exception{
+        Optional<List<JobPosting> >jobPosting =  jobPostingRepository.findByEmployerID(employerId);
+//                () -> new NotFoundException("Job postings were not found!")
+//        );
+        return jobPosting.orElseGet(ArrayList::new);
 
-        if (jobPosting.isEmpty()){
-            return null;
-        }else{
-            JobPostingResponse jobPostingResponse = new JobPostingResponse();
 
-            BeanUtils.copyProperties(jobPosting, jobPostingResponse);
-            return jobPostingResponse;
+
+//            return mapper.map(jobPosting, JobPostingDto.class);
         }
 
 
-}
+
 }
 

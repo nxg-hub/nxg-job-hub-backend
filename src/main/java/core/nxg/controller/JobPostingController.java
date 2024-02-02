@@ -1,6 +1,7 @@
 package core.nxg.controller;
 
 import core.nxg.dto.JobPostingDto;
+import core.nxg.entity.JobPosting;
 import core.nxg.service.JobPostingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -93,7 +94,7 @@ public class JobPostingController {
 
 
     @GetMapping("/stream")
-    public Flux<ServerSentEvent<List<JobPostingDto>>> streamJobPostings() throws InterruptedException {
+    public Flux<ServerSentEvent<List<JobPosting>>> streamJobPostings() throws InterruptedException {
         return jobPostingService.sendJobPostingEvents();
     }
 }

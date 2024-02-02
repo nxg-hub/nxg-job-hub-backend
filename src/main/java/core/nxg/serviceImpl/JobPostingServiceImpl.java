@@ -25,6 +25,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -59,13 +60,26 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
         JobPosting jobPosting = new JobPosting();
-        jobPosting.setCreated_at(LocalDate.now());
         String employerId = jobPostingDto.getEmployerID();
-//        BeanUtils.copyProperties(jobPostingDto, jobPosting);
-        JobPosting mapped = mapper.map(jobPostingDto, JobPosting.class);
-        JobPosting savedJobPosting = jobPostingRepository.saveAndFlush(mapped);
-        onJobPosted(Long.valueOf(employerId), savedJobPosting);
-        return mapToDto(savedJobPosting);
+        Optional<Employer> optionalEmployer = employerRepository.findById(Long.valueOf(employerId));
+        if (optionalEmployer.isPresent()) {
+            jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
+        } else {
+            throw new NotFoundException("Employer does not exist!");
+        }
+        jobPosting.setJob_description(jobPostingDto.getJob_description());
+        jobPosting.setJob_title(jobPostingDto.getJob_title());
+        jobPosting.setJob_type(jobPostingDto.getJob_type());
+        jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setSalary(jobPostingDto.getSalary());
+        jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setRequirements(jobPostingDto.getRequirements());
+        jobPosting.setDeadline(jobPostingDto.getDeadline());
+        jobPosting.setTags(jobPostingDto.getTags());
+        jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
+        var savedJobPosting = jobPostingRepository.saveAndFlush(jobPosting);
+//        onJobPosted(Long.valueOf(employerId), savedJobPosting);
+        return mapper.map(savedJobPosting, JobPostingDto.class);
     }
 
     private void onJobPosted(Long employerId, JobPosting jobPosting) throws Exception {
@@ -138,16 +152,27 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
 
-
+    private List<JobPosting> getJobPostingsForEvents(){
+        return  jobPostingRepository.findAll() ;
+    }
 
     @Override
-    public Flux<ServerSentEvent<List<JobPostingDto>>> sendJobPostingEvents() throws InterruptedException {
-        return Flux.interval(Duration.ofSeconds(4))
-                .publishOn(Schedulers.boundedElastic())
-                .map(sequence -> ServerSentEvent.<List<JobPostingDto>>builder().id(String.valueOf(sequence))
-                        .event("jobpostings")
-                        .data(
-                                Collections.singletonList(mapper.map(jobPostingRepository.findAll(), JobPostingDto.class)))
-                        .build());
-    }
+    public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException {
+
+        var postings = getJobPostingsForEvents();
+        if (!postings.isEmpty()) {
+            return Flux.interval(Duration.ofSeconds(4))
+                    .publishOn(Schedulers.boundedElastic())
+                    .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
+                            .event("jobpostings")
+                            .data(
+                                    (getJobPostingsForEvents()))
+                            .comment("A new job posting event")
+                            .build());
+        }
+            return Flux.interval(Duration.ofSeconds(3))
+                    .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
+                            .event("jobpostings").data(new ArrayList<>()).build());
+        }
+
 }
