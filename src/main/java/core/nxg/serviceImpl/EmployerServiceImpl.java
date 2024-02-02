@@ -210,13 +210,11 @@ public class EmployerServiceImpl implements EmployerService {
     @Override
     public List<JobPosting> getJobPostings(String employerId) throws Exception{
         Optional<List<JobPosting> >jobPosting =  jobPostingRepository.findByEmployerID(employerId);
-//                () -> new NotFoundException("Job postings were not found!")
-//        );
+
         return jobPosting.orElseGet(ArrayList::new);
 
 
 
-//            return mapper.map(jobPosting, JobPostingDto.class);
         }
 
 

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -62,11 +63,11 @@ public class JobPostingServiceImpl implements JobPostingService {
         JobPosting jobPosting = new JobPosting();
         String employerId = jobPostingDto.getEmployerID();
         Optional<Employer> optionalEmployer = employerRepository.findById(Long.valueOf(employerId));
-        if (optionalEmployer.isPresent()) {
-            jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
-        } else {
-            throw new NotFoundException("Employer does not exist!");
-        }
+//        if (optionalEmployer.isPresent()) {
+//            jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
+//        } else {
+//            throw new NotFoundException("Employer does not exist!");
+//        }
         jobPosting.setJob_description(jobPostingDto.getJob_description());
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
@@ -152,27 +153,28 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
 
-    private List<JobPosting> getJobPostingsForEvents(){
-        return  jobPostingRepository.findAll() ;
-    }
 
-    @Override
+    @Async
+    private List<JobPosting> getJobPostingsForEvents(){
+
+         var toBeDelivered =  jobPostingRepository.findByDeliveredFalse();
+         toBeDelivered.forEach(a -> a.setDelivered(true));
+         jobPostingRepository.saveAll(toBeDelivered);
+         return toBeDelivered;
+    }
+   @Override
     public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException {
 
-        var postings = getJobPostingsForEvents();
-        if (!postings.isEmpty()) {
+
             return Flux.interval(Duration.ofSeconds(4))
                     .publishOn(Schedulers.boundedElastic())
                     .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
                             .event("jobpostings")
                             .data(
-                                    (getJobPostingsForEvents()))
+                                    getJobPostingsForEvents())
                             .comment("A new job posting event")
                             .build());
-        }
-            return Flux.interval(Duration.ofSeconds(3))
-                    .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
-                            .event("jobpostings").data(new ArrayList<>()).build());
+
         }
 
 }

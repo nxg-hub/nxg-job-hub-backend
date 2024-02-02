@@ -47,6 +47,8 @@ public class JobPosting {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Comments> comments;
 
+    private boolean delivered;
+
     @OneToOne
     private View view;
 
