@@ -1,6 +1,7 @@
 package core.nxg.service;
 
 import core.nxg.dto.JobPostingDto;
+import core.nxg.entity.JobPosting;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import reactor.core.publisher.Flux;
@@ -18,7 +19,7 @@ public interface JobPostingService {
 
     void deleteJobPosting(Long jobId);
 
-    public Flux<ServerSentEvent<List<JobPostingDto>>> sendJobPostingEvents() throws InterruptedException ;
+    public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException ;
 
 //    void deleteJobPosting(JobPostingDto jobPostingDto);
 }

@@ -6,8 +6,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JobPostingResponse {
 
     private Long jobID;
