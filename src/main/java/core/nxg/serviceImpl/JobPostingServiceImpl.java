@@ -63,11 +63,11 @@ public class JobPostingServiceImpl implements JobPostingService {
         JobPosting jobPosting = new JobPosting();
         String employerId = jobPostingDto.getEmployerID();
         Optional<Employer> optionalEmployer = employerRepository.findById(Long.valueOf(employerId));
-//        if (optionalEmployer.isPresent()) {
-//            jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
-//        } else {
-//            throw new NotFoundException("Employer does not exist!");
-//        }
+        if (optionalEmployer.isPresent()) {
+            jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
+        } else {
+            throw new NotFoundException("Employer does not exist!");
+        }
         jobPosting.setJob_description(jobPostingDto.getJob_description());
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
@@ -153,7 +153,6 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
 
-
     @Async
     private List<JobPosting> getJobPostingsForEvents(){
 
@@ -164,7 +163,6 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
    @Override
     public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException {
-
 
             return Flux.interval(Duration.ofSeconds(4))
                     .publishOn(Schedulers.boundedElastic())
