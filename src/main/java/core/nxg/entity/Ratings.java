@@ -4,6 +4,7 @@ import core.nxg.enums.Rating;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Data
@@ -20,5 +21,12 @@ public class Ratings {
     @ManyToOne()
     @JoinColumn(name = "employer_id")
     private Employer employer;
+
+    @ManyToOne()
+    @Setter
+    private User rater;
+
+    @Setter
+    private Long raterID = rater.getId();
 
 }

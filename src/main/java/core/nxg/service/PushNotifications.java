@@ -35,20 +35,7 @@ public class PushNotifications {
     private UserRepository userRepository;
 
 
-    public void pushNotification(NotificationDTO dto) {
-        var notification =
-        Notification.builder()
-                .notificationType(dto.getNotificationType())
-                .message("You have a new " + dto.getNotificationType().toString() + "!")
-                .delivered(false)
-                .referencedUser(userRepository.findByEmail(dto.getEmail()).get())
-                .dateTime(LocalDateTime.now());
-        pushNotification(notification.build());
-    }
-    private void pushNotification(Notification notification) {
 
-        notificationRepository.saveAndFlush(notification);
-    }
 
 
     @Async
@@ -63,7 +50,7 @@ public class PushNotifications {
     }
 
 
-    // DO NOT TOUCH THIS METHOD EXCEPT YOU KNOW WHAT YOU'RE DOING!
+
 
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserInID(String userID) throws InterruptedException {
         if (userID != null && !userID.isBlank()) {

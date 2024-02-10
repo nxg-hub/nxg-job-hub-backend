@@ -2,6 +2,7 @@ package core.nxg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.enums.NotificationType;
+import core.nxg.enums.UserType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +24,19 @@ public class Notification {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User referencedUser;
-	
+
+	@Setter
+	private Long referencedUserID = referencedUser.getId();
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private User sender ;
+
+	@Setter
+	private Long senderID = sender.getId(); ;
+
+	private UserType senderType;
+
 
 	@Column
 	private String message;
@@ -32,6 +45,7 @@ public class Notification {
 	private LocalDateTime dateTime;
 
 
+	private Long contentId;
 
 	@Column
 	private NotificationType notificationType;
@@ -41,6 +55,9 @@ public class Notification {
 
 	
 	private boolean seen;
+
+
+
 
 
 

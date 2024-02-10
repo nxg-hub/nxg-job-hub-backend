@@ -28,7 +28,6 @@ public class NotificationController {
     private final PushNotifications service;
 
 
-
     @GetMapping("/render")
     public String renderForm(Model model) {
         return "rendernotif";
@@ -37,28 +36,16 @@ public class NotificationController {
     @GetMapping(value = "/stream/{userID}")
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
 
-       return service.getNotificationsByUserInID(userID);
+        return service.getNotificationsByUserInID(userID);
 
 
-//    @GetMapping("/stream/{userID}")
-//    public ServerResponse getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
-//        return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
-//                .body(Flux.from(service.getNotificationsByUserInID(userID)));
     }
-
 
 
     @PatchMapping("/read/{notifID}")
     @ResponseBody
     public ResponseEntity<?> changeNotifStatusToRead(@PathVariable String notifID) {
         return ResponseEntity.ok(service.changeNotifStatusToRead(notifID));
-    }
-
-    @PostMapping("/push")
-    @ResponseBody
-    public ResponseEntity<?> createNotification(@RequestBody NotificationDTO dto) {
-        service.pushNotification(dto);
-        return ResponseEntity.ok("Notification created successfully!");
     }
 
 

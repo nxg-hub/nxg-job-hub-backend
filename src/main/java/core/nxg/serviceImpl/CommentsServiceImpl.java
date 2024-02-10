@@ -3,9 +3,11 @@ package core.nxg.serviceImpl;
 import core.nxg.dto.CommentsDto;
 import core.nxg.entity.Comments;
 import core.nxg.entity.JobPosting;
+import core.nxg.entity.Notification;
+import core.nxg.entity.User;
+import core.nxg.enums.NotificationType;
 import core.nxg.exceptions.NotFoundException;
-import core.nxg.repository.CommentsRepository;
-import core.nxg.repository.JobPostingRepository;
+import core.nxg.repository.*;
 import core.nxg.service.CommentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -25,15 +27,47 @@ public class CommentsServiceImpl implements CommentsService {
     @Autowired
     private final JobPostingRepository jobPostingRepository;
 
+    @Autowired
+    private final UserRepository userRepository;
+
+    @Autowired
+    private final NotificationRepository notificationRepository;
+
+    @Autowired
+    private final EmployerRepository employerRepository;
+
     @Override
-    public Comments createComments(CommentsDto commentsDto) {
+    public Comments createComments(CommentsDto commentsDto) { // Assuming Comments is made on job postings only
         JobPosting jobPosting = jobPostingRepository.findById(Long.parseLong(String.valueOf(commentsDto.getJobID())))
                 .orElseThrow(() -> new NotFoundException("Job posting with Id " + commentsDto.getJobID() + " not found"));
 
+
+        var commenter = userRepository.findById(commentsDto.getCommenterID())
+                .orElseThrow(() -> new NotFoundException("User with id " + commentsDto.getCommenterID() + " not found"));
         Comments comments = new Comments();
         comments.setComment(commentsDto.getComment());
         comments.setJobPosting(jobPosting);
-        return commentsRepository.saveAndFlush(comments);
+
+        var savedcomments = commentsRepository.save(comments);
+        notify(savedcomments.getId(), jobPosting, commenter );
+
+        return savedcomments;
+    }
+
+    private void notify(Long commentsID, JobPosting jobPosting, User commenter){
+
+        var employer = employerRepository.findById(Long.valueOf(jobPosting.getEmployerID()))
+                .orElseThrow(() -> new NotFoundException("Employer with id " + jobPosting.getEmployerID()+ " not found"));
+        var notification = Notification.builder()
+                .notificationType(NotificationType.COMMENT)
+                .delivered(false)
+                .message("You have a new comment")
+                .referencedUser(employer.getUser())
+                .sender(commenter)
+                .senderType(commenter.getUserType())
+                .contentId(commentsID)
+                .build();
+        notificationRepository.saveAndFlush(notification);
     }
 
 
