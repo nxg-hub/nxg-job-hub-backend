@@ -15,6 +15,7 @@ import core.nxg.service.EmployerService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.util.ReflectionUtils;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EmployerServiceImpl implements EmployerService {
 
@@ -193,10 +195,9 @@ public class EmployerServiceImpl implements EmployerService {
                 noOfApprovedJobs.addAndGet(applicationsForJob.stream()
                         .filter(x -> x.getApplicationStatus()
                                 .equals(ApplicationStatus.APPROVED)).toList().size());}
-            catch (Exception e){
+            catch (Exception ex){
+                log.error("Error occurred while fetching applications for job posting with ID: {}", jobPosting.getJobID());
 
-//                log.error("Error getting applications for job posting:" + jobPosting.getJobID(), e);
-                return;
             }
         }));
         

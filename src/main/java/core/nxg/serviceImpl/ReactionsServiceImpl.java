@@ -84,20 +84,6 @@ public class ReactionsServiceImpl implements ReactionsService {
                 .stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-//    @Override
-//    @Transactional
-//    public void deleteReaction(Long reactionId) {
-//        Reactions reaction = reactionsRepository.findById(reactionId)
-//                .orElseThrow(() -> new NotFoundException("Reaction with ID " + reactionId + " not found"));
-//
-//        for (JobPosting jobPosting : reaction.getJobPosting()) {
-//            jobPosting.getReactions().remove(reaction);
-//        }
-//        for (Comments comment : reaction.getComments()) {
-//            comment.getReactions().remove(reaction);
-//        }
-//        reactionsRepository.delete(reaction);
-//    }
 
     private ReactionsDto mapToDto(Reactions reactions) {
         ReactionsDto reactionsDto = new ReactionsDto();
