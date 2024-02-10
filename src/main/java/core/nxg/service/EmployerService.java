@@ -19,7 +19,6 @@ public interface EmployerService {
 
     EmployerResponse getEmployer(HttpServletRequest request)throws Exception;
 
-    Object updateEmployer(Long employerId, EmployerDto employerDto) throws Exception;
     Employer patchEmployer(String employerId, Map<Object, Object> fields) throws Exception;
 
     EngagementForEmployer getEngagements(Long employerId,Pageable pageable) throws Exception;

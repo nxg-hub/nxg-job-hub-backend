@@ -69,16 +69,16 @@ public class User implements UserDetails, OAuth2User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToOne(mappedBy = "agent")
+    @OneToOne(mappedBy = "user")
     @JsonIgnore
     private TechTalentAgent techTalentAgent;
 
 
-    @OneToOne(mappedBy = "techtalent")
+    @OneToOne(mappedBy = "user")
     @JsonIgnore
     private TechTalentUser techTalent;
 
-    @OneToOne(mappedBy = "employer")
+    @OneToOne(mappedBy = "user")
     @JsonIgnore
     private Employer employer;
 

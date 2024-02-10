@@ -25,15 +25,28 @@ public class Notification {
 	@JsonIgnore
 	private User referencedUser;
 
-	@Setter
-	private Long referencedUserID = referencedUser.getId();
+	@Getter
+	private Long referencedUserID;
+
+
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private User sender ;
 
-	@Setter
-	private Long senderID = sender.getId(); ;
+	@Getter
+	private Long senderID;
+
+
+	public void setSenderID(){
+		this.senderID = sender.getId();
+	}
+
+	public void setReferencedUserID(){
+		this.referencedUserID = referencedUser.getId();
+	}
+
+
 
 
 

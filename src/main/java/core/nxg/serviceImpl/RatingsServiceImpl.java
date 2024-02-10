@@ -52,7 +52,6 @@ private void notify(Long ratingsID, Employer employer, User sender){
             .message("You have a new rating")
             .referencedUser(employer.getUser())
             .sender(sender)
-            .senderType(sender.getUserType())
             .contentId(ratingsID)
             .build();
     notificationRepository.saveAndFlush(notification);

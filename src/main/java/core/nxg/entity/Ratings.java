@@ -25,8 +25,12 @@ public class Ratings {
     @ManyToOne()
     @Setter
     private User rater;
+    private Long raterID;
 
-    @Setter
-    private Long raterID = rater.getId();
+
+    public void setRaterID() {
+       this.raterID =  rater.getId();
+
+    }
 
 }

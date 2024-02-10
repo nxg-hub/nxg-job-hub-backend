@@ -115,24 +115,6 @@ public class EmployerServiceImpl implements EmployerService {
     }
 
 
-
-
-
-    @Override
-    public ResponseEntity<Employer> updateEmployer(Long id, EmployerDto employerdto) {
-    Optional<Employer> employer = employerRepository.findById(id);
-// TODO: refactor code
-    return null;
-}
-
-
-
-
-
-
-
-
-
     @Override
     public Employer patchEmployer(String employerId, Map<Object, Object> fields) throws Exception {
             if (employerId == null) {
