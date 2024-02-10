@@ -86,7 +86,7 @@ public class JobPostingServiceImpl implements JobPostingService {
         jobPosting.setTags(jobPostingDto.getTags());
         jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
         var savedJobPosting = jobPostingRepository.saveAndFlush(jobPosting);
-//        onJobPosted(Long.valueOf(employerId), savedJobPosting);
+        onJobPosted(Long.valueOf(employerId), savedJobPosting);
         return mapper.map(savedJobPosting, JobPostingDto.class);
     }
 
@@ -119,7 +119,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
                 emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
                 notify(mapper.map(user, User.class), jobPosting.getJobID(), poster.getUser());
-                log.info("Email sent to {}", user.getEmail());
+                log.info("Email notification sent to {}", user.getEmail());
             } catch (Exception e) {
                 throw new RuntimeException("Error sending email to {}" + user.getEmail());
             }
