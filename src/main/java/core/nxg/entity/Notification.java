@@ -35,7 +35,7 @@ public class Notification {
 	@Setter
 	private Long senderID = sender.getId(); ;
 
-	private UserType senderType;
+
 
 
 	@Column
