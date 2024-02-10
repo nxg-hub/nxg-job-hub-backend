@@ -64,7 +64,6 @@ public class CommentsServiceImpl implements CommentsService {
                 .message("You have a new comment")
                 .referencedUser(employer.getUser())
                 .sender(commenter)
-                .senderType(commenter.getUserType())
                 .contentId(commentsID)
                 .build();
         notificationRepository.saveAndFlush(notification);

@@ -19,7 +19,5 @@ public class RatingsDto {
 
     private Long raterID;
 
-    private UserType raterType;
-
 
 }
