@@ -1,9 +1,7 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.ReactionsDto;
-import core.nxg.entity.Comments;
-import core.nxg.entity.JobPosting;
-import core.nxg.entity.Reactions;
+import core.nxg.entity.*;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.CommentsRepository;
 import core.nxg.repository.JobPostingRepository;
@@ -37,6 +35,8 @@ public class ReactionsServiceImpl implements ReactionsService {
 
         return mapToDto(reactionsRepository.save(reactions));
     }
+
+
 
     @Override
     public ReactionsDto createReactionOnComment(Long commentID, ReactionsDto reactionsDto) {

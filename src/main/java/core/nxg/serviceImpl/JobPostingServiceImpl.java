@@ -4,9 +4,13 @@ import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.Employer;
 import core.nxg.entity.JobPosting;
+import core.nxg.entity.Notification;
+import core.nxg.entity.User;
+import core.nxg.enums.NotificationType;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.JobPostingRepository;
+import core.nxg.repository.NotificationRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.JobPostingService;
 import core.nxg.service.UserService;
@@ -47,6 +51,9 @@ public class JobPostingServiceImpl implements JobPostingService {
     private final UserService userService;
 
     @Autowired
+    private final NotificationRepository notificationRepository;
+
+    @Autowired
     private final ModelMapper mapper;
 
 
@@ -83,6 +90,22 @@ public class JobPostingServiceImpl implements JobPostingService {
         return mapper.map(savedJobPosting, JobPostingDto.class);
     }
 
+    private void notify(User subscriber, Long jobID, User sender){
+
+        var notification = Notification.builder()
+                .notificationType(NotificationType.JOB_POST)
+                .delivered(false)
+                .referencedUser(subscriber)
+                .sender(sender)
+                .message("A new job posting has been made")
+                .contentId(jobID)
+                .dateTime(LocalDateTime.now())
+                .build();
+        notificationRepository.saveAndFlush(notification);
+
+    }
+
+
     private void onJobPosted(Long employerId, JobPosting jobPosting) throws Exception {
         //TODO send email to only subscribed tech talent agents and tech talent
         Employer poster = employerRepository.findById(employerId).
@@ -91,12 +114,11 @@ public class JobPostingServiceImpl implements JobPostingService {
         Page<UserResponseDto> users = userService.getAllUsers(Pageable.unpaged());
 
         users.forEach(user -> {
-            final String posterName = poster.getCompanyName();
             try {
                 log.info("Preparing to send an email to {}", user.getEmail());
 
                 emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
-
+                notify(mapper.map(user, User.class), jobPosting.getJobID(), poster.getUser());
                 log.info("Email sent to {}", user.getEmail());
             } catch (Exception e) {
                 throw new RuntimeException("Error sending email to {}" + user.getEmail());
