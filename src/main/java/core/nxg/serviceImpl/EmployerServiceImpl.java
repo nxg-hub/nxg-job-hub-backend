@@ -99,10 +99,9 @@ public class EmployerServiceImpl implements EmployerService {
             userRepository.save(loggedInUser);
 
             employer.setUser(loggedInUser);
-
-
-
             employerRepository.saveAndFlush(employer);
+            loggedInUser.setEmployer(employer);
+            userRepository.save(loggedInUser);
             return "Employer created successfully!";
         }
 

@@ -1,15 +1,17 @@
 package core.nxg.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class TechTalentResponse {
     private Long techId;
     private List<String> skills;
+    private String bio;
     private String highestQualification;
     private String experienceLevel;
     private String jobType;

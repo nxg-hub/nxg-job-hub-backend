@@ -3,6 +3,7 @@ package core.nxg.entity;
 import core.nxg.enums.Rating;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -18,13 +19,14 @@ public class Ratings {
     @Enumerated(EnumType.STRING)
     private Rating rating;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "employer_id")
     private Employer employer;
 
-    @ManyToOne()
-    @Setter
+    @ManyToOne
     private User rater;
+
+    @Getter
     private Long raterID;
 
 

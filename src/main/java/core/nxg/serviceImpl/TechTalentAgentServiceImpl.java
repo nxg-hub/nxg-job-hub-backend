@@ -78,6 +78,7 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
         techTalentAgent.setAddress(agentDTO.getAddress());
         techTalentAgent.setZipCode(agentDTO.getZipCode());
         loggedInUser.setUserType(UserType.AGENT);
+        loggedInUser.setTechTalentAgent(techTalentAgent);
         userRepository.save(loggedInUser);
         techTalentAgent.setUser(loggedInUser);
 

@@ -9,6 +9,7 @@ import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.response.EmployerResponse;
+import core.nxg.response.TechTalentResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -110,6 +111,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setCoverletter(techTalentDto.getCoverletter());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
         loggedInUser.setUserType(UserType.TECHTALENT);
+        loggedInUser.setTechTalent(techTalentUser);
         userRepo.save(loggedInUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.saveAndFlush(techTalentUser);
@@ -122,10 +124,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 
     @Override
-    public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
+    public TechTalentResponse getTechTalent(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
-        return techTalentRepository.findByEmail(loggedInUser.getEmail())
+        var response = techTalentRepository.findByEmail(loggedInUser.getEmail())
             .orElseThrow(() -> new NotFoundException("TechTalent Not Found!"));
+        return mapper.map(response, TechTalentResponse.class);
     }
 
     @Override

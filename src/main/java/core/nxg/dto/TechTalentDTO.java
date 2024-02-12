@@ -22,6 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class TechTalentDTO implements Serializable {
     private List<String> skills;
+    private String bio;
     private String highestQualification;
     private String experienceLevel;
     private String jobType;
