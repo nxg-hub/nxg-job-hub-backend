@@ -189,7 +189,6 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
    @Override
     public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException {
-            Thread.currentThread().start();
             return Flux.interval(Duration.ofSeconds(5))
                     .publishOn(Schedulers.boundedElastic())
                     .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
