@@ -37,7 +37,7 @@ public class CommentsServiceImpl implements CommentsService {
     private final EmployerRepository employerRepository;
 
     @Override
-    public Comments createComments(CommentsDto commentsDto) { // Assuming Comments is made on job postings only
+    public Comments createComments(CommentsDto commentsDto) { // Assuming Comments are made on job postings only
         JobPosting jobPosting = jobPostingRepository.findById(Long.parseLong(String.valueOf(commentsDto.getJobID())))
                 .orElseThrow(() -> new NotFoundException("Job posting with Id " + commentsDto.getJobID() + " not found"));
 
@@ -49,22 +49,22 @@ public class CommentsServiceImpl implements CommentsService {
         comments.setJobPosting(jobPosting);
 
         var savedcomments = commentsRepository.save(comments);
-        notify(savedcomments.getId(), jobPosting, commenter );
+        notify(savedcomments, jobPosting, commenter );
 
         return savedcomments;
     }
 
-    private void notify(Long commentsID, JobPosting jobPosting, User commenter){
+    private void notify(Comments comment, JobPosting jobPosting, User commenter){
 
         var employer = employerRepository.findById(Long.valueOf(jobPosting.getEmployerID()))
                 .orElseThrow(() -> new NotFoundException("Employer with id " + jobPosting.getEmployerID()+ " not found"));
         var notification = Notification.builder()
                 .notificationType(NotificationType.COMMENT)
                 .delivered(false)
-                .message("You have a new comment")
-                .referencedUser(employer.getUser())
-                .sender(commenter)
-                .contentId(commentsID)
+                .message(comment.getComment())
+                .referencedUserID(employer.getUser().getId())
+                .senderID(commenter.getId())
+                .contentId(comment.getId())
                 .build();
         notificationRepository.saveAndFlush(notification);
     }

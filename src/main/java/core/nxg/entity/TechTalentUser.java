@@ -26,12 +26,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class TechTalentUser{
 
     @Id
-    @Column(name = "techId")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long techId;
 
     @Column(name="email")
     private String email;
+
+    private String bio;
 
     private String highestQualification;
 

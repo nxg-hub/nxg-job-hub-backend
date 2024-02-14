@@ -20,38 +20,14 @@ public class Notification {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-	private User referencedUser;
 
-	@Getter
-	private Long referencedUserID;
+	private Long referencedUserID; // we're using User id for ease. Profile
 
 
+	private Long senderID; 	// picture, fName, lName, would be easy to fetch that way.
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-	private User sender ;
+							// less db query.
 
-	@Getter
-	private Long senderID;
-
-
-	public void setSenderID(){
-		this.senderID = sender.getId();
-	}
-
-	public void setReferencedUserID(){
-		this.referencedUserID = referencedUser.getId();
-	}
-
-
-
-
-
-
-	@Column
 	private String message;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -60,7 +36,7 @@ public class Notification {
 
 	private Long contentId;
 
-	@Column
+	@Enumerated(EnumType.STRING)
 	private NotificationType notificationType;
 
 

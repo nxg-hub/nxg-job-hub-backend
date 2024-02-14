@@ -16,6 +16,7 @@ import core.nxg.service.RatingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,14 +45,15 @@ public RatingsDto createRatings(RatingsDto ratingsDto) {
 }
 
 private void notify(Long ratingsID, Employer employer, User sender){
-    // send notification to employer
-    ;
+
     var notification = Notification.builder()
             .notificationType(NotificationType.RATING)
+            .dateTime(LocalDateTime.now())
             .delivered(false)
+            .senderID(sender.getId())
+            .referencedUserID(employer.getUser().getId()) // we're using User id for ease. Profile
+                                                        // picture, fName, lName, would be easy to fetch that way.
             .message("You have a new rating")
-            .referencedUser(employer.getUser())
-            .sender(sender)
             .contentId(ratingsID)
             .build();
     notificationRepository.saveAndFlush(notification);

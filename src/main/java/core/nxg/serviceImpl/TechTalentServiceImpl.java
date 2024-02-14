@@ -92,6 +92,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 //      TechTalentUser techTalentUser1 = (TechTalentUser)helper.copyFromDto(techTalentDto, techTalentUser1);
 
         techTalentUser.setEmail(loggedInUser.getEmail());
+        techTalentUser.setBio(techTalentDto.getBio());
         techTalentUser.setSkills(techTalentDto.getSkills());
         techTalentUser.setResidentialAddress(techTalentDto.getResidentialAddress());
         techTalentUser.setJobType(techTalentDto.getJobType());
@@ -112,9 +113,10 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
         loggedInUser.setUserType(UserType.TECHTALENT);
         loggedInUser.setTechTalent(techTalentUser);
-        userRepo.save(loggedInUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.saveAndFlush(techTalentUser);
+        userRepo.saveAndFlush(loggedInUser);
+
         return "TechTalent User created successfully";
 
 

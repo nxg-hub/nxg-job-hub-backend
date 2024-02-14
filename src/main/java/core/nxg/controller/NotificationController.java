@@ -18,7 +18,7 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth/notifications")
 public class NotificationController {
@@ -28,12 +28,17 @@ public class NotificationController {
     private final PushNotifications service;
 
 
-    @GetMapping("/render")
-    public String renderForm(Model model) {
-        return "rendernotif";
-    }
+   @PostMapping("/push")
+   public ResponseEntity<?> push(@RequestBody NotificationDTO dto) {
+       try {
+           service.pushNotification(dto);
+           return ResponseEntity.ok("Pushed successfully");
+       } catch (Exception ex) {
+           return ResponseEntity.badRequest().build();
 
-    @GetMapping(value = "/stream/{userID}")
+       }
+   }
+    @GetMapping("/stream/{userID}")
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
 
         return service.getNotificationsByUserInID(userID);
@@ -42,8 +47,7 @@ public class NotificationController {
     }
 
 
-    @PatchMapping("/read/{notifID}")
-    @ResponseBody
+    @GetMapping("/read/{notifID}")
     public ResponseEntity<?> changeNotifStatusToRead(@PathVariable String notifID) {
         return ResponseEntity.ok(service.changeNotifStatusToRead(notifID));
     }

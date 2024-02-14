@@ -19,4 +19,10 @@ public class NotificationDTO {
     private String email;
     private NotificationType notificationType;
 
+    private Long referencedUserID;
+    private Long senderID;
+    private Long contentID;
+
+
+
 }

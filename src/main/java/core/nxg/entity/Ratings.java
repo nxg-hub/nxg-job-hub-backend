@@ -30,9 +30,6 @@ public class Ratings {
     private Long raterID;
 
 
-    public void setRaterID() {
-       this.raterID =  rater.getId();
 
-    }
 
 }

@@ -90,15 +90,15 @@ public class JobPostingServiceImpl implements JobPostingService {
         return mapper.map(savedJobPosting, JobPostingDto.class);
     }
 
-    private void notify(User subscriber, Long jobID, User sender){
+    private void notify(User subscriber,JobPosting jobPosting, User sender){
 
         var notification = Notification.builder()
                 .notificationType(NotificationType.JOB_POST)
                 .delivered(false)
-                .referencedUser(subscriber)
-                .sender(sender)
-                .message("A new job posting has been made")
-                .contentId(jobID)
+                .message(jobPosting.getJob_title())
+                .contentId(jobPosting.getJobID())
+                .referencedUserID(subscriber.getId())
+                .senderID(sender.getId())
                 .dateTime(LocalDateTime.now())
                 .build();
         notificationRepository.saveAndFlush(notification);
@@ -118,9 +118,13 @@ public class JobPostingServiceImpl implements JobPostingService {
                 log.info("Preparing to send an email to {}", user.getEmail());
 
                 emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
-                notify(mapper.map(user, User.class), jobPosting.getJobID(), poster.getUser());
+
+                notify(mapper.map(user, User.class), jobPosting, poster.getUser());
+
                 log.info("Email notification sent to {}", user.getEmail());
+
             } catch (Exception e) {
+
                 throw new RuntimeException("Error sending email to {}" + user.getEmail());
             }
         });
@@ -185,8 +189,8 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
    @Override
     public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException {
-
-            return Flux.interval(Duration.ofSeconds(4))
+            Thread.currentThread().start();
+            return Flux.interval(Duration.ofSeconds(5))
                     .publishOn(Schedulers.boundedElastic())
                     .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
                             .event("jobpostings")
