@@ -46,9 +46,14 @@ public class Employer {
 
     private String CACCertificate;
 
+    private String address;
+    private String nationality;
+    private String state;
+    private String zipCode;
+    private String companyZipCode;
     private String taxClearanceCertificate;
     private String TIN;
-
+    private List<String> vacancies;
     private List<String> namesOfDirectors;
 
     private String companyMemorandum;

@@ -92,6 +92,12 @@ public class EmployerServiceImpl implements EmployerService {
             employer.setTIN(employerDto.getTIN());
             employer.setTaxClearanceCertificate(employerDto.getTaxClearanceCertificate());
             employer.setCompanySize(employerDto.getCompanySize());
+            employer.setAddress(employerDto.getAddress());
+            employer.setNationality(employerDto.getNationality());
+            employer.setState(employerDto.getState());
+            employer.setZipCode(employerDto.getZipCode());
+            employer.setCompanyZipCode(employerDto.getCompanyZipCode());
+            employer.setVacancies(employerDto.getVacancies());
             loggedInUser.setRoles(UserType.EMPLOYER.toString());
             loggedInUser.setUserType(UserType.EMPLOYER);
             userRepository.save(loggedInUser);

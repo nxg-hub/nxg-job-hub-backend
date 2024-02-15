@@ -29,6 +29,7 @@ public class TechTalentProfileDto {
     private String coverLetter;
     private String projectPortfolioLink;
     private String linkedinProfileLink;
+    private String bio;
 
     // Constructors, getters, setters, and other methods
 }
