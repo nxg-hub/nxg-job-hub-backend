@@ -26,9 +26,9 @@ public class RatingsController {
 //       return ratingsService.createRatings(ratingsDto);
 //
 //    }
-@PostMapping("/create/{Id}")
-public ResponseEntity<RatingsDto> createRatings(@PathVariable Long Id, @RequestBody RatingsDto ratingsDto) {
-    RatingsDto createdRatings = ratingsService.createRatings(Id, ratingsDto);
+@PostMapping("/create")
+public ResponseEntity<RatingsDto> createRatings( @RequestBody RatingsDto ratingsDto) {
+    RatingsDto createdRatings = ratingsService.createRatings(ratingsDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdRatings);
 }
 

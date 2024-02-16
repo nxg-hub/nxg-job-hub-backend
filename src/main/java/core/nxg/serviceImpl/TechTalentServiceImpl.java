@@ -9,6 +9,7 @@ import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.response.EmployerResponse;
+import core.nxg.response.TechTalentResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -89,6 +90,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 //      TechTalentUser techTalentUser1 = (TechTalentUser)helper.copyFromDto(techTalentDto, techTalentUser1);
 
         techTalentUser.setEmail(loggedInUser.getEmail());
+        techTalentUser.setBio(techTalentDto.getBio());
         techTalentUser.setSkills(techTalentDto.getSkills());
         techTalentUser.setResidentialAddress(techTalentDto.getResidentialAddress());
         techTalentUser.setJobType(techTalentDto.getJobType());
@@ -111,9 +113,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setPortfolioLink(techTalentDto.getPortfolioLink());
         techTalentUser.setJobInterest(techTalentDto.getJobInterest());
         loggedInUser.setUserType(UserType.TECHTALENT);
-        userRepo.save(loggedInUser);
+        loggedInUser.setTechTalent(techTalentUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.saveAndFlush(techTalentUser);
+        userRepo.saveAndFlush(loggedInUser);
+
         return "TechTalent User created successfully";
     }
             
@@ -121,10 +125,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 
     @Override
-    public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
+    public TechTalentResponse getTechTalent(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
-        return techTalentRepository.findByEmail(loggedInUser.getEmail())
+        var response = techTalentRepository.findByEmail(loggedInUser.getEmail())
             .orElseThrow(() -> new NotFoundException("TechTalent Not Found!"));
+        return mapper.map(response, TechTalentResponse.class);
     }
 
 //    @Override

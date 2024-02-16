@@ -1,9 +1,7 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.ReactionsDto;
-import core.nxg.entity.Comments;
-import core.nxg.entity.JobPosting;
-import core.nxg.entity.Reactions;
+import core.nxg.entity.*;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.CommentsRepository;
 import core.nxg.repository.JobPostingRepository;
@@ -37,6 +35,8 @@ public class ReactionsServiceImpl implements ReactionsService {
 
         return mapToDto(reactionsRepository.save(reactions));
     }
+
+
 
     @Override
     public ReactionsDto createReactionOnComment(Long commentID, ReactionsDto reactionsDto) {
@@ -84,20 +84,6 @@ public class ReactionsServiceImpl implements ReactionsService {
                 .stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-//    @Override
-//    @Transactional
-//    public void deleteReaction(Long reactionId) {
-//        Reactions reaction = reactionsRepository.findById(reactionId)
-//                .orElseThrow(() -> new NotFoundException("Reaction with ID " + reactionId + " not found"));
-//
-//        for (JobPosting jobPosting : reaction.getJobPosting()) {
-//            jobPosting.getReactions().remove(reaction);
-//        }
-//        for (Comments comment : reaction.getComments()) {
-//            comment.getReactions().remove(reaction);
-//        }
-//        reactionsRepository.delete(reaction);
-//    }
 
     private ReactionsDto mapToDto(Reactions reactions) {
         ReactionsDto reactionsDto = new ReactionsDto();

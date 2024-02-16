@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.enums.*;
 import jakarta.persistence.*;
@@ -67,6 +68,21 @@ public class User implements UserDetails, OAuth2User {
     @Column(name = "user_type")
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private TechTalentAgent techTalentAgent;
+
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private TechTalentUser techTalent;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Employer employer;
+
+
 
     @Transient
     private Map<String, Object> attributes;
