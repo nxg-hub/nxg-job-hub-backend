@@ -9,6 +9,7 @@ import core.nxg.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -17,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Delayed;
 
 
@@ -39,19 +41,22 @@ public class PushNotifications {
                 .notificationType(dto.getNotificationType())
                 .message("You have a new " + dto.getNotificationType().toString() + "!")
                 .delivered(false)
+                .referencedUser(userRepository.findByEmail(dto.getEmail()).get())
                 .dateTime(LocalDateTime.now());
         pushNotification(notification.build());
     }
     private void pushNotification(Notification notification) {
 
-        notificationRepository.save(notification);
+        notificationRepository.saveAndFlush(notification);
     }
 
-    private List<Notification> getNotifs(String userID) {
-        User user = userRepository.findById(Long.valueOf(userID))
-                .orElseThrow(() -> new UserNotFoundException("User Not Found!"));
 
-        var notifications = notificationRepository.findByReferencedUserAndSeenFalse(user);
+    @Async
+    private List<Notification> getNotifs(String userID) {
+
+        Optional<User> user = userRepository.findById(Long.valueOf(userID));
+
+        var notifications = notificationRepository.findByReferencedUserAndDeliveredFalse(user.get());
         notifications.forEach(x -> x.setDelivered(true));
         notificationRepository.saveAll(notifications);
         return notifications;
@@ -62,15 +67,15 @@ public class PushNotifications {
 
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserInID(String userID) throws InterruptedException {
         if (userID != null && !userID.isBlank()) {
-            return Flux.interval(Duration.ofSeconds(1))
+            return Flux.interval(Duration.ofSeconds(3))
                     .publishOn(Schedulers.boundedElastic())
                     .map(sequence -> ServerSentEvent.<List<Notification>>builder().id(String.valueOf(sequence))
-                            .event("user-list-event").data(getNotifs(userID))
+                            .event("notifications").data(getNotifs(userID))
                             .build());
         }
 
-        return Flux.interval(Duration.ofSeconds(5)).map(sequence -> ServerSentEvent.<List<Notification>>builder()
-                .id(String.valueOf(sequence)).event("user-list-event").data(new ArrayList<>()).build());
+        return Flux.interval(Duration.ofSeconds(3)).map(sequence -> ServerSentEvent.<List<Notification>>builder()
+                .id(String.valueOf(sequence)).event("notifications").data(new ArrayList<>()).build());
     }
     public List<Notification> getNotificationsByUserID(String userID) {
 

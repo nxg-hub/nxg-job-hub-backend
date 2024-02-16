@@ -2,9 +2,12 @@ package core.nxg.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -28,12 +31,9 @@ public class JobPosting {
     @Temporal(TemporalType.DATE)
     private LocalDate deadline;
 
+    @Setter
     @Temporal(TemporalType.DATE)
-    private LocalDate created_at;
-
-    public void setCreated_at(LocalDate created_at){
-        this.created_at = LocalDate.now();
-    }
+    private LocalDate created_at = LocalDate.now();
 
     private String job_location;
     private String tags;
@@ -46,6 +46,8 @@ public class JobPosting {
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Comments> comments;
+
+    private boolean delivered;
 
     @OneToOne
     private View view;

@@ -96,14 +96,14 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @GetMapping("/get-user")
     @ResponseBody
-    public ResponseEntity<?> getTechTalent (HttpServletRequest request) throws Exception {
-        try {TechTalentDTO techtalent = techTalentService.getTechTalent(request);
-        return ResponseEntity.ok(techtalent);}
-        catch(Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<TechTalentDTO> getTechTalent (HttpServletRequest request) throws Exception {
+        try{
+            TechTalentDTO employer = techTalentService.getTechTalent(request);
+            return ResponseEntity.ok(employer);
+        }catch(Exception e){
+            log.error("Error while getting TechTalent: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(null);
         }
-
-
     }
 
     @Operation(summary = "Update a Tech Talent ",

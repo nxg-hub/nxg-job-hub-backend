@@ -147,9 +147,10 @@ public class EmployerController {
             @ApiResponse(responseCode = "404", description = "Not found",
                     content = @Content) })
     @GetMapping("postings/{employerId}")
-    public ResponseEntity<?> getJobPostings(@PathVariable String employerId, Pageable pageable) throws Exception {
+    @ResponseBody
+    public ResponseEntity<?> getJobPostings(@Valid @PathVariable String employerId) throws Exception {
         try {
-            return ResponseEntity.ok(employerService.getJobPostings(employerId,pageable));
+            return ResponseEntity.ok(employerService.getJobPostings(employerId));
         } catch (NotFoundException | NullPointerException e) {
             log.error("Error while getting job postings: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());

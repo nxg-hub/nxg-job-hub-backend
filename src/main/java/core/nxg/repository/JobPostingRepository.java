@@ -16,8 +16,7 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     //void deleteJobPostingByJobId(Long jobId);
     Optional<JobPosting> findJobPostingByJobID(Long jobID);
 
-    @Modifying
-    @Query("SELECT j FROM JobPosting j WHERE j.employerID = ?1")
+    List<JobPosting> findByDeliveredFalse();
    Optional<List<JobPosting>> findByEmployerID(String employerID);
 
 

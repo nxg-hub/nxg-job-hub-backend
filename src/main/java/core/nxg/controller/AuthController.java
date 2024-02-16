@@ -110,7 +110,6 @@ public class AuthController {
         model.addAttribute("loginUrl", LOGIN_URL);
         try {
             emailService.confirmVerification(code);
-
             return "EmailVerified";
         } catch (Exception e) {
             logger.error("Error while verifying email: " + e.getMessage());

@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "notifications")
@@ -19,7 +21,7 @@ public class Notification {
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@PrimaryKeyJoinColumn(name = "user_id")
+	@JsonIgnore
 	private User referencedUser;
 	
 
