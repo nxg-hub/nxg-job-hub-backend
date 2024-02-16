@@ -5,6 +5,7 @@ import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.VerificationCode;
 import core.nxg.enums.Provider;
+import core.nxg.enums.UserType;
 import core.nxg.exceptions.*;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -150,6 +152,24 @@ public class UserServiceImpl implements UserService {
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
         Page<User> user = userRepository.findAll(pageable);
         return user.map(u -> modelMapper.map(u, UserResponseDto.class));
+    }
+
+
+    public Page<User> getUsersByType(UserType userType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findByUserType(userType, pageable);
+    }
+
+    public Page<User> getTalentUsers(int page, int size) {
+        return getUsersByType(UserType.TECHTALENT, page, size);
+    }
+
+    public Page<User> getAgentUsers(int page, int size) {
+        return getUsersByType(UserType.AGENT, page, size);
+    }
+
+    public Page<User> getEmployerUsers(int page, int size) {
+        return getUsersByType(UserType.EMPLOYER, page, size);
     }
 
 }
