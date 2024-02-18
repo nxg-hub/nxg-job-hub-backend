@@ -129,35 +129,36 @@ public class SubscriptionService {
         }
 
     }
-    private Map<String, Object> setPlan(PlanType planType) {
-    int amount;
-    String name;
-    String interval;
-    String currency = "NGN";
-    String description;
 
-    switch (planType) {
-        case PLATINUM:
-            amount = 10000;
-            name = "Platinum";
-            interval = "yearly";
-            description = "Platinum Subscription Plan";
-            break;
-        case GOLD:
-            amount = 70000;
-            name = "Gold";
-            interval = "quarterly";
-            description = "Gold Subscription Plan";
-            break;
-        case SILVER:
-            amount = 120000; 
-            name = "Silver";
-            interval = "monthly";
-            description = "Silver Subscription Plan";
-            break;
-        default:
-            throw new RuntimeException("Invalid plan type");
-    }
+    private Map<String, Object> setPlan(PlanType planType) {
+        int amount;
+        String name;
+        String interval;
+        String currency = "NGN";
+        String description;
+
+        switch (planType) {
+            case PLATINUM:
+                amount = 10000;
+                name = "Platinum";
+                interval = "yearly";
+                description = "Platinum Subscription Plan";
+                break;
+            case GOLD:
+                amount = 70000;
+                name = "Gold";
+                interval = "quarterly";
+                description = "Gold Subscription Plan";
+                break;
+            case SILVER:
+                amount = 120000;
+                name = "Silver";
+                interval = "monthly";
+                description = "Silver Subscription Plan";
+                break;
+            default:
+                throw new RuntimeException("Invalid plan type");
+        }
 
         Map<String, Object> query = new HashMap<>();
         query.put("name", name);
@@ -167,12 +168,29 @@ public class SubscriptionService {
         query.put("description", description);
 
         return query;
-}
+    }
+
+
+    public JsonNode validateCustomer(VerificationDTO dto) {
+//
+//        var customer = subscriptionRepo.findByEmail(dto.getEmail());
+//        if (customer.isEmpty()) {
+//            throw new UserNotFoundException("Customer does not exist!");
+//        }
+        Map<String, Object> request = new HashMap<>();
+        request.put("account_number", dto.getAccount_number());
+        request.put("bank_code", dto.getBank_code());
+        request.put("bvn", dto.getBvn());
+        request.put("first_name",dto.getFirst_name());
+        request.put("last_name",dto.getLast_name() );
+        request.put("type","bank_account");
+        request.put("country", "NG");
+        return apiService.validateIdentity(request,dto.getCustomer_code());
+
+
+
 
 
     }
-
-//    public JsonNode verifyCustomer(VerificationDTO dto){
-//
-//    }
+}
 

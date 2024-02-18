@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
 import core.nxg.subscription.dto.TransactionDTO;
+import core.nxg.subscription.dto.VerificationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,21 +15,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/subscriptions")
-public class PayemntController {
+public class SubscriptionController {
 
     @Autowired
     private final SubscriptionService paymentService;
@@ -57,10 +54,10 @@ public class PayemntController {
 
 
     @PostMapping("/initialize-transaction")
-    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws Exception{
+    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws Exception {
 
         try {
-           JsonNode response = paymentService.
+            JsonNode response = paymentService.
                     initializeTransaction(dto);
 
             return ResponseEntity.ok().body(response);
@@ -82,7 +79,7 @@ public class PayemntController {
     @Content(mediaType = "application/json",
             schema = @Schema(implementation = SubscribeDTO.class)))
     @PostMapping("/subscribe")
-    public ResponseEntity<JsonNode> subscribe(@RequestBody SubscribeDTO dto) throws Exception{
+    public ResponseEntity<JsonNode> subscribe(@RequestBody SubscribeDTO dto) throws Exception {
 
         try {
             JsonNode response = paymentService.subscribe(dto);
@@ -99,4 +96,23 @@ public class PayemntController {
 
     }
 
+    @Operation(summary = "Validate  a customer before a transfer or virtual account creation")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Validate a customer with a bank-account", required = true, content =
+    @Content(mediaType = "application/json",
+            schema = @Schema(implementation = String.class)))
+    @PostMapping("/verify-customer")
+    public ResponseEntity<JsonNode> verifyCustomer(@RequestBody VerificationDTO dto) throws Exception {
+
+        try {
+            JsonNode response = paymentService.validateCustomer(dto);
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode error = mapper.convertValue(e.getMessage(), JsonNode.class);
+
+            return ResponseEntity.badRequest().body(error);
+        }
+
+    }
 }

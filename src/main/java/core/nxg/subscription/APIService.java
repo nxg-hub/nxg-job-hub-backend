@@ -51,9 +51,7 @@ public class APIService {
     public JsonNode initialize(TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
         String reference = "txID" + System.currentTimeMillis();
-        dto.setPlan(null);
         dto.setReference(reference);
-
         return post(dto, APIConstants.PAYSTACK_INIT_TRANSACTIONS).getBody();
 
 
@@ -93,6 +91,11 @@ public class APIService {
                 url,
                 request,
                 JsonNode.class);
+
+    }
+    public JsonNode validateIdentity(Map<String,Object> body, String customer_code){
+        return post(body,
+                APIConstants.PAYSTACK_CUSTOMER_URL+ "/" + customer_code + "/identification" ).getBody();
 
     }
 }
