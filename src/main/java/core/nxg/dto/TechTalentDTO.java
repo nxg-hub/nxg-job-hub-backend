@@ -40,7 +40,6 @@ public class TechTalentDTO implements Serializable {
     private String currentJob;
     private int yearsOfExperience;
     private String profilePicture;
-    private String bio;
     private String portfolioLink;
     private String jobInterest;
 

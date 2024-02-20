@@ -67,7 +67,6 @@ public class TechTalentUser{
     private String currentJob;
     private int yearsOfExperience;
     private String profilePicture;
-    private String bio;
     private String portfolioLink;
     private String jobInterest;
 
