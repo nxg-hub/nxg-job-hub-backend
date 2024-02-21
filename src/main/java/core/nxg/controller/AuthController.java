@@ -10,6 +10,8 @@ import core.nxg.service.UserService;
 
 import core.nxg.utils.Helper;
 
+import lombok.NonNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -120,11 +122,11 @@ public class AuthController {
     @Operation(summary = "Send a password reset email",
     description = "Send a password reset email to a user with the email address provided. " +
             "Email will not be delivered if user does not EXIST.")
-    @PostMapping("/reset-password-email")
+    @PostMapping("/reset-password-email/{email}")
     @ResponseBody
     public ResponseEntity<String> sendResetPasswordEmail(@PathVariable String email, HttpServletRequest request) throws Exception {
         try {
-            emailService.sendPasswordResetEmail(helper.getSiteURL(request), request);
+            emailService.sendPasswordResetEmail(email, request);
             return ResponseEntity.status(HttpStatus.OK).body("Reset password link sent successfully");
         } catch (Exception e) {
             logger.error("Error while sending reset password email: " + e.getMessage());
@@ -134,7 +136,7 @@ public class AuthController {
 
 
     @GetMapping("/reset-password")
-    public String resetPassword(@Nonnull @RequestParam("code") String code, Model model) throws Exception{
+    public String resetPassword(@Validated @RequestParam("code") String code, Model model) throws Exception{
         try {
             emailService.confirmReset(code);
             return "redirect:/api/vi/auth/update-password/";}
