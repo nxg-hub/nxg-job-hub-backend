@@ -122,7 +122,7 @@ public class AuthController {
             "Email will not be delivered if user does not EXIST.")
     @PostMapping("/reset-password-email")
     @ResponseBody
-    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailDTO dto, HttpServletRequest request) throws Exception {
+    public ResponseEntity<String> sendResetPasswordEmail(@PathVariable String email, HttpServletRequest request) throws Exception {
         try {
             emailService.sendPasswordResetEmail(helper.getSiteURL(request), request);
             return ResponseEntity.status(HttpStatus.OK).body("Reset password link sent successfully");

@@ -111,10 +111,10 @@ public class UserServiceImpl implements UserService {
     public String login( LoginDTO loginDTO) throws Exception {
 
         var user = userRepository.findByEmail(loginDTO.getEmail());
-//
-//        if (helper.EmailIsInvalid(loginDTO.getEmail())){
-//            throw new EmailNotValidException("Invalid email address");
-//    }
+
+        if (helper.EmailIsInvalid(loginDTO.getEmail())){
+            throw new EmailNotValidException("Invalid email address");
+    }
         if (user.isEmpty()) {
             throw new UserNotFoundException( "Wrong username or password!");
 
