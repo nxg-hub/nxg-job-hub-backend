@@ -19,7 +19,7 @@ public class EmailConstant {
     + "   <h1 style=\"font-weight: bold;\">Reset Your Password!</h1>"
     + "   <p>Your request to <strong>Reset your password!</strong> To get started, please click the button.</p>"
     + "   <a href=\"[[URL]]\" style=\"text-decoration: none;\">"
-    + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Verify Your Email</button>"
+    + "     <button style=\"background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;\">Reset Password</button>"
     + "   </a>"
     + " </div>"
     + " <p style=\"margin-top: 50px;\">If you did not make this request please report this incident.</p>"

@@ -24,7 +24,7 @@ public interface EmailService {
             String email,
             String siteURL)throws MessagingException, UnsupportedEncodingException, MailException;
     public void sendVerificationEmail( VerificationCode code , String siteURL ) throws MessagingException, IOException, MailException;
-    public void sendPasswordResetEmail(String siteURL , HttpServletRequest request ) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException;
+    public void sendPasswordResetEmail(String email , HttpServletRequest request ) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException;
     public void confirmVerification(String verificationCode) throws Exception;
     public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException ,MessagingException;
     public void confirmReset(String verificationCode) throws Exception;

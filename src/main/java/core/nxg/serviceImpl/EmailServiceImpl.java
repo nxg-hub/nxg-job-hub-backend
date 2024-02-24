@@ -103,20 +103,21 @@ public class EmailServiceImpl implements EmailService {
         }
     }
     @Override
-    public void sendPasswordResetEmail(String siteURL, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
-        User loggedInUser = helper.extractLoggedInUser(request);
-        Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
+    public void sendPasswordResetEmail(String email, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+       var siteURL = helper.getSiteURL(request);
+
+        Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()){
             throw new UserNotFoundException("User with email does not exist");}
         if (!user.get().isEnabled()){
-            throw new AccountExpiredException("Account is yet to be verified!");}
+            throw new AccountExpiredException("Account is yet to be verified! Kindly request a verification email.");}
 
         else{
             VerificationCode verificationCode = new VerificationCode(user.get());
 
 
             String subject = "Password Reset";
-            String toAddress = loggedInUser.getEmail();
+            String toAddress = user.get().getEmail();
             String content  = PASSWORD_RESET_CONTENT;
 
 
