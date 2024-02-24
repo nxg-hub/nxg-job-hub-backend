@@ -1,12 +1,15 @@
 package core.nxg.subscription.enums;
 
 
-import lombok.AllArgsConstructor;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+
+@Getter
 @RequiredArgsConstructor
 public enum PlanType {
-    PLATINUM("yearly"),
+    PLATINUM("annually"),
 
     GOLD("quarterly"),
     SILVER("monthly");

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,7 +17,10 @@ import java.util.Collection;
 public class Subscriber {
 
     @Id
-    private String customerId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long Id;
+
+    private String customerCode;
 
     private String email;
 
@@ -30,9 +34,10 @@ public class Subscriber {
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
 
-    @OneToMany(targetEntity = PaymentTransactions.class)
-    @CollectionTable(name = "payment_transactions", joinColumns = @JoinColumn(name = "customer_id"))
-    private Collection<PaymentTransactions> transactions;
+    @OneToMany(mappedBy = "subscriber")
+    private List<PaymentTransactions> transactions;
+
+
 
 
 }

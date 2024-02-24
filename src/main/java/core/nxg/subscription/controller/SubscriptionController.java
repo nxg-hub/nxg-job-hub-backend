@@ -17,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -33,19 +36,18 @@ public class SubscriptionController {
 
     @Operation(summary = "Create a subscription account for a user")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Create a new subscription account for a user with an " +
-            "email address, first name, " +
-            "last name, phone number and metadata *(a key-value pair object type)* ", required = true, content =
+            "email address, planType ", required = true, content =
     @Content(mediaType = "application/json",
             schema = @Schema(implementation = CustomerDTO.class)))
     @PostMapping("/create-account")
-    public ResponseEntity<JsonNode> createAccount(@RequestBody CustomerDTO customerdto) {
+    public ResponseEntity<JsonNode> createAccount(@Validated @RequestBody Map<String, Object> request) {
 
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.createSubscriber(customerdto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.createSubscriber(request));
 
 
         } catch (Exception e) {
-            log.error("Could not create account for  " + customerdto.getEmail(), e);
+            log.error("Could not create account for  " + request.get("email").toString(), e);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode err = mapper.convertValue(e.getMessage(), JsonNode.class);
             return ResponseEntity.badRequest().body(err);

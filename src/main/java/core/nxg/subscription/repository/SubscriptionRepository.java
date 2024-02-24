@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SubscriptionRepository  extends JpaRepository<Subscriber, String> {
+public interface SubscriptionRepository  extends JpaRepository<Subscriber, Long> {
 
-    Subscriber findByCustomerId(String customerId);
+    Subscriber findByCustomerCode(String customerCode);
 
     Optional<Subscriber> findByEmail(String email);
 

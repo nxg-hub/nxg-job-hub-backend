@@ -48,8 +48,6 @@ public class APIService {
 
     public JsonNode initialize(TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
-        String reference = "txID" + System.currentTimeMillis();
-        dto.setReference(reference);
         return post(dto, APIConstants.PAYSTACK_INIT_TRANSACTIONS).getBody();
 
 

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
+import core.nxg.subscription.entity.PaymentTransactions;
+import core.nxg.subscription.enums.TransactionStatus;
 import core.nxg.subscription.repository.SubscriptionRepository;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
@@ -12,6 +14,7 @@ import core.nxg.subscription.dto.TransactionDTO;
 import core.nxg.subscription.dto.VerificationDTO;
 import core.nxg.subscription.entity.Subscriber;
 import core.nxg.subscription.enums.PlanType;
+import core.nxg.subscription.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +23,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 @Slf4j
@@ -38,26 +45,43 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepo;
 
     @Autowired
+    private final TransactionRepository transactionRepo;
+
+    @Autowired
     private final APIService apiService;
 
 
-    public JsonNode createSubscriber(CustomerDTO customerdto) throws HttpClientErrorException, JsonProcessingException {
+    public JsonNode createSubscriber(Map<String, Object> arg) throws HttpClientErrorException, JsonProcessingException {
         try {
-            User user = userRepo.findByEmail(customerdto.getEmail()).
+            User user = userRepo.findByEmail(arg.get("email").toString()).
                     orElseThrow(() -> new UserNotFoundException("User not found! Please register first"));
 
+            CustomerDTO customerdto = new CustomerDTO();
+            customerdto.setEmail(arg.get("email").toString());
+            customerdto.setFirstName(user.getFirstName());
+            customerdto.setLastName(user.getLastName());
+            customerdto.setPhone(user.getPhoneNumber());
 
             ResponseEntity<JsonNode> response = apiService.createCustomer(customerdto);
 
             if (response.hasBody() && response.getBody().get("status").booleanValue()) {
-
-                Subscriber subscriber = new Subscriber();
-                subscriber.setCustomerId(response.getBody().get("data").get("customer_code").asText());
-                subscriber.setEmail(response.getBody().get("data").get("email").asText());
-                subscriber.setPlanType(customerdto.getPlanType());
-                subscriber.setUser(user);
-                userRepo.save(user);
-                subscriptionRepo.saveAndFlush(subscriber);
+                var email = response.getBody().get("data").get("email").asText();
+                var existing = subscriptionRepo.findByEmail(email);
+                existing.ifPresentOrElse
+                        (existingsubscriber -> {
+                                existingsubscriber.setPlanType(PlanType.valueOf(arg.get("planType").toString().toUpperCase()));
+                                subscriptionRepo.save(existingsubscriber);
+                         },
+                                () -> {
+                                    Subscriber subscriber = new Subscriber();
+                                    subscriber.setCustomerCode(response.getBody().get("data").get("customer_code").asText());
+                                    subscriber.setEmail(email);
+                                    subscriber.setPlanType(PlanType.valueOf(arg.get("planType").toString().toUpperCase()));
+                                    subscriber.setUser(user);
+                                    userRepo.save(user);
+                                    subscriptionRepo.saveAndFlush(subscriber);
+                                    log.info("Subscriber created successfully");
+                                });
                 return response.getBody();
 
             } else {
@@ -108,11 +132,15 @@ public class SubscriptionService {
         var subscriber = subscriptionRepo.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("A Subscription Account is not bound to this email!"));
         JsonNode response;
+        if (subscriber.getCustomerCode() == null) {
+            throw new Exception("Customer ID is blank or null!");
+        }
 
         try {
             log.info("Creating a " + subscriber.getPlanType()+ " plan...");
             response = createPlan(setPlan(subscriber.getPlanType()));
             log.info("Created a " + subscriber.getPlanType() + " plan..." + response);
+            String reference = "txID" + System.currentTimeMillis() + subscriber.getCustomerCode();
 
             TransactionDTO transactionDTO = new TransactionDTO();
             transactionDTO.setEmail(dto.getEmail());
@@ -122,12 +150,35 @@ public class SubscriptionService {
             transactionDTO.setCallback_url(dto.getCallback_url());
             transactionDTO.setAmount(response.get("data").get("amount").asInt());
             log.info("Initialized transaction..." + transactionDTO.getAmount());
+            transactionDTO.setReference(reference);
+
+            PaymentTransactions tranx = new PaymentTransactions();
+            tranx.setTransactionReference(reference);
+            tranx.setTransactionStatus(TransactionStatus.PENDING);
+            tranx.setTransactionAmount(transactionDTO.getAmount());
+            tranx.setTransactionMessage(subscriber.getPlanType() + " plan subscription ");
+            tranx.setTransactionDate(LocalDate.now());
+            tranx.setTransactionTime(LocalTime.now());
+            tranx.setSubscriber(subscriber);
+//            subscriber.setTransactions(List.of(tranx));// fix
+            subscriptionRepo.save(subscriber);
+            transactionRepo.save(tranx);
+
+
+
+
+            ;
+
+
+
+
+
 
             return this.initializeTransaction(transactionDTO);
         } catch (Exception e) {
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
-                            Level.SEVERE, "Could not initialize transaction @subscription " + dto.getEmail());
+                            Level.SEVERE, "Could not initialize transaction @subscription " + dto.getEmail(),e);
             throw new Exception(e.getMessage());
 
         }
@@ -146,19 +197,19 @@ public class SubscriptionService {
             case PLATINUM:
                 amount = 10000;
                 name = "Platinum";
-                interval = "yearly";
+                interval = planType.getInterval();
                 description = "Platinum Subscription Plan";
                 break;
             case GOLD:
                 amount = 70000;
-                name = "Gold";
-                interval = "quarterly";
+                name = planType.getInterval();
+                interval =
                 description = "Gold Subscription Plan";
                 break;
             case SILVER:
                 amount = 120000;
                 name = "Silver";
-                interval = "monthly";
+                interval = planType.getInterval();
                 description = "Silver Subscription Plan";
                 break;
             default:

@@ -9,10 +9,7 @@ import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscriptionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,10 +22,13 @@ public class APIController {
     private SubscriptionRepository repo;
 
     @PostMapping("/event")
-    public void event(@RequestBody Map<String, Object> query, HttpServletRequest request) throws Exception {
+    public void event(@RequestBody Map<String, Object> query,@RequestHeader ("x-paystack-signature") String headerSignature ) throws Exception {
 
-        var headersignature = request.getHeader("x-paystack-signature"); // todo: check if this is the correct header name
 
+        // todo: validate the signature
+        if (headerSignature == null || headerSignature.isEmpty()) {
+            throw new Exception("x-paystack-signature header is missing");
+        }
         if (query.get("event").equals(EventType.SUBSCRIPTION_CREATE.getEvent())) {
 
             ObjectMapper mapper = new ObjectMapper();
