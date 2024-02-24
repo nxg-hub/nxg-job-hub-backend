@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
-import core.nxg.subscription.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscriptionRepository;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
 import core.nxg.subscription.dto.TransactionDTO;

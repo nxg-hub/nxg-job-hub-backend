@@ -1,4 +1,4 @@
-package core.nxg.subscription;
+package core.nxg.subscription.repository;
 
 import core.nxg.subscription.entity.Subscriber;
 import org.springframework.data.jpa.repository.JpaRepository;

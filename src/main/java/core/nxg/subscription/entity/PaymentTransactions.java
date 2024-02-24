@@ -2,9 +2,7 @@ package core.nxg.subscription.entity;
 
 
 import core.nxg.subscription.enums.TransactionStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -15,6 +13,8 @@ public class PaymentTransactions {
     @Id
     private String transactionReference;
 
+
+    @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
 
     private String transactionMessage;
