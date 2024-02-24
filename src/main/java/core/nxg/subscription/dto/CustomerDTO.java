@@ -1,7 +1,7 @@
 package core.nxg.subscription.dto;
 
 
-import core.nxg.subscription.PlanType;
+import core.nxg.subscription.enums.PlanType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

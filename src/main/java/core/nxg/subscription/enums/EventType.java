@@ -5,10 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum EventType {
     CUSTOMER_IDENTIFICATION_FAILED("customeridentification.failed"),
     CUSTOMER_IDENTIFICATION_SUCCESS("customeridentification.success"),
-    CHARGE_DISPTE_CREATE ("charge.dispute.create")	,
+    CHARGE_DISPUTE_CREATE ("charge.dispute.create")	,
     CHARGE_DISPUTE_REMIND("charge.dispute.remind")	,
     CHARGE_DISPUTE_RESOLVE("charge.dispute.resolve")	,
     CHARGE_FAILED("charge.failed")	,
@@ -33,11 +34,8 @@ public enum EventType {
     TRANSFER_REVERSED("transfer.reversed");
 
 
-    private final String event;
+   private final String event;
 
-    EventType(String event) {
-        this.event = event;
-    }
 
 
 

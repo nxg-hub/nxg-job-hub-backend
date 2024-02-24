@@ -1,4 +1,4 @@
-package core.nxg.subscription;
+package core.nxg.subscription.controller;
 
 
 import core.nxg.subscription.enums.EventType;

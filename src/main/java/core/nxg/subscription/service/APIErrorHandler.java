@@ -1,4 +1,4 @@
-package core.nxg.subscription;
+package core.nxg.subscription.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

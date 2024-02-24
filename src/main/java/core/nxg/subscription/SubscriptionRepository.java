@@ -1,5 +1,6 @@
 package core.nxg.subscription;
 
+import core.nxg.subscription.entity.Subscriber;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

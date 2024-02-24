@@ -1,23 +1,24 @@
-package core.nxg.subscription;
+package core.nxg.subscription.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.UserRepository;
+import core.nxg.subscription.SubscriptionRepository;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
 import core.nxg.subscription.dto.TransactionDTO;
 import core.nxg.subscription.dto.VerificationDTO;
+import core.nxg.subscription.entity.Subscriber;
+import core.nxg.subscription.enums.PlanType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;

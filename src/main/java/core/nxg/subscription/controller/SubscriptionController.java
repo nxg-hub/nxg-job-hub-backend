@@ -1,4 +1,4 @@
-package core.nxg.subscription;
+package core.nxg.subscription.controller;
 
 
 
@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
-import core.nxg.subscription.dto.TransactionDTO;
 import core.nxg.subscription.dto.VerificationDTO;
+import core.nxg.subscription.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -82,7 +82,7 @@ public class SubscriptionController {
     @Operation(summary = "Validate  a customer before a transfer or virtual account creation")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Validate a customer with a bank-account", required = true, content =
     @Content(mediaType = "application/json",
-            schema = @Schema(implementation = String.class)))
+            schema = @Schema(implementation = VerificationDTO.class)))
     @PostMapping("/verify-customer")
     public ResponseEntity<JsonNode> verifyCustomer(@RequestBody VerificationDTO dto) throws Exception {
 
