@@ -2,6 +2,7 @@ package core.nxg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.enums.NotificationType;
+import core.nxg.enums.UserType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,21 +20,23 @@ public class Notification {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-	private User referencedUser;
-	
 
-	@Column
+	private Long referencedUserID; // we're using User id for ease. Profile
+
+
+	private Long senderID; 	// picture, fName, lName, would be easy to fetch that way.
+
+							// less db query.
+
 	private String message;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime dateTime;
 
 
+	private Long contentId;
 
-	@Column
+	@Enumerated(EnumType.STRING)
 	private NotificationType notificationType;
 
 
@@ -41,6 +44,9 @@ public class Notification {
 
 	
 	private boolean seen;
+
+
+
 
 
 

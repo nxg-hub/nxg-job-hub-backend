@@ -29,5 +29,11 @@ public interface UserService {
 
     Optional<User> getUserByUsername(String username);
 
+    Page<User> getTalentUsers(int page, int size);
+
+    Page<User> getAgentUsers(int page, int size);
+
+    Page<User> getEmployerUsers(int page, int size);
+
 
 }

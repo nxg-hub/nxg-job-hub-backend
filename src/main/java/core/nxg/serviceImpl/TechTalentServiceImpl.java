@@ -9,6 +9,7 @@ import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.response.EmployerResponse;
+import core.nxg.response.TechTalentResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +18,6 @@ import core.nxg.controller.TechTalentController;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 
@@ -29,7 +29,6 @@ import core.nxg.exceptions.NotFoundException;
 import core.nxg.exceptions.UserAlreadyExistException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.utils.Helper;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -91,6 +90,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 //      TechTalentUser techTalentUser1 = (TechTalentUser)helper.copyFromDto(techTalentDto, techTalentUser1);
 
         techTalentUser.setEmail(loggedInUser.getEmail());
+        techTalentUser.setBio(techTalentDto.getBio());
         techTalentUser.setSkills(techTalentDto.getSkills());
         techTalentUser.setResidentialAddress(techTalentDto.getResidentialAddress());
         techTalentUser.setJobType(techTalentDto.getJobType());
@@ -106,51 +106,85 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setLocation(techTalentDto.getLocation());
         techTalentUser.setState(techTalentDto.getState());
         techTalentUser.setResume(techTalentDto.getResume());
-
         techTalentUser.setCoverletter(techTalentDto.getCoverletter());
         techTalentUser.setProfessionalCert(techTalentDto.getProfessionalCert());
+        techTalentUser.setProfilePicture(techTalentDto.getProfilePicture());
+        techTalentUser.setBio(techTalentDto.getBio());
+        techTalentUser.setPortfolioLink(techTalentDto.getPortfolioLink());
+        techTalentUser.setJobInterest(techTalentDto.getJobInterest());
         loggedInUser.setUserType(UserType.TECHTALENT);
-        userRepo.save(loggedInUser);
+        loggedInUser.setTechTalent(techTalentUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.saveAndFlush(techTalentUser);
+        userRepo.saveAndFlush(loggedInUser);
+
         return "TechTalent User created successfully";
-
-
     }
             
 
 
 
     @Override
-    public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
+    public TechTalentResponse getTechTalent(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
-        return techTalentRepository.findByEmail(loggedInUser.getEmail())
+        var response = techTalentRepository.findByEmail(loggedInUser.getEmail())
             .orElseThrow(() -> new NotFoundException("TechTalent Not Found!"));
+        return mapper.map(response, TechTalentResponse.class);
     }
 
+//    @Override
+//    public TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws Exception {
+//        if (techId == null) {
+//            throw new NotFoundException("Tech ID is required");}
+//        Optional<TechTalentUser> techtalent = techTalentRepository.findById(Long.valueOf(techId));
+//        if (techtalent.isPresent()) {
+//            fields.forEach((key, value) -> {
+//                        Field field = ReflectionUtils.findField(TechTalentUser.class, (String) key);
+//
+//                        if (field == null){
+//                            throw new IllegalArgumentException("Fields cannot be null");
+//                        }
+//                        field.setAccessible(true);
+//                        ReflectionUtils.setField(field, techtalent.get(), value);
+//
+//                    }
+//            );
+//             return techTalentRepository.save(techtalent.get());
+//        }else
+//        {
+//            throw new NotFoundException("Tech Talent not found. Can't be updated!");
+//        }
+//
+//    }
+
     @Override
-    public TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws Exception {
+    public TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws NotFoundException {
         if (techId == null) {
-            throw new NotFoundException("Tech ID is required");}
-        Optional<TechTalentUser> techtalent = techTalentRepository.findById(Long.valueOf(techId));
-        if (techtalent.isPresent()) {
-            fields.forEach((key, value) -> {
-                        Field field = ReflectionUtils.findField(TechTalentUser.class, (String) key);
-
-                        if (field == null){
-                            throw new IllegalArgumentException("Fields cannot be null");
-                        }
-                        field.setAccessible(true);
-                        ReflectionUtils.setField(field, techtalent.get(), value);
-
-                    }
-            );
-             return techTalentRepository.save(techtalent.get());
-        }else
-        {
-            throw new NotFoundException("Tech Talent not found. Can't be updated!");
+            throw new IllegalArgumentException("Tech ID is required");
         }
 
+        Long techTalentId = Long.valueOf(techId);
+        Optional<TechTalentUser> techTalentOptional = techTalentRepository.findById(techTalentId);
+
+        if (techTalentOptional.isEmpty()) {
+            throw new NotFoundException("Tech Talent not found with ID: " + techId);
+        }
+
+        TechTalentUser techTalent = techTalentOptional.get();
+
+        // Update fields using reflection
+        fields.forEach((fieldName, value) -> {
+            try {
+                Field field = TechTalentUser.class.getDeclaredField((String) fieldName);
+                field.setAccessible(true);
+                field.set(techTalent, value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new IllegalArgumentException("Invalid field name: " + fieldName);
+            }
+        });
+
+        // Save the updated TechTalentUser object
+        return techTalentRepository.save(techTalent);
     }
 
 

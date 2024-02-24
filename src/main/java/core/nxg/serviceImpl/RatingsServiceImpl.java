@@ -2,15 +2,21 @@ package core.nxg.serviceImpl;
 
 import core.nxg.dto.RatingsDto;
 import core.nxg.entity.Employer;
+import core.nxg.entity.Notification;
 import core.nxg.entity.Ratings;
+import core.nxg.entity.User;
+import core.nxg.enums.NotificationType;
 import core.nxg.enums.Rating;
+import core.nxg.enums.UserType;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.EmployerRepository;
+import core.nxg.repository.NotificationRepository;
 import core.nxg.repository.RatingsRepository;
 import core.nxg.service.RatingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,18 +27,38 @@ public class RatingsServiceImpl implements RatingsService {
     private final RatingsRepository ratingsRepository;
     private final EmployerRepository employerRepository;
 
+    private final NotificationRepository notificationRepository;
+
 @Override
-public RatingsDto createRatings(Long Id, RatingsDto ratingsDto) {
-    Employer employer = employerRepository.findById(Id)
-            .orElseThrow(() -> new NotFoundException("Employer with id " + Id + " not found"));
+public RatingsDto createRatings(RatingsDto ratingsDto) {
+    Employer employer = employerRepository.findById(ratingsDto.getEmployerID())
+            .orElseThrow(() -> new NotFoundException("Employer with id " + ratingsDto.getEmployerID()+ " not found"));
 
     Ratings ratings = new Ratings();
     ratings.setEmployer(employer);
+    ratings.setRaterID(ratingsDto.getRaterID());
     ratings.setRating(Rating.valueOf(ratingsDto.getRating())); // Assuming Rating is an enum type
 
     Ratings savedRatings = ratingsRepository.save(ratings);
+    notify(savedRatings.getId(), employer, employer.getUser());
     return mapToDto(savedRatings);
 }
+
+private void notify(Long ratingsID, Employer employer, User sender){
+
+    var notification = Notification.builder()
+            .notificationType(NotificationType.RATING)
+            .dateTime(LocalDateTime.now())
+            .delivered(false)
+            .senderID(sender.getId())
+            .referencedUserID(employer.getUser().getId()) // we're using User id for ease. Profile
+                                                        // picture, fName, lName, would be easy to fetch that way.
+            .message("You have a new rating")
+            .contentId(ratingsID)
+            .build();
+    notificationRepository.saveAndFlush(notification);
+}
+
 
 
     @Override

@@ -15,6 +15,7 @@ import core.nxg.service.EmployerService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.util.ReflectionUtils;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EmployerServiceImpl implements EmployerService {
 
@@ -92,15 +94,20 @@ public class EmployerServiceImpl implements EmployerService {
             employer.setTIN(employerDto.getTIN());
             employer.setTaxClearanceCertificate(employerDto.getTaxClearanceCertificate());
             employer.setCompanySize(employerDto.getCompanySize());
+            employer.setAddress(employerDto.getAddress());
+            employer.setNationality(employerDto.getNationality());
+            employer.setState(employerDto.getState());
+            employer.setZipCode(employerDto.getZipCode());
+            employer.setCompanyZipCode(employerDto.getCompanyZipCode());
+            employer.setVacancies(employerDto.getVacancies());
             loggedInUser.setRoles(UserType.EMPLOYER.toString());
             loggedInUser.setUserType(UserType.EMPLOYER);
             userRepository.save(loggedInUser);
 
             employer.setUser(loggedInUser);
-
-
-
             employerRepository.saveAndFlush(employer);
+            loggedInUser.setEmployer(employer);
+            userRepository.save(loggedInUser);
             return "Employer created successfully!";
         }
 
@@ -111,24 +118,6 @@ public class EmployerServiceImpl implements EmployerService {
         return employerRepository.findByEmail(loggedInUser.getEmail())
                 .orElseThrow(() -> new NotFoundException("Employer not found"));
     }
-
-
-
-
-
-    @Override
-    public ResponseEntity<Employer> updateEmployer(Long id, EmployerDto employerdto) {
-    Optional<Employer> employer = employerRepository.findById(id);
-// TODO: refactor code
-    return null;
-}
-
-
-
-
-
-
-
 
 
     @Override
@@ -193,10 +182,9 @@ public class EmployerServiceImpl implements EmployerService {
                 noOfApprovedJobs.addAndGet(applicationsForJob.stream()
                         .filter(x -> x.getApplicationStatus()
                                 .equals(ApplicationStatus.APPROVED)).toList().size());}
-            catch (Exception e){
+            catch (Exception ex){
+                log.error("Error occurred while fetching applications for job posting with ID: {}", jobPosting.getJobID());
 
-//                log.error("Error getting applications for job posting:" + jobPosting.getJobID(), e);
-                return;
             }
         }));
         

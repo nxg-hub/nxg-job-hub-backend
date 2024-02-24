@@ -10,4 +10,5 @@ public class CommentsDto {
     private String comment;
     private Long viewID;
     private Long jobID;
+    private Long commenterID;
 }

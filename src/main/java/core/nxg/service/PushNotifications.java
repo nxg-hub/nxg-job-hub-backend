@@ -35,35 +35,35 @@ public class PushNotifications {
     private UserRepository userRepository;
 
 
-    public void pushNotification(NotificationDTO dto) {
-        var notification =
-        Notification.builder()
+
+
+
+    public void pushNotification(NotificationDTO dto){
+
+        var notification = Notification.builder()
                 .notificationType(dto.getNotificationType())
-                .message("You have a new " + dto.getNotificationType().toString() + "!")
                 .delivered(false)
-                .referencedUser(userRepository.findByEmail(dto.getEmail()).get())
-                .dateTime(LocalDateTime.now());
-        pushNotification(notification.build());
-    }
-    private void pushNotification(Notification notification) {
-
+                .referencedUserID(dto.getReferencedUserID())
+                .senderID(dto.getSenderID())
+                .dateTime(LocalDateTime.now())
+                .message(dto.getMessage())
+                .build();
         notificationRepository.saveAndFlush(notification);
-    }
 
+    }
 
     @Async
     private List<Notification> getNotifs(String userID) {
 
-        Optional<User> user = userRepository.findById(Long.valueOf(userID));
 
-        var notifications = notificationRepository.findByReferencedUserAndDeliveredFalse(user.get());
+        var notifications = notificationRepository.findByReferencedUserIDAndDeliveredFalse(Long.valueOf(userID));
         notifications.forEach(x -> x.setDelivered(true));
         notificationRepository.saveAll(notifications);
         return notifications;
     }
 
 
-    // DO NOT TOUCH THIS METHOD EXCEPT YOU KNOW WHAT YOU'RE DOING!
+
 
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserInID(String userID) throws InterruptedException {
         if (userID != null && !userID.isBlank()) {
@@ -81,7 +81,7 @@ public class PushNotifications {
 
         User user = userRepository.findById(Long.valueOf(userID))
                 .orElseThrow(() -> new RuntimeException("User not found!"));
-        return notificationRepository.findByReferencedUserId(user);
+        return notificationRepository.findByReferencedUserID(user.getId());
     }
 
     public Notification changeNotifStatusToRead(String notifID) {
@@ -94,7 +94,7 @@ public class PushNotifications {
     public List<Notification> getNotificationsByUserIDNotRead(String userID) {
         User user = userRepository.findById(Long.valueOf(userID))
                 .orElseThrow(() -> new UserNotFoundException("User Not Found!"));
-        return notificationRepository.findByReferencedUserAndSeenFalse(user);
+        return notificationRepository.findByReferencedUserIDAndSeenFalse(user.getId());
     }
 
 

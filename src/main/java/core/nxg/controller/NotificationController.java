@@ -18,7 +18,7 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth/notifications")
 public class NotificationController {
@@ -28,37 +28,28 @@ public class NotificationController {
     private final PushNotifications service;
 
 
+   @PostMapping("/push")
+   public ResponseEntity<?> push(@RequestBody NotificationDTO dto) {
+       try {
+           service.pushNotification(dto);
+           return ResponseEntity.ok("Pushed successfully");
+       } catch (Exception ex) {
+           return ResponseEntity.badRequest().build();
 
-    @GetMapping("/render")
-    public String renderForm(Model model) {
-        return "rendernotif";
-    }
-
-    @GetMapping(value = "/stream/{userID}")
+       }
+   }
+    @GetMapping("/stream/{userID}")
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
 
-       return service.getNotificationsByUserInID(userID);
+        return service.getNotificationsByUserInID(userID);
 
 
-//    @GetMapping("/stream/{userID}")
-//    public ServerResponse getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
-//        return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
-//                .body(Flux.from(service.getNotificationsByUserInID(userID)));
     }
 
 
-
-    @PatchMapping("/read/{notifID}")
-    @ResponseBody
+    @GetMapping("/read/{notifID}")
     public ResponseEntity<?> changeNotifStatusToRead(@PathVariable String notifID) {
         return ResponseEntity.ok(service.changeNotifStatusToRead(notifID));
-    }
-
-    @PostMapping("/push")
-    @ResponseBody
-    public ResponseEntity<?> createNotification(@RequestBody NotificationDTO dto) {
-        service.pushNotification(dto);
-        return ResponseEntity.ok("Notification created successfully!");
     }
 
 

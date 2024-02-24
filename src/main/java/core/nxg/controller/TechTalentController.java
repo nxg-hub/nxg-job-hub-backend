@@ -6,6 +6,7 @@ import core.nxg.entity.TechTalentUser;
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.repository.ApplicationRepository;
 import core.nxg.repository.SavedJobRepository;
+import core.nxg.response.TechTalentResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import core.nxg.service.UserService;
@@ -96,9 +97,9 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @GetMapping("/get-user")
     @ResponseBody
-    public ResponseEntity<TechTalentDTO> getTechTalent (HttpServletRequest request) throws Exception {
+    public ResponseEntity<TechTalentResponse> getTechTalent (HttpServletRequest request) throws Exception {
         try{
-            TechTalentDTO employer = techTalentService.getTechTalent(request);
+            TechTalentResponse employer = techTalentService.getTechTalent(request);
             return ResponseEntity.ok(employer);
         }catch(Exception e){
             log.error("Error while getting TechTalent: {}", e.getMessage());

@@ -6,7 +6,7 @@ import core.nxg.entity.Ratings;
 import java.util.List;
 
 public interface RatingsService {
-    RatingsDto createRatings(Long employerId,RatingsDto ratingsDto);
+    RatingsDto createRatings(RatingsDto ratingsDto);
 
     List<RatingsDto> getRatingsForEmployer(Long employerId);
 

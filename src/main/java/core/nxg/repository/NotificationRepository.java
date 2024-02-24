@@ -14,15 +14,15 @@ import core.nxg.entity.User;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 	
-	List<Notification> findByReferencedUserOrderByDateTimeDesc(User referencedUser);
+	List<Notification> findByReferencedUserIDOrderByDateTimeDesc(Long referencedUserID);
 
 
-	List<Notification> findByReferencedUserId(User id);
+	List<Notification> findByReferencedUserID(Long userID);
 
 
-	List<Notification> findByReferencedUserAndSeenFalse(User id);
+	List<Notification> findByReferencedUserIDAndSeenFalse(Long userID);
 
-	List<Notification> findByReferencedUserAndDeliveredFalse(User user);
+	List<Notification> findByReferencedUserIDAndDeliveredFalse(Long userID);
 
 
 }

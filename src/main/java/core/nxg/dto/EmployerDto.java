@@ -26,9 +26,14 @@ public class EmployerDto {
     private String companySize;
 
     private String jobBoard;
-
+    //
+    private String address;
+    private String nationality;
+    private String state;
     private String CACCertificate;
-
+    private String zipCode;
+    private String companyZipCode;
+    private List<String> vacancies;
     private String taxClearanceCertificate;
     private String TIN;
 
