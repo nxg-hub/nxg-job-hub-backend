@@ -14,17 +14,19 @@ import java.util.Map;
 public class APIController {
 
     @PostMapping("/event")
-    public void event(@RequestBody Map<String,Object> query){
-        if (query.get("event").equals(EventType.CUSTOMER_IDENTIFICATION_SUCCESS)){
-            System.out.println("Customer identification successful");
+    public void event(@RequestBody Map<String, Object> query) {
+        if (query.get("event").equals(EventType.CHARGE_SUCCESS.getEvent())) {
+
+            System.out.println("SUCCESSFUL TRANSACTION");
 
         }
-        if (query.get("event").equals(EventType.CUSTOMER_IDENTIFICATION_FAILED)){
+        if (query.get("event").equals(EventType.CHARGE_FAILED)){
             System.out.println("Customer identification failed");
         }
-        System.out.println(query);
+            System.out.println(query);
+
+        }
+
 
     }
 
-
-}

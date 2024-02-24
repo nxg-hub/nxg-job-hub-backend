@@ -53,29 +53,12 @@ public class SubscriptionController {
     }
 
 
-    @PostMapping("/initialize-transaction")
-    public ResponseEntity<JsonNode> intializeTransaction(@RequestBody TransactionDTO dto) throws Exception {
 
-        try {
-            JsonNode response = paymentService.
-                    initializeTransaction(dto);
-
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            log.error("Could not initialize transaction for  " + dto.getEmail(), e);
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode error = mapper.convertValue(e.getMessage(), JsonNode.class);
-
-            return ResponseEntity.badRequest().body(error);
-        }
-
-
-    }
 
 
     @Operation(summary = "Subscribe a user to a plan. Based on the plan type, the user will be charged accordingly")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Subscribe a user with " +
-            "email address, planType(PLATINUM, GOLD, SILVER, FREE ) and a callback_url", required = true, content =
+            "email address, planType(PLATINUM, GOLD, SILVER, ) and a callback_url", required = true, content =
     @Content(mediaType = "application/json",
             schema = @Schema(implementation = SubscribeDTO.class)))
     @PostMapping("/subscribe")

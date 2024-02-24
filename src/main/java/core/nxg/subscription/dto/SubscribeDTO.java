@@ -11,7 +11,7 @@ public class SubscribeDTO {
     private  String email;
     private String callback_url;
 
-    private PlanType planType;
+//    private PlanType planType;
 
 
 }

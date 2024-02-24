@@ -51,8 +51,8 @@ public class SubscriptionService {
             if (response.hasBody() && response.getBody().get("status").booleanValue()) {
 
                 Subscriber subscriber = new Subscriber();
-                subscriber.setCustomerId(response.getBody().get("data").get("customer_code").toString());
-                subscriber.setEmail(response.getBody().get("data").get("email").toString());
+                subscriber.setCustomerId(response.getBody().get("data").get("customer_code").asText());
+                subscriber.setEmail(response.getBody().get("data").get("email").asText());
                 subscriber.setPlanType(customerdto.getPlanType());
                 subscriber.setUser(user);
                 userRepo.save(user);
@@ -103,19 +103,22 @@ public class SubscriptionService {
 
 
     public JsonNode subscribe(SubscribeDTO dto) throws Exception {
+
+        var subscriber = subscriptionRepo.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("A Subscription Account is not bound to this email!"));
         JsonNode response;
 
         try {
-            log.info("Creating a " + dto.getPlanType() + " plan...");
-            response = createPlan(setPlan(dto.getPlanType()));
-            log.info("Created a " + dto.getPlanType() + " plan..." + response);
+            log.info("Creating a " + subscriber.getPlanType()+ " plan...");
+            response = createPlan(setPlan(subscriber.getPlanType()));
+            log.info("Created a " + subscriber.getPlanType() + " plan..." + response);
 
             TransactionDTO transactionDTO = new TransactionDTO();
             transactionDTO.setEmail(dto.getEmail());
             log.info("Initializing transaction...");
-            transactionDTO.setPlan(response.get("data").get("plan_code").toString());
+            transactionDTO.setPlan(response.get("data").get("plan_code").asText());
             log.info("Initialized transaction..." + transactionDTO.getPlan());
-//            transactionDTO.setCallback_url(dto.getCallback_url());
+            transactionDTO.setCallback_url(dto.getCallback_url());
             transactionDTO.setAmount(response.get("data").get("amount").asInt());
             log.info("Initialized transaction..." + transactionDTO.getAmount());
 
@@ -130,11 +133,12 @@ public class SubscriptionService {
 
     }
 
-    private Map<String, Object> setPlan(PlanType planType) {
+    private Map<String, Object> setPlan(PlanType planType) throws Exception{
         int amount;
         String name;
         String interval;
-        String currency = "NGN";
+//        String currency = "NGN"; // removed currency to check if user can specify the currency.
+                                    ;//based on the currency { usd,ngn } integration bound to the paystack key
         String description;
 
         switch (planType) {
@@ -157,14 +161,14 @@ public class SubscriptionService {
                 description = "Silver Subscription Plan";
                 break;
             default:
-                throw new RuntimeException("Invalid plan type");
+                throw new Exception("Invalid plan type");
         }
 
         Map<String, Object> query = new HashMap<>();
         query.put("name", name);
         query.put("amount", amount);
         query.put("interval", interval);
-        query.put("currency", currency);
+//        query.put("currency", currency); //to be tested in live environment. See update above.
         query.put("description", description);
 
         return query;
@@ -172,17 +176,19 @@ public class SubscriptionService {
 
 
     public JsonNode validateCustomer(VerificationDTO dto) {
-//
-//        var customer = subscriptionRepo.findByEmail(dto.getEmail());
-//        if (customer.isEmpty()) {
-//            throw new UserNotFoundException("Customer does not exist!");
-//        }
+        var user = userRepo.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User not found! Please register first"));
+        var customer = subscriptionRepo.findByEmail(dto.getEmail())
+                .orElseThrow(()-> new UserNotFoundException("A Subscription Account is not bound to this email!"));
+
+
+
         Map<String, Object> request = new HashMap<>();
         request.put("account_number", dto.getAccount_number());
         request.put("bank_code", dto.getBank_code());
         request.put("bvn", dto.getBvn());
-        request.put("first_name",dto.getFirst_name());
-        request.put("last_name",dto.getLast_name() );
+        request.put("first_name",user.getFirstName());
+        request.put("last_name",user.getLastName() );
         request.put("type","bank_account");
         request.put("country", "NG");
         return apiService.validateIdentity(request,dto.getCustomer_code());
