@@ -20,6 +20,8 @@ public interface UserService {
     String createUser(UserDTO userDto, String siteURL) throws Exception;
     User saveUser(User user);
 
+    String generateOAuthPassword();
+
     void createOAuthUSer(String username, String provider);
     Page<UserResponseDto> getAllUsers(Pageable pageable);
     UserResponseDto getUserById(Long id) throws Exception;

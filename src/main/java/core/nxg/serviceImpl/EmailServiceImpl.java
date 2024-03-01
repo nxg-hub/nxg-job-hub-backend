@@ -1,10 +1,7 @@
 package core.nxg.serviceImpl;
 
 
-import core.nxg.dto.EmailDTO;
-import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.JobPosting;
-import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.entity.VerificationCode;
 import core.nxg.exceptions.*;
@@ -13,22 +10,13 @@ import core.nxg.repository.UserRepository;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
 import core.nxg.utils.Helper;
-import static core.nxg.utils.constants.EmailConstant.PASSWORD_RESET_CONTENT;
-import static core.nxg.utils.constants.EmailConstant.VERIFICATION_EMAIL_CONTENT;
-import static core.nxg.utils.constants.EmailConstant.JOBPOSTING_NOTIFICATION_CONTENT;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,8 +25,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.Optional;
+
+import static core.nxg.utils.constants.EmailConstant.*;
 
 
 @Service
@@ -55,7 +44,6 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     TechTalentRepository TechTalentRepository;
 
-    
 
     @Autowired
     UserRepository userRepository;
@@ -67,14 +55,13 @@ public class EmailServiceImpl implements EmailService {
     Helper helper;
 
 
-
-
     @Override
     public void confirmReset(String verificationCode) throws Exception {
 
         Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
         if (verification.isEmpty()) {
-            throw new TokenNotFoundException("Invalid reset code!");}
+            throw new TokenNotFoundException("Invalid reset code!");
+        }
 
         if (verification.get().isExpired()) {
             throw new TokenExpiredException("Verification code has expired!");
@@ -86,7 +73,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void confirmVerification(String verificationCode) throws  Exception {
+    public void confirmVerification(String verificationCode) throws Exception {
 
         Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
         if (verification.isEmpty()) {
@@ -102,23 +89,24 @@ public class EmailServiceImpl implements EmailService {
             }
         }
     }
+
     @Override
     public void sendPasswordResetEmail(String email, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
-       var siteURL = helper.getSiteURL(request);
+        var siteURL = helper.getSiteURL(request);
 
         Optional<User> user = userRepository.findByEmail(email);
-        if(user.isEmpty()){
-            throw new UserNotFoundException("User with email does not exist");}
-        if (!user.get().isEnabled()){
-            throw new AccountExpiredException("Account is yet to be verified! Kindly request a verification email.");}
-
-        else{
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User with email does not exist");
+        }
+        if (!user.get().isEnabled()) {
+            throw new AccountExpiredException("Account is yet to be verified! Kindly request a verification email.");
+        } else {
             VerificationCode verificationCode = new VerificationCode(user.get());
 
 
             String subject = "Password Reset";
             String toAddress = user.get().getEmail();
-            String content  = PASSWORD_RESET_CONTENT;
+            String content = PASSWORD_RESET_CONTENT;
 
 
             MimeMessage message = mailSender.createMimeMessage();
@@ -149,9 +137,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendVerificationEmail(
-    VerificationCode code , 
-    String siteURL
-   ) throws MessagingException, IOException, MailException {
+            VerificationCode code,
+            String siteURL
+    ) throws MessagingException, IOException, MailException {
 
 
         User user = code.getUser();
@@ -169,7 +157,6 @@ public class EmailServiceImpl implements EmailService {
         // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
 
         helper.addInline("mylogo", mylogo);
-
 
 
         helper.setSubject(subject);
@@ -197,7 +184,6 @@ public class EmailServiceImpl implements EmailService {
 
         Optional<User> user1 = userRepository.findByEmail(email);
         if (user1.isEmpty()) throw new UserNotFoundException("User cant be found!");
-
 
 
         User user = user1.get();
@@ -240,7 +226,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException{
+    public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         String firstName = userRepository.findByEmail(to).get().getFirstName();
@@ -259,6 +245,36 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
 
 
+    }
 
+    @Override
+    public void sendOAuthUSerLoginDetails(String email) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User with email does not exist");
+        }
+        if (!user.get().isEnabled()) {
+            throw new AccountExpiredException("Account is yet to be verified! Kindly request a verification email.");
+        } else {
+
+
+            String mailSubject = "NXG JOB HUB LOGIN DETAILS";
+            String mailto = user.get().getEmail();
+            String content = OAUTH_MAIL_CONTENT;
+
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+
+            helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
+            helper.setTo(mailto);
+
+            helper.setSubject(mailSubject);
+            helper.setText(content, true);
+            mailSender.send(message);
+
+        }
+    }
 }
-}
+
