@@ -11,6 +11,8 @@ public final class Endpoints {
             "/api/v1/auth/**",
             "/api/v1/auth/**",
             "/**",
+            "/**.html",
+            "/**.js",
             "/api/agents/**",
             "/api/reactions/**",
             "/api/ratings/**",

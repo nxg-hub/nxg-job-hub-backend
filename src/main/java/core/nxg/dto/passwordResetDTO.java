@@ -1,7 +1,7 @@
 package core.nxg.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+//import jakarta.validation.constraints.Email;
+//import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 

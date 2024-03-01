@@ -52,7 +52,7 @@ public class User implements UserDetails, OAuth2User {
     private String phoneNumber;
 
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String password;
 
     @Column(name = "nationality")

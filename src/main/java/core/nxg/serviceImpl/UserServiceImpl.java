@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setEmail(username);
-        user.setProvider(OAuth2Provider.LOCAL);
+        user.setProvider(OAuth2Provider.GOOGLE);
 //        user.setPassword(helper.encodePassword(password));
         //TODO: SEND SUCCESS EMAIL FOR OAUTH REGISTRATION
         userRepository.save(user);

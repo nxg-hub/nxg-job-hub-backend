@@ -54,6 +54,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user1.setPassword(user.getPassword());
             user1.setNationality(user.getNationality());
             user1.setDateOfBirth(user.getDateOfBirth());
+            user1.setEnabled(true);
             user1.setUserType(user.getUserType());
         } else {
             user1 = userOptional.get();
