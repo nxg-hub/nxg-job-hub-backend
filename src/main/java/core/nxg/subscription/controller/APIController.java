@@ -1,18 +1,4 @@
 package core.nxg.subscription.controller;
-import java.io.UnsupportedEncodingException;
-
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-
-import java.security.NoSuchAlgorithmException;
-import jakarta.xml.bind.DatatypeConverter;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
-
-import org.json.JSONObject;
-
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,16 +6,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscriptionRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.bind.DatatypeConverter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.integration.annotation.Payloads;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 
@@ -40,7 +32,7 @@ import java.util.Map;
 public class APIController {
 
     @Autowired
-    private SubscriptionRepository repo;
+    private final SubscriptionRepository repo;
 
     @Autowired
     @Value("${paystack.secret.active}")
@@ -52,7 +44,7 @@ public class APIController {
 
 
     @PostMapping("/event")
-    public ResponseEntity<Void >event(@RequestBody Map<String, Object> query, @RequestHeader ("x-paystack-signature") String headerSignature ) throws Exception {
+    public ResponseEntity<Void >event(@RequestBody Map<String, Object> query, @RequestHeader ("x-paystack-signature") String headerSignature ) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, JSONException,Exception {
 
 
 
@@ -79,7 +71,7 @@ public class APIController {
                 }
                 return ResponseEntity.ok().build();
             }
-        } catch (Exception e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             log.error("Error while processing event from  Query: {}, Header Signature: {}", query, headerSignature, e);
         }
         return ResponseEntity.badRequest().build();
