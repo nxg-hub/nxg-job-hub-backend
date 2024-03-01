@@ -23,13 +23,6 @@ public final class Endpoints {
             "/api/v1/auth/notifications/**",
             "/api/subscriptions/**",
 //            "/api/v1/callbacks/**",
-// =======
-//             "/h2-console/**",
-//             "/h2/**",
-//         "/**"
-// >>>>>>> main
-            
-            
     };
 }
 
