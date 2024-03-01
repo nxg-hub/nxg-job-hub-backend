@@ -72,7 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user1.setEmail(user1.getEmail());
             user1.setProfilePicture(user1.getProfilePicture());
         }
-        emailService.sendOAuthUSerLoginDetails(user.getEmail());
+//        emailService.sendOAuthUSerLoginDetails(user.getEmail());
         return userService.saveUser(user1);
     }
 }
