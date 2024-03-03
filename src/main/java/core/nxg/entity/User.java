@@ -5,8 +5,7 @@ import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,7 +25,6 @@ public class User implements UserDetails, OAuth2User {
     private Long id;
 
     private String firstName;
-
 
     @Column(nullable = false, unique = true)
     @Email
@@ -52,7 +50,7 @@ public class User implements UserDetails, OAuth2User {
     private String phoneNumber;
 
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "nationality")
