@@ -9,4 +9,5 @@ public interface OAuth2UserInfoExtractor {
     User extractUserInfo(OAuth2User oAuth2User);
 
     boolean accepts(OAuth2UserRequest userRequest);
+
 }

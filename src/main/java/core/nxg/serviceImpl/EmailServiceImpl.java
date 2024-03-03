@@ -248,7 +248,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendOAuthUSerLoginDetails(String email) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+    public void sendOAuthUSerLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
 
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
@@ -261,7 +261,10 @@ public class EmailServiceImpl implements EmailService {
 
             String mailSubject = "NXG JOB HUB LOGIN DETAILS";
             String mailto = user.get().getEmail();
-            String content = OAUTH_MAIL_CONTENT;
+            String content = OAUTH_MAIL_CONTENT
+                    .replace("[[name]]", name)  // Replace with user's name
+                    .replace("[[email]]", email)
+                    .replace("[[password]]", generatedPassword);
 
 
             MimeMessage message = mailSender.createMimeMessage();
