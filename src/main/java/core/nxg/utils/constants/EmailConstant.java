@@ -92,4 +92,28 @@ public class EmailConstant {
 
             + "</body>"
             + "</html>";
+
+
+    public static final String OAUTH_MAIL_CONTENT = "<html>"
+            + "<head>"
+            + "<style>"
+            + "body {"
+            + "  font-family: Arial, Helvetica, sans-serif;"
+            + "  font-size: 1rem;"
+            + "  line-height: 1.6;"
+            + "  color: #000;"
+            + "}"
+            + "</style>"
+            + "</head>"
+            + "<body style=\"text-align:justify;\">"
+            + "  <h1 style=\"font-weight: bold;\">NXGJOBHUB OAUTH LOGIN DETAILS</h1>"
+            + "   <p>Dear [[name]],</p>"
+            + "   <p>Please find below your Login Details:</p>"
+            + "   <p>Email: [[email]]</p>"
+            + "   <p>Password: [[password]]</p>"
+            + "   <p style=\"margin-top: 50px;\">If you have any questions, please feel free to contact us.</p>"
+            + "   <p>Thanks,</p>"
+            + "   <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
+            + "</body>"
+            + "</html>";
 }

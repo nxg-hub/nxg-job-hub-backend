@@ -26,6 +26,7 @@ import core.nxg.dto.UserDTO;
 import core.nxg.entity.User;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
+import java.security.SecureRandom;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 
@@ -90,13 +91,62 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String generateOAuthPassword() {
+
+        // Define the characters to be used for password generation
+        final String UPPER_CASE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final String SPECIAL_CHARACTERS = "!@#$%^&*()-_=+";
+
+            StringBuilder password = new StringBuilder();
+            SecureRandom random = new SecureRandom();
+
+            // Add 2 random upper case characters
+            for (int i = 0; i < 2; i++) {
+                char upperCaseChar = UPPER_CASE_CHARACTERS.charAt(random.nextInt(UPPER_CASE_CHARACTERS.length()));
+                password.append(upperCaseChar);
+            }
+
+            // Add 2 random special characters
+            for (int i = 0; i < 2; i++) {
+                char specialChar = SPECIAL_CHARACTERS.charAt(random.nextInt(SPECIAL_CHARACTERS.length()));
+                password.append(specialChar);
+            }
+
+            // Add 4 random alphanumeric characters
+            String alphanumericCharacters = UPPER_CASE_CHARACTERS.toLowerCase() + "0123456789";
+            for (int i = 0; i < 4; i++) {
+                char randomChar = alphanumericCharacters.charAt(random.nextInt(alphanumericCharacters.length()));
+                password.append(randomChar);
+            }
+
+            // Shuffle the characters in the password
+        return shuffleString(password.toString());
+        }
+
+        // Method to shuffle the characters in a string
+        private String shuffleString(String string) {
+            char[] charArray = string.toCharArray();
+            SecureRandom random = new SecureRandom();
+
+            for (int i = 0; i < charArray.length; i++) {
+                int randomIndex = random.nextInt(charArray.length);
+                char temp = charArray[i];
+                charArray[i] = charArray[randomIndex];
+                charArray[randomIndex] = temp;
+            }
+
+            return new String(charArray);
+    }
+
+
+    @Override
     public void createOAuthUSer(String username, String provider) {
         User existinguser = userRepository.findByEmailAndProvider(username,Provider.valueOf(provider.toUpperCase() ))
                 .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         User user = new User();
         user.setEmail(username);
-        user.setProvider(OAuth2Provider.LOCAL);
+        user.setProvider(OAuth2Provider.GOOGLE);
 //        user.setPassword(helper.encodePassword(password));
         //TODO: SEND SUCCESS EMAIL FOR OAUTH REGISTRATION
         userRepository.save(user);
