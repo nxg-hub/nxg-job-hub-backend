@@ -35,7 +35,7 @@ public class APIController {
     private final SubscriptionRepository repo;
 
     @Value("${paystack.secret.active}")
-    private static String secretKey;
+    private String secretKey;
 
 
     @PostMapping("/event")
@@ -55,19 +55,22 @@ public class APIController {
             if (paystackIsValidated(headerSignature, data)) {
 
 
-                if (payload.get("event").equals(EventType.SUBSCRIPTION_CREATE.getEvent())) {
+                if (data.get("event").asText().equals(EventType.SUBSCRIPTION_CREATE.getEvent())) {
+
+
+                    log.info("Subscription event received: {}", data.get("event"));
 
 
 
-                    String email = data.get("customer").get("email").asText();
+                    String email =  data.get("data").get("customer").get("email").asText();
+                        repo.findByEmail(email).ifPresent(subscriber -> {
+                                    subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+                                    repo.save(subscriber);
 
-                    repo.findByEmail(email).ifPresent(subscriber -> {
-                                subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
-                                repo.save(subscriber);
+                                }
+                        )
+                        ;
 
-                            }
-                    )
-                    ;
                 }
                 return ResponseEntity.ok().build();
             }
@@ -103,10 +106,13 @@ public class APIController {
         byte[] mac_data = sha512_HMAC.
 
                 doFinal(payload.toString().getBytes(StandardCharsets.UTF_8));
+        log.info("Payload: {}", payload);
 
         String result = DatatypeConverter.printHexBinary(mac_data);
 
-        return result.toLowerCase().equals(headerSignature);
+        log.info("Result: {} and header {}", result, headerSignature);
+
+        return result.equalsIgnoreCase(headerSignature);
     }
 }
 

@@ -264,17 +264,19 @@ public class SubscriptionService {
         Optional<List<Subscriber>> activeSubscribers = subscriptionRepo.findBySubscriptionStatus(SubscriptionStatus.ACTIVE);
 
         if (activeSubscribers.isPresent()) {
-
+            log.info("Found {} active subscribers", activeSubscribers.get().size());
             List<Subscriber> updatedSubscribers = new ArrayList<>() {
             };
             for (Subscriber subscriber : activeSubscribers.get()) {
 
                 LocalDate endDate = calculateEndDate(subscriber.getSubscriptionStarts(), subscriber.getPlanType());
 
-
                 if (LocalDate.now().isAfter(endDate)) {
+                    log.info("Subscriber {} subscription ends on {}", subscriber.getEmail(), endDate);
+
 
                     subscriber.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+                    log.warn("Subscriber {} subscription has expired and set INACTIVE", subscriber.getEmail());
                     updatedSubscribers.add(subscriber);
 
 
