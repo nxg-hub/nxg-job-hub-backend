@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.util.Map;
 
 
@@ -65,6 +66,7 @@ public class APIController {
                     String email =  data.get("data").get("customer").get("email").asText();
                         repo.findByEmail(email).ifPresent(subscriber -> {
                                     subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+                                    subscriber.setSubscriptionStarts(LocalDate.now());
                                     repo.save(subscriber);
 
                                 }
