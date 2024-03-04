@@ -42,8 +42,7 @@ public class PaymentTransactions {
 
     private String transactionType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscriber_id")
+    @ManyToOne(targetEntity = Subscriber.class)
     private Subscriber subscriber;
 
 
