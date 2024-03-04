@@ -5,6 +5,7 @@ import core.nxg.entity.User;
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
+import core.nxg.utils.Helper;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserService userService;
     private final EmailService emailService;
     private final List<OAuth2UserInfoExtractor> oAuth2UserInfoExtractors;
+    private final Helper helper;
 
 
     @Override
@@ -79,7 +81,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user1.setProvider(user.getProvider());
             user1.setProviderId((long) providerPosition);
             user1.setPhoneNumber(user.getPhoneNumber());
-            user1.setPassword(randomPassword);
+            user1.setPassword(helper.encodePassword(randomPassword));
             user1.setNationality(user.getNationality());
             user1.setDateOfBirth(user.getDateOfBirth());
             user1.setEnabled(true);
