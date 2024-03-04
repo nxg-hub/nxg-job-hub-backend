@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -31,10 +33,15 @@ public class Subscriber {
     private User user;
 
 
+    @Temporal(TemporalType.DATE)
+    private LocalDate subscriptionStarts;
+
+
+
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
 
-    @OneToMany(mappedBy = "subscriber")
+    @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL)
     private List<PaymentTransactions> transactions;
 
 

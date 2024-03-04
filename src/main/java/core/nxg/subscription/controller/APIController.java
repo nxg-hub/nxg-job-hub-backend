@@ -9,8 +9,7 @@ import core.nxg.subscription.repository.SubscriptionRepository;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,38 +25,39 @@ import java.util.Map;
 
 
 @Slf4j
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/callbacks")
 public class APIController {
 
-    @Autowired
+
+
     private final SubscriptionRepository repo;
 
-    @Autowired
     @Value("${paystack.secret.active}")
-    private final String secretKey;
-
-
-    @Autowired
-    private static final String HMAC_SHA512 = "HmacSHA512";
+    private static String secretKey;
 
 
     @PostMapping("/event")
-    public ResponseEntity<Void >event(@RequestBody Map<String, Object> query, @RequestHeader ("x-paystack-signature") String headerSignature ) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, JSONException,Exception {
+    public ResponseEntity<Void> event(@RequestBody Map<String, Object> payload, @RequestHeader("x-paystack-signature") String headerSignature) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException,  Exception {
 
 
+
+        ObjectMapper mapper = new ObjectMapper();
+
+
+
+        TypeReference<JsonNode> typeReference = new TypeReference<>() {
+        };
+        JsonNode data = mapper.convertValue(payload, typeReference);
 
         try {
-            if (paystackIsValidated( headerSignature, query)) {
+            if (paystackIsValidated(headerSignature, data)) {
 
 
-                if (query.get("event").equals(EventType.SUBSCRIPTION_CREATE.getEvent())) {
+                if (payload.get("event").equals(EventType.SUBSCRIPTION_CREATE.getEvent())) {
 
-                    ObjectMapper mapper = new ObjectMapper();
-                    TypeReference<JsonNode> typeReference = new TypeReference<>() {
-                    };
-                    JsonNode data = mapper.convertValue(query.get("data"), typeReference);
+
 
                     String email = data.get("customer").get("email").asText();
 
@@ -72,67 +72,49 @@ public class APIController {
                 return ResponseEntity.ok().build();
             }
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            log.error("Error while processing event from  Query: {}, Header Signature: {}", query, headerSignature, e);
+            log.warn("Error while processing event from  Payload: {}, Header Signature: {}", payload, headerSignature, e);
         }
         return ResponseEntity.badRequest().build();
 
     }
 
 
+    public boolean paystackIsValidated(
+            String headerSignature,
+            JsonNode payload)
+
+            throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, Exception {
 
 
-
-
-
-
-        public boolean paystackIsValidated(
-                                 String headerSignature,
-                                 Map<String, Object> payload)
-
-                throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, JSONException, Exception{
-
-
-
-            if (headerSignature == null || headerSignature.isEmpty()) {
-                throw new Exception("x-paystack-signature header is missing");
-            }
-
-
-            JSONObject body = new JSONObject(payload);
-
-
-
-
-
-
-            byte [] byteKey = secretKey.getBytes(StandardCharsets.UTF_8);
-
-            SecretKeySpec keySpec = new SecretKeySpec(byteKey, HMAC_SHA512);
-
-            Mac sha512_HMAC = Mac.getInstance(HMAC_SHA512);
-
-            sha512_HMAC.init(keySpec);
-
-            byte [] mac_data = sha512_HMAC.
-
-                    doFinal(body.toString().getBytes(StandardCharsets.UTF_8));
-
-            String result = DatatypeConverter.printHexBinary(mac_data);
-
-            if(result.toLowerCase().equals(headerSignature)) {
-                ResponseEntity.ok().build();
-
-                return true;
-
-
-            }else{
-                    ResponseEntity.badRequest().build();
-                    throw new InvalidKeyException("Invalid signature");
-            }
-
+        if (headerSignature == null || headerSignature.isEmpty()) {
+            throw new Exception("x-paystack-signature header is missing");
         }
 
+
+        byte[] byteKey = secretKey.getBytes(StandardCharsets.UTF_8);
+
+        String HMAC_SHA512 = "HmacSHA512";
+        SecretKeySpec keySpec = new SecretKeySpec(byteKey, HMAC_SHA512);
+
+        Mac sha512_HMAC = Mac.getInstance(HMAC_SHA512);
+
+        sha512_HMAC.init(keySpec);
+
+        byte[] mac_data = sha512_HMAC.
+
+                doFinal(payload.toString().getBytes(StandardCharsets.UTF_8));
+
+        String result = DatatypeConverter.printHexBinary(mac_data);
+
+        return result.toLowerCase().equals(headerSignature);
     }
+}
+
+
+
+
+
+
 
 
 
