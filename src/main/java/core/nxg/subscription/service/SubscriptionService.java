@@ -165,7 +165,6 @@ public class SubscriptionService {
             tranx.setTransactionDate(LocalDate.now());
             tranx.setTransactionTime(LocalTime.now());
             tranx.setSubscriber(subscriber);
-//            subscriber.setTransactions(List.of(tranx));// fix
             subscriptionRepo.save(subscriber);
             transactionRepo.save(tranx);
 
