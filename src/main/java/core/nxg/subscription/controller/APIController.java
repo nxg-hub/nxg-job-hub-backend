@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscriptionRepository;
-import core.nxg.subscription.service.APIService;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,6 @@ public class APIController {
 
 
     private final SubscriptionRepository repo;
-    private final APIService apiService;
 
     @Value("${paystack.secret.active}")
     private String secretKey;
@@ -58,19 +56,26 @@ public class APIController {
             if (paystackIsValidated(headerSignature, data)) {
 
 
+                if (data.get("event").asText().equals(EventType.SUBSCRIPTION_CREATE.getEvent())) {
+
 
                     log.info("Subscription event received: {}", data.get("event"));
 
 
 
                     String email =  data.get("data").get("customer").get("email").asText();
-                apiService.parseEvents(EventType.valueOf(data.get("event").asText()), email );
+                        repo.findByEmail(email).ifPresent(subscriber -> {
+                                    subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+                                    subscriber.setSubscriptionStarts(LocalDate.now());
+                                    repo.save(subscriber);
 
-
+                                }
+                        )
+                        ;
 
                 }
                 return ResponseEntity.ok().build();
-
+            }
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             log.warn("Error while processing event from  Payload: {}, Header Signature: {}", payload, headerSignature, e);
         }
