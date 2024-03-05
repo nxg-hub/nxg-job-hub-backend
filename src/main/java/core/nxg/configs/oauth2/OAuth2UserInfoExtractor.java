@@ -1,6 +1,8 @@
 package core.nxg.configs.oauth2;
 
 import core.nxg.entity.User;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
