@@ -22,6 +22,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+      env:
+        PSK_SK_LIVE: ${{ secrets.PSK_SK_LIVE }}
     - name: Build with Maven
       run: mvn clean install
     - name: Build & push Docker image
