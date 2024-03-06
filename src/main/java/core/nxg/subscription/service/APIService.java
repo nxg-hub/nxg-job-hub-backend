@@ -21,16 +21,11 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static core.nxg.subscription.enums.EventType.*;
-
-
-
 @Slf4j
 @Service
 public class APIService {
 
-
-    @Value("${paystack.secret.active}")
+    @Value("${psk.secret.active}")
     private String API_KEY;
 
 
