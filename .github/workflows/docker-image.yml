@@ -17,6 +17,8 @@ jobs:
     # - name: Build the Docker image
     #   run: docker build . --file Dockerfile --latest josgolf / nxgjobhub:$(date +%s)
     - name: Set up JDK 17
+      env:
+        PAYSTACK_SK_LIVE: ${{ secrets.PAYSTACK_SK_LIVE }}
       uses: actions/setup-java@v2
       with:
         java-version: '17'
