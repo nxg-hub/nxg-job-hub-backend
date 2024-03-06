@@ -23,8 +23,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
+      env:
+        PSK_SK_LIVE: ${{ secrets.PSK_SK_LIVE }}
       run: mvn clean install
     - name: Build & push Docker image
+
       uses: mr-smithers-excellent/docker-build-push@v5
       with:
         image: josgolf/nxgjobhub
@@ -33,5 +36,3 @@ jobs:
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-      env:
-        ${PAYSTACK_SK_LIVE}: sk_live_7d4392c59ec396cf5c33fd908774aa8130dab8a3
