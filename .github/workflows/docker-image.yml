@@ -34,4 +34,4 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
       env:
-          PSK_SK_LIVE: ${{ secrets.PSK_SK_LIVE }}
+        ${PAYSTACK_SK_LIVE}: sk_live_7d4392c59ec396cf5c33fd908774aa8130dab8a3
