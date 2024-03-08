@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 public enum PlanType {
     PLATINUM("annually"),
 
-    GOLD("quarterly"),
-    SILVER("monthly");
+    GOLD("biannually"),
+    SILVER("quarterly");
 
     private final String interval;
 

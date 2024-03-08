@@ -29,7 +29,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/callbacks")
+@RequestMapping("/api/v1/webhooks")
 public class APIController {
 
 
@@ -59,7 +59,7 @@ public class APIController {
 
 
 
-                    log.info("Subscription event received: {}", data.get("event"));
+                    log.info("Paystack event received: {}", data.get("event"));
                 String email =  data.get("data").get("customer").get("email").asText();
 
                 apiService.parseEvents(data.get("event").asText(), email);

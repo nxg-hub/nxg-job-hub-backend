@@ -8,7 +8,9 @@ import core.nxg.subscription.dto.TransactionDTO;
 import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscriptionRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,13 +25,14 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class APIService {
 
     @Value("${psk.secret.active}")
     private String API_KEY;
 
-
-    private SubscriptionRepository repo;
+    @Autowired
+    private final SubscriptionRepository repo;
 
     public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
@@ -107,7 +110,7 @@ public class APIService {
         switch(event){
             case "subscription.create":
                log.info("Subscription event to be parsed: {}", event);
-               repo.findByEmail(email).ifPresent(subscriber -> {
+               this.repo.findByEmail(email).ifPresent(subscriber -> {
                 subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
                 subscriber.setSubscriptionStarts(LocalDate.now());
                 repo.save(subscriber);});
@@ -118,7 +121,7 @@ public class APIService {
                 log.info("A Charge event received {}", event);
                 break;
             case "charge.success":
-                log.info("A Charge event created ");
+                log.info("A Charge event successfully created ");
                 break;
 
 
