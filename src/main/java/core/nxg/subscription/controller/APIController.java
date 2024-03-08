@@ -37,7 +37,7 @@ public class APIController {
     private final SubscriptionRepository repo;
     private final APIService apiService;
 
-    @Value("${paystack.secret.active}")
+    @Value("${psk.secret.active}")
     private String secretKey;
 
 
