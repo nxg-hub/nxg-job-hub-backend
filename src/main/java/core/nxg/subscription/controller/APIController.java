@@ -60,16 +60,12 @@ public class APIController {
 
 
                     log.info("Subscription event received: {}", data.get("event"));
+                String email =  data.get("data").get("customer").get("email").asText();
 
+                apiService.parseEvents(data.get("event").asText(), email);
 
-
-                    String email =  data.get("data").get("customer").get("email").asText();
-                apiService.parseEvents(EventType.valueOf(data.get("event").asText()), email );
-
-
-
-                }
                 return ResponseEntity.ok().build();
+            }
 
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             log.warn("Error while processing event from  Payload: {}, Header Signature: {}", payload, headerSignature, e);
@@ -101,7 +97,6 @@ public class APIController {
         sha512_HMAC.init(keySpec);
 
         byte[] mac_data = sha512_HMAC.
-
                 doFinal(payload.toString().getBytes(StandardCharsets.UTF_8));
         log.info("Payload: {}", payload);
 

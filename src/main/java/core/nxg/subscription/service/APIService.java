@@ -106,24 +106,27 @@ public class APIService {
     }
 
 
-    public void parseEvents(EventType event, String email) {
-        String eventString = event.getEvent();
+    public void parseEvents(String event, String email) {
         System.out.println("Event: " + event);
-        switch(eventString){
+
+        switch(event){
             case "subscription.create":
-               log.info("Subscription event received: {}", event.getEvent());
+               log.info("Subscription event to be parsed: {}", event);
                repo.findByEmail(email).ifPresent(subscriber -> {
                 subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
                 subscriber.setSubscriptionStarts(LocalDate.now());
                 repo.save(subscriber);});
                 break;
+
                 case "charge.failed":
 
-                log.info("A Charge event received {}", eventString);
+                log.info("A Charge event received {}", event);
                 break;
             case "charge.success":
-                log.info("A Charge event created {}", eventString);
+                log.info("A Charge event created ");
                 break;
+
+
             case "subscription.disable":
                 System.out.println("Subscription disabled");
                 break;
@@ -146,8 +149,9 @@ public class APIService {
                 System.out.println("Transfer reversed");
                 break;
             default:
-                log.info("An unrecognized event was received: {}", eventString);
-                break;
+                log.info("An unrecognized event was received: {}", event);
+                throw new IllegalStateException("Unexpected value: " + event);
+
         }
 
 

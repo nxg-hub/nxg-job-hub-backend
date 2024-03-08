@@ -60,7 +60,7 @@ public class SubscriptionController {
 
     @Operation(summary = "Subscribe a user to a plan. Based on the plan type, the user will be charged accordingly")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Subscribe a user with " +
-            "email address, planType(PLATINUM, GOLD, SILVER, ) and a callback_url", required = true, content =
+            "email address,  and a callback_url", required = true, content =
     @Content(mediaType = "application/json",
             schema = @Schema(implementation = SubscribeDTO.class)))
     @PostMapping("/subscribe")
@@ -68,6 +68,8 @@ public class SubscriptionController {
 
         try {
             JsonNode response = paymentService.subscribe(dto);
+            /* make provision to change the plan type */
+            /* from the current to a new plan type */
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {

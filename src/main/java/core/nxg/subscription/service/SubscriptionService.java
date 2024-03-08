@@ -171,13 +171,6 @@ public class SubscriptionService {
 
 
 
-            ;
-
-
-
-
-
-
             return this.initializeTransaction(transactionDTO);
         } catch (Exception e) {
             Logger.getLogger(SubscriptionService.class.getName())
@@ -260,12 +253,12 @@ public class SubscriptionService {
 
     @Scheduled(cron = "0 0 0 */5 * *")
     public void updateSubscriptionStatus() {
+        log.info("..Checking for active subscribers");
         Optional<List<Subscriber>> activeSubscribers = subscriptionRepo.findBySubscriptionStatus(SubscriptionStatus.ACTIVE);
 
         if (activeSubscribers.isPresent()) {
             log.info("Found {} active subscribers", activeSubscribers.get().size());
-            List<Subscriber> updatedSubscribers = new ArrayList<>() {
-            };
+            List<Subscriber> updatedSubscribers = new ArrayList<>() ;
             for (Subscriber subscriber : activeSubscribers.get()) {
 
                 LocalDate endDate = calculateEndDate(subscriber.getSubscriptionStarts(), subscriber.getPlanType());
@@ -279,9 +272,10 @@ public class SubscriptionService {
                     updatedSubscribers.add(subscriber);
 
 
-                    subscriptionRepo.saveAll(updatedSubscribers);
+
                 }
             }
+            subscriptionRepo.saveAll(updatedSubscribers);
         }
     }
 
