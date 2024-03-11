@@ -94,18 +94,26 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
     @Operation(description = "Get logged-in techtalent user",
             summary = "Get logged-in techtalent user using the bearer token")
-
     @GetMapping("/get-user")
-    @ResponseBody
-    public ResponseEntity<TechTalentResponse> getTechTalent (HttpServletRequest request) throws Exception {
-        try{
-            TechTalentResponse employer = techTalentService.getTechTalent(request);
-            return ResponseEntity.ok(employer);
+    public ResponseEntity<TechTalentDTO> getLoggedInTalent(HttpServletRequest request){
+        try {
+            TechTalentDTO response = techTalentService.getTechTalent(request);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }catch(Exception e){
-            log.error("Error while getting TechTalent: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(null);
-        }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
     }
+
+//    @GetMapping("/get-user")
+//    @ResponseBody
+//    public ResponseEntity<TechTalentDTO> getTechTalent (HttpServletRequest request) throws Exception {
+//        try{
+//            TechTalentDTO techTalent = techTalentService.getTechTalent(request);
+//            return ResponseEntity.ok(techTalent);
+//        }catch(Exception e){
+//            log.error("Error while getting TechTalent: {}", e.getMessage());
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//    }
 
     @Operation(summary = "Update a Tech Talent ",
             description = "This endpoint updates an existing Tech Talent")

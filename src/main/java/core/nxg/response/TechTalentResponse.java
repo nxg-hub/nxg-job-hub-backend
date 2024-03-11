@@ -6,9 +6,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class TechTalentResponse {
-
     private Long techId;
     private List<String> skills;
     private String bio;

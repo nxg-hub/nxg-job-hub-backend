@@ -120,16 +120,16 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
         return "TechTalent User created successfully";
     }
-            
+
 
 
 
     @Override
-    public TechTalentResponse getTechTalent(HttpServletRequest request) throws Exception{
+    public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
-        var response = techTalentRepository.findByEmail(loggedInUser.getEmail())
-            .orElseThrow(() -> new NotFoundException("TechTalent Not Found!"));
-        return mapper.map(response, TechTalentResponse.class);
+
+        return techTalentRepository.findByEmail(loggedInUser.getEmail())
+                .orElseThrow(() -> new NotFoundException("Tech Talent not found"));
     }
 
 //    @Override
