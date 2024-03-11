@@ -92,14 +92,14 @@ public class SubscriptionService {
             } else {
                 Logger.getLogger(SubscriptionService.class.getName())
                         .log(
-                                Level.SEVERE, "Could not create account for " + customerdto.getEmail());
+                                Level.WARNING, "Could not create account for " + customerdto.getEmail());
                 throw new Exception("Could not create account for " + customerdto.getEmail());
 
             }
         } catch (Exception ex) {
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
-                            Level.SEVERE, null, ex);
+                            Level.WARNING, null, ex);
             throw new RuntimeException(ex.getMessage());
         }
 
@@ -171,19 +171,12 @@ public class SubscriptionService {
 
 
 
-            ;
-
-
-
-
-
-
             return this.initializeTransaction(transactionDTO);
         } catch (Exception e) {
             Logger.getLogger(SubscriptionService.class.getName())
                     .log(
                             Level.SEVERE, "Could not initialize transaction @subscription " + dto.getEmail(),e);
-            throw new Exception(e.getMessage());
+            throw new Exception("Cannot complete request at this time! Please try again later.");
 
         }
 
@@ -199,19 +192,19 @@ public class SubscriptionService {
 
         switch (planType) {
             case PLATINUM:
-                amount = 10000;
+                amount = 900000;
                 name = "Platinum";
                 interval = planType.getInterval();
                 description = "Platinum Subscription Plan";
                 break;
             case GOLD:
-                amount = 70000;
+                amount = 700000;
                 name = planType.getInterval();
                 interval =
                 description = "Gold Subscription Plan";
                 break;
             case SILVER:
-                amount = 120000;
+                amount = 250000;
                 name = "Silver";
                 interval = planType.getInterval();
                 description = "Silver Subscription Plan";
@@ -260,12 +253,12 @@ public class SubscriptionService {
 
     @Scheduled(cron = "0 0 0 */5 * *")
     public void updateSubscriptionStatus() {
+        log.info("..Checking for active subscribers");
         Optional<List<Subscriber>> activeSubscribers = subscriptionRepo.findBySubscriptionStatus(SubscriptionStatus.ACTIVE);
 
         if (activeSubscribers.isPresent()) {
             log.info("Found {} active subscribers", activeSubscribers.get().size());
-            List<Subscriber> updatedSubscribers = new ArrayList<>() {
-            };
+            List<Subscriber> updatedSubscribers = new ArrayList<>() ;
             for (Subscriber subscriber : activeSubscribers.get()) {
 
                 LocalDate endDate = calculateEndDate(subscriber.getSubscriptionStarts(), subscriber.getPlanType());
@@ -279,16 +272,17 @@ public class SubscriptionService {
                     updatedSubscribers.add(subscriber);
 
 
-                    subscriptionRepo.saveAll(updatedSubscribers);
+
                 }
             }
+            subscriptionRepo.saveAll(updatedSubscribers);
         }
     }
 
     private LocalDate calculateEndDate(LocalDate startDate, PlanType planType) {
         return switch (planType) {
-            case SILVER -> startDate.plus(Period.ofMonths(1));
-            case  GOLD -> startDate.plus(Period.ofMonths(3));
+            case SILVER -> startDate.plus(Period.ofMonths(3));
+            case  GOLD -> startDate.plus(Period.ofMonths(6));
             case PLATINUM -> startDate.plus(Period.ofMonths(12));
         };
     }

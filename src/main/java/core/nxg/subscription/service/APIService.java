@@ -8,7 +8,9 @@ import core.nxg.subscription.dto.TransactionDTO;
 import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscriptionRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,13 +25,14 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class APIService {
 
     @Value("${psk.secret.active}")
     private String API_KEY;
 
-
-    private SubscriptionRepository repo;
+    @Autowired
+    private final SubscriptionRepository repo;
 
     public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
@@ -101,24 +104,27 @@ public class APIService {
     }
 
 
-    public void parseEvents(EventType event, String email) {
-        String eventString = event.getEvent();
+    public void parseEvents(String event, String email) {
         System.out.println("Event: " + event);
-        switch(eventString){
+
+        switch(event){
             case "subscription.create":
-               log.info("Subscription event received: {}", event.getEvent());
-               repo.findByEmail(email).ifPresent(subscriber -> {
+               log.info("Subscription event to be parsed: {}", event);
+               this.repo.findByEmail(email).ifPresent(subscriber -> {
                 subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
                 subscriber.setSubscriptionStarts(LocalDate.now());
                 repo.save(subscriber);});
                 break;
+
                 case "charge.failed":
 
-                log.info("A Charge event received {}", eventString);
+                log.info("A Charge event received {}", event);
                 break;
             case "charge.success":
-                log.info("A Charge event created {}", eventString);
+                log.info("A Charge event successfully created ");
                 break;
+
+
             case "subscription.disable":
                 System.out.println("Subscription disabled");
                 break;
@@ -141,8 +147,9 @@ public class APIService {
                 System.out.println("Transfer reversed");
                 break;
             default:
-                log.info("An unrecognized event was received: {}", eventString);
-                break;
+                log.info("An unrecognized event was received: {}", event);
+                throw new IllegalStateException("Unexpected value: " + event);
+
         }
 
 

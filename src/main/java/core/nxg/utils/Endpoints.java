@@ -22,7 +22,7 @@ public final class Endpoints {
             "/api/oauth/**",
             "/api/v1/auth/notifications/**",
             "/api/subscriptions/**",
-//            "/api/v1/callbacks/**",
+            "/api/v1/webhooks/**",
     };
 }
 
