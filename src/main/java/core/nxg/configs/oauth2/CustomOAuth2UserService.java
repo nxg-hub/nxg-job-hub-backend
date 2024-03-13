@@ -71,6 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             // New user
             user1 = new User();
             user1.setUsername(user.getEmail());
+            String[] name = user.getFirstName().split(" ");
             // Generate a random password for the first-time OAuth users
             String randomPassword = userService.generateOAuthPassword();
             user1.setPassword(helper.encodePassword(randomPassword));
@@ -79,8 +80,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             // Populate other user fields
             user1.setEmail(user.getEmail());
-            user1.setFirstName(user.getFirstName());
-            user1.setLastName(user.getLastName());
+            user1.setFirstName(name[0]);
+            user1.setLastName(name[1]);
             user1.setProfilePicture(user.getProfilePicture());
             user1.setGender(user.getGender());
             user1.setProvider(user.getProvider());
