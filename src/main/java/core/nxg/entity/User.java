@@ -37,7 +37,6 @@ public class User implements UserDetails, OAuth2User {
 
     private String profilePicture;
 
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -52,6 +51,8 @@ public class User implements UserDetails, OAuth2User {
 
     @Column(nullable = false)
     private String password;
+
+    private boolean passwordGenerated;
 
     @Column(name = "nationality")
     private String nationality;
@@ -136,6 +137,12 @@ public class User implements UserDetails, OAuth2User {
 
         return enabled;
     }
+
+    // Add getter and setter for passwordGenerated field
+    public boolean isPasswordGenerated() {
+        return passwordGenerated;
+    }
+
 
 
     @Override
