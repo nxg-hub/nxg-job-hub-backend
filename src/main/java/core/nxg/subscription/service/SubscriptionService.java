@@ -79,7 +79,7 @@ public class SubscriptionService {
                          },
                                 () -> {
                                     Subscriber subscriber = new Subscriber();
-                                    subscriber.setCustomerCode(response.getBody().get("data").get("customer_code").asText());
+                                       subscriber.setCustomerCode(response.getBody().get("data").get("customer_code").asText());
                                     subscriber.setEmail(email);
                                     subscriber.setPlanType(PlanType.valueOf(arg.get("planType").toString().toUpperCase()));
                                     subscriber.setUser(user);

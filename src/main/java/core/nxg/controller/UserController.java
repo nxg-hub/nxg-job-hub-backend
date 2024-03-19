@@ -15,27 +15,35 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.GenericGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
-@RestController
+
+@Slf4j
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class UserController {
 
-    private final Logger logError = LoggerFactory.getLogger(UserController.class);
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    private static final String LOGIN_URL = "https://www.nxgjobhub.com/login";
     @Autowired
     private Helper helper;
 
@@ -58,7 +66,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }catch (Exception e) {
 
-//            logError.error("Error creating new User: {}", e.getMessage());
+            log.error("Error creating new User: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
 }
@@ -74,6 +82,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
+    }
+
+    @Operation(summary = "Upload a new photo for a loggedIn User .",
+            description ="The jwt is to be passed in the header")
+    @PostMapping("/upload-photo")
+    public ResponseEntity<Object> uploadPhoto(@RequestBody Map<String,Object> payload, HttpServletRequest request) throws Exception{
+        try
+        {
+            userService.uploadPhoto(payload.get("link").toString(), request);
+            URI uri = new URI(LOGIN_URL);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(uri);
+            return new ResponseEntity<>( httpHeaders, HttpStatus.SEE_OTHER);
+        }catch (Exception ex){
+            log.warn(ex.getMessage());
+            return  ResponseEntity.badRequest().build();
+        }
     }
 
 
