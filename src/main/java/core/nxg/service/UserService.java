@@ -2,6 +2,7 @@ package core.nxg.service;
 
 import core.nxg.entity.User;
 import core.nxg.enums.Provider;
+import core.nxg.exceptions.ExpiredJWTException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +18,14 @@ import java.util.Optional;
 
 @Service
 public interface UserService {
+
+    public void uploadPhoto(String link, HttpServletRequest request) throws ExpiredJWTException;
     String createUser(UserDTO userDto, String siteURL) throws Exception;
     User saveUser(User user);
 
     String generateOAuthPassword();
 
-    void createOAuthUSer(String username, String provider);
+
     Page<UserResponseDto> getAllUsers(Pageable pageable);
     UserResponseDto getUserById(Long id) throws Exception;
     String login(LoginDTO loginDTO) throws Exception;
