@@ -91,13 +91,11 @@ public class UserController {
         try
         {
             userService.uploadPhoto(payload.get("link").toString(), request);
-            URI uri = new URI(LOGIN_URL);
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(uri);
-            return new ResponseEntity<>( httpHeaders, HttpStatus.SEE_OTHER);
+
+            return new ResponseEntity<>("Photo uploaded successfully",HttpStatus.OK);
         }catch (Exception ex){
             log.warn(ex.getMessage());
-            return  ResponseEntity.badRequest().build();
+            return  ResponseEntity.badRequest().body("Error uploading photo :" + ex.getMessage());
         }
     }
 
