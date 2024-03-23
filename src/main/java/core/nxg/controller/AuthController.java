@@ -34,6 +34,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -165,17 +167,13 @@ public class AuthController {
     public ResponseEntity<String> forgotPassword(@RequestBody passwordResetDTO dto, HttpServletRequest request) throws Exception {
         try {
             passwordReset.updatePassword(dto, request);
-            URI uri = new URI(LOGIN_URL);
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(uri);
-            return new ResponseEntity<>( httpHeaders, HttpStatus.SEE_OTHER);
+            return new ResponseEntity<>( "Password reset successful!", HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("Error while resetting password: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            logger.error("Error while resetting password: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
         }
     }
-
 
 
 }
