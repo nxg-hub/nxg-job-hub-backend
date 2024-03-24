@@ -1,5 +1,5 @@
 package core.nxg.service;
-
+import core.nxg.dto.inAppPasswordResetDTO;
 import core.nxg.configs.JwtService;
 import core.nxg.dto.passwordResetDTO;
 import core.nxg.entity.User;
@@ -36,6 +36,31 @@ public class PasswordReset {
 
 
 
+    public void inAppPasswordUpdate(inAppPasswordResetDTO dto,HttpServletRequest request) throws Exception {
+        User loggedInUser = helper.extractLoggedInUser(request);
+
+        Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User with email does not exist");
+        }
+
+
+        if (!helper.encoder.matches(dto.getOldPassword(), user.get().getPassword())) {
+            throw new Exception("Incorrect Password!");
+        }
+
+        else {
+
+                if (dto.getNewPassword().equals(user.get().getPassword())){
+                    throw new Exception("New password cannot be the same as old password!");
+
+                }
+            if (helper.isPasswordStrong(dto.getNewPassword())){
+                user.get().setPassword(helper.encodePassword(dto.getNewPassword()));
+                userRepository.save(user.get());
+            }
+        }
+    }
     public void updatePassword(@Nonnull passwordResetDTO passwordResetDTO, HttpServletRequest request) throws Exception {
         User loggedInUser = helper.extractLoggedInUser(request);
         Optional<User> user = userRepository.findByEmail(loggedInUser.getEmail());
