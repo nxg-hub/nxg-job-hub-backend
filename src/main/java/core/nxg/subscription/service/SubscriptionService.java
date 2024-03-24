@@ -93,7 +93,7 @@ public class SubscriptionService {
                 Logger.getLogger(SubscriptionService.class.getName())
                         .log(
                                 Level.WARNING, "Could not create account for " + customerdto.getEmail());
-                throw new Exception("Could not create account for " + customerdto.getEmail());
+                throw new Exception("Could not create account " +  Objects.requireNonNull(response.getBody()).asText());
 
             }
         } catch (Exception ex) {

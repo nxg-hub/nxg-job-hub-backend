@@ -8,18 +8,26 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+
+@Slf4j
 @Setter
 @Getter
 @RequiredArgsConstructor
 @Entity
 @Table(name = "employer")
 public class Employer {
+
+    private static final double FRACTION_THRESHOLD = 0.75;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long employerID;
@@ -67,26 +75,30 @@ public class Employer {
 
     @JsonProperty("isVerified")
     public boolean isVerified() {
+
+        if (CACCertificate == null || taxClearanceCertificate == null || TIN == null || namesOfDirectors == null) {
+            return false;
+        }
+
+
         Field[] fields = this.getClass().getDeclaredFields();
         int totalFields = fields.length;
         int nonNullFields = 0;
 
         for (Field field : fields) {
             try {
-                if (field.get(this) != null) {
+                if (Optional.ofNullable(field.get(this) ).isPresent() ){
                     nonNullFields++;
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
+                log.atLevel(Level.TRACE).log("Error accessing field: {}", field.getName(),e);
             }
         }
 
-        if (CACCertificate == null || taxClearanceCertificate == null || TIN == null || namesOfDirectors == null) {
-            return false;
-        }
 
         double fraction = (double) nonNullFields / totalFields;
 
-        return fraction > 0.75;
+        return fraction > FRACTION_THRESHOLD;
     }
 }
