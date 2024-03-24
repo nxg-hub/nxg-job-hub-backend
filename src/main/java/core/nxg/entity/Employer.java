@@ -1,6 +1,7 @@
 package core.nxg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import core.nxg.enums.Rating;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,4 +65,28 @@ public class Employer {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Ratings> ratings;
 
+
+    public boolean isVerified() {
+        Field[] fields = this.getClass().getDeclaredFields();
+        int totalFields = fields.length;
+        int nonNullFields = 0;
+
+        for (Field field : fields) {
+            try {
+                if (field.get(this) != null) {
+                    nonNullFields++;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (CACCertificate == null || taxClearanceCertificate == null || TIN == null || namesOfDirectors == null) {
+            return false;
+        }
+
+        double fraction = (double) nonNullFields / totalFields;
+
+        return fraction > 0.75;
+    }
 }
