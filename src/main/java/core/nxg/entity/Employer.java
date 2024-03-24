@@ -65,7 +65,7 @@ public class Employer {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Ratings> ratings;
 
-
+    @JsonProperty("isVerified")
     public boolean isVerified() {
         Field[] fields = this.getClass().getDeclaredFields();
         int totalFields = fields.length;
