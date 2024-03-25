@@ -2,15 +2,13 @@ package core.nxg.serviceImpl;
 
 import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.UserResponseDto;
-import core.nxg.entity.Employer;
-import core.nxg.entity.JobPosting;
-import core.nxg.entity.Notification;
-import core.nxg.entity.User;
+import core.nxg.entity.*;
 import core.nxg.enums.NotificationType;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.JobPostingRepository;
 import core.nxg.repository.NotificationRepository;
+import core.nxg.repository.TechTalentRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.JobPostingService;
 import core.nxg.service.UserService;
@@ -49,6 +47,9 @@ public class JobPostingServiceImpl implements JobPostingService {
     private final EmailService emailService;
     @Autowired
     private final UserService userService;
+
+    @Autowired
+    private final TechTalentRepository techRepo;
 
     @Autowired
     private final NotificationRepository notificationRepository;
@@ -111,7 +112,7 @@ public class JobPostingServiceImpl implements JobPostingService {
         Employer poster = employerRepository.findById(employerId).
                 orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
-        Page<UserResponseDto> users = userService.getAllUsers(Pageable.unpaged());
+        List<TechTalentUser> users = techRepo.findAll();
 
         users.forEach(user -> {
             try {
@@ -119,7 +120,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
                 emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
 
-                notify(mapper.map(user, User.class), jobPosting, poster.getUser());
+                notify(user.getUser(), jobPosting, poster.getUser());
 
                 log.info("Email notification sent to {}", user.getEmail());
 

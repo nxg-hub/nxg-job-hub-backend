@@ -1,7 +1,7 @@
 package core.nxg.controller;
 
 
-import core.nxg.dto.EmailDTO;
+import core.nxg.dto.inAppPasswordResetDTO;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.passwordResetDTO;
 import core.nxg.service.EmailService;
@@ -33,9 +33,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Controller
@@ -156,7 +153,7 @@ public class AuthController {
 
     @Operation(summary = "Reset password with new and confirm password")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "303", description = "Successfully reset password",
+            @ApiResponse(responseCode = "200", description = "Successfully reset password",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = passwordResetDTO.class)) }),
             @ApiResponse(responseCode = "400", description = "Invalid reset parameters or conditions.",
@@ -167,6 +164,28 @@ public class AuthController {
     public ResponseEntity<String> forgotPassword(@RequestBody passwordResetDTO dto, HttpServletRequest request) throws Exception {
         try {
             passwordReset.updatePassword(dto, request);
+            return new ResponseEntity<>( "Password reset successful!", HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while resetting password: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        }
+    }
+
+    @Operation(summary = "Reset password with an old, new and confirm password +" +
+            ". Password must contain at least 8 characters, a number, a special character and an uppercase letter.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully reset password",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = inAppPasswordResetDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid reset parameters or conditions.",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")})
+    @PostMapping("/update-password/in-app")
+    @ResponseBody
+    public ResponseEntity<String> inAppResetPassword(@RequestBody inAppPasswordResetDTO dto, HttpServletRequest request) throws Exception {
+        try {
+            passwordReset.inAppPasswordUpdate(dto, request);
             return new ResponseEntity<>( "Password reset successful!", HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while resetting password: " + e.getMessage(), e);

@@ -31,7 +31,6 @@ class NxgApplicationTests {
 
 	@Mock
 	private JobPosting jobPosting;
-
 	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.openMocks(this);

@@ -7,6 +7,7 @@ import core.nxg.exceptions.NotFoundException;
 import core.nxg.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.annotation.Contract;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,21 +67,12 @@ public class Helper<K,V> {
         return encoder.matches(password, encodedPassword);
     }
 
-    public static String getURLType(String urlString) {
-        try {
-            URL url = new URL(urlString);
-            String host = url.getHost();
-
-            if (host.contains("github.com")) {
-                return "GitHub";
-            } else if (host.contains("linkedin.com")) {
-                return "LinkedIn";
-            } else {
-                return "Other";
-            }
-            //TODO: CREATE A CUSTOM EXCEPTION FOR THIS
-        } catch (Exception e) {
-            return "Invalid URL";
+    public boolean isPasswordStrong(String password) {
+        Pattern pattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
+        if (password != null && pattern.matcher(password).matches()) {
+            return true;
         }
+        throw new IllegalArgumentException("Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character and must be at least 8 characters long.");
+
     }
 }
