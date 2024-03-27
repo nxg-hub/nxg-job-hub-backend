@@ -79,7 +79,7 @@ public class SubscriptionService {
                          },
                                 () -> {
                                     Subscriber subscriber = new Subscriber();
-                                    subscriber.setCustomerCode(response.getBody().get("data").get("customer_code").asText());
+                                       subscriber.setCustomerCode(response.getBody().get("data").get("customer_code").asText());
                                     subscriber.setEmail(email);
                                     subscriber.setPlanType(PlanType.valueOf(arg.get("planType").toString().toUpperCase()));
                                     subscriber.setUser(user);
@@ -93,7 +93,7 @@ public class SubscriptionService {
                 Logger.getLogger(SubscriptionService.class.getName())
                         .log(
                                 Level.WARNING, "Could not create account for " + customerdto.getEmail());
-                throw new Exception("Could not create account for " + customerdto.getEmail());
+                throw new Exception("Could not create account " +  Objects.requireNonNull(response.getBody()).asText());
 
             }
         } catch (Exception ex) {

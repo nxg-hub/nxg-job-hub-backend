@@ -14,6 +14,7 @@ import core.nxg.service.UserService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,7 @@ import java.security.SecureRandom;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -52,6 +53,17 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private final VerificationCodeRepository verificationRepo;
+
+
+
+    public void uploadPhoto(String link, HttpServletRequest request) throws ExpiredJWTException {
+
+        var loggedInUser = helper.extractLoggedInUser(request);
+        loggedInUser.setProfilePicture(link);
+        log.info(loggedInUser.getProfilePicture());
+        userRepository.save(loggedInUser);
+
+        }
 
     @Override
     public String createUser(UserDTO userDTO, String siteURL) throws Exception {
@@ -139,19 +151,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public void createOAuthUSer(String username, String provider) {
-        User existinguser = userRepository.findByEmailAndProvider(username,Provider.valueOf(provider.toUpperCase() ))
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
-        User user = new User();
-        user.setEmail(username);
-        user.setProvider(OAuth2Provider.GOOGLE);
-//        user.setPassword(helper.encodePassword(password));
-        //TODO: SEND SUCCESS EMAIL FOR OAUTH REGISTRATION
-        userRepository.save(user);
-
-    }
 
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);

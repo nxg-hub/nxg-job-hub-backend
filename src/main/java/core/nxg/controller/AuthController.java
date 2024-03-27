@@ -1,7 +1,7 @@
 package core.nxg.controller;
 
 
-import core.nxg.dto.EmailDTO;
+import core.nxg.dto.inAppPasswordResetDTO;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.passwordResetDTO;
 import core.nxg.service.EmailService;
@@ -34,11 +34,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-    private static final String LOGIN_URL = "https://nxgjobhub.netlify.app/login";
+    private static final String BASE_URL = "https://nxgjobhub.com";
+    private static final String LOGIN_URL = BASE_URL + "/login";
+
 
     @Autowired
     private final PasswordReset passwordReset;
@@ -119,6 +122,7 @@ public class AuthController {
         }
     }
 
+
     @Operation(summary = "Send a password reset email",
     description = "Send a password reset email to a user with the email address provided. " +
             "Email will not be delivered if user does not EXIST.")
@@ -138,8 +142,8 @@ public class AuthController {
     @GetMapping("/reset-password")
     public String resetPassword(@Validated @RequestParam("code") String code, Model model) throws Exception{
         try {
-            emailService.confirmReset(code);
-            return "redirect:/api/vi/auth/update-password/";}
+            var token = passwordReset.confirmReset(code);
+            return "redirect:" + BASE_URL + "/auth/reset-password?token=" +token;}
         catch(Exception e){
             logger.error("Error while confirming reset link: " + e.getMessage());
             return "ExpiredLink";
@@ -147,7 +151,7 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "Reset password with old, new and confirm password")
+    @Operation(summary = "Reset password with new and confirm password")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully reset password",
                     content = { @Content(mediaType = "application/json",
@@ -158,15 +162,37 @@ public class AuthController {
     @PostMapping("/update-password/")
     @ResponseBody
     public ResponseEntity<String> forgotPassword(@RequestBody passwordResetDTO dto, HttpServletRequest request) throws Exception {
-        try {passwordReset.updatePassword(dto, request);
-            return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");
+        try {
+            passwordReset.updatePassword(dto, request);
+            return new ResponseEntity<>( "Password reset successful!", HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("Error while resetting password: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            logger.error("Error while resetting password: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
         }
     }
 
+    @Operation(summary = "Reset password with an old, new and confirm password +" +
+            ". Password must contain at least 8 characters, a number, a special character and an uppercase letter.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully reset password",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = inAppPasswordResetDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid reset parameters or conditions.",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")})
+    @PostMapping("/update-password/in-app")
+    @ResponseBody
+    public ResponseEntity<String> inAppResetPassword(@RequestBody inAppPasswordResetDTO dto, HttpServletRequest request) throws Exception {
+        try {
+            passwordReset.inAppPasswordUpdate(dto, request);
+            return new ResponseEntity<>( "Password reset successful!", HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while resetting password: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        }
+    }
 
 
 }

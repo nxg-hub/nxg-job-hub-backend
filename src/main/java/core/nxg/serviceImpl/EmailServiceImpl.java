@@ -1,6 +1,7 @@
 package core.nxg.serviceImpl;
 
 
+import core.nxg.configs.JwtService;
 import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.entity.VerificationCode;
@@ -38,6 +39,9 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     JavaMailSender mailSender;
 
+    @Autowired
+    JwtService jwtService;
+
     @Value("classpath:images/mylogo.png")
     Resource mylogo;
 
@@ -55,21 +59,7 @@ public class EmailServiceImpl implements EmailService {
     Helper helper;
 
 
-    @Override
-    public void confirmReset(String verificationCode) throws Exception {
 
-        Optional<VerificationCode> verification = verificationRepo.findByCode(verificationCode);
-        if (verification.isEmpty()) {
-            throw new TokenNotFoundException("Invalid reset code!");
-        }
-
-        if (verification.get().isExpired()) {
-            throw new TokenExpiredException("Verification code has expired!");
-        } else {
-            userRepository.save(verification.get().getUser());
-            verificationRepo.deleteById(verification.get().getId());
-        }
-    }
 
 
     @Override
@@ -96,7 +86,7 @@ public class EmailServiceImpl implements EmailService {
 
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
-            throw new UserNotFoundException("User with email does not exist");
+            return;
         }
         if (!user.get().isEnabled()) {
             throw new AccountExpiredException("Account is yet to be verified! Kindly request a verification email.");
