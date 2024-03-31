@@ -42,7 +42,7 @@ public class JobPosting {
 
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Reactions> reactions;
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)

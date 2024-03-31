@@ -198,29 +198,6 @@ public class UserServiceImpl implements UserService {
 
 
 
-    @Override
-    public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<User> user = userRepository.findAll(pageable);
-        return user.map(u -> modelMapper.map(u, UserResponseDto.class));
-    }
-
-
-    public Page<User> getUsersByType(UserType userType, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return userRepository.findByUserType(userType, pageable);
-    }
-
-    public Page<User> getTalentUsers(int page, int size) {
-        return getUsersByType(UserType.TECHTALENT, page, size);
-    }
-
-    public Page<User> getAgentUsers(int page, int size) {
-        return getUsersByType(UserType.AGENT, page, size);
-    }
-
-    public Page<User> getEmployerUsers(int page, int size) {
-        return getUsersByType(UserType.EMPLOYER, page, size);
-    }
 
 }
 

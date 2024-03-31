@@ -3,11 +3,14 @@ package core.nxg;
 import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.JobPostingRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.AdminService;
 import core.nxg.serviceImpl.AdminServiceImpl;
+import core.nxg.subscription.entity.PaymentTransactions;
 import core.nxg.subscription.enums.JobStatus;
+import core.nxg.subscription.enums.TransactionType;
 import core.nxg.subscription.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +20,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import core.nxg.enums.Roles;
 
@@ -51,6 +58,9 @@ class NxgApplicationTests {
 	@Mock
 	private UserRepository userRepository;
 
+	@Mock
+	private  ModelMapper modelMapper;
+
 
 	@Mock
 	 private JobPostingRepository jobPostingRepository;
@@ -63,7 +73,7 @@ class NxgApplicationTests {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(transactionRepository, jobPostingRepository, userRepository);
+		adminService = new AdminServiceImpl(transactionRepository, jobPostingRepository,modelMapper, userRepository);
 
 
 
@@ -179,6 +189,9 @@ class NxgApplicationTests {
 
 		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(1L));
 	}
+
+
+
 
 
 }

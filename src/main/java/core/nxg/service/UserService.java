@@ -26,19 +26,12 @@ public interface UserService {
     String generateOAuthPassword();
 
 
-    Page<UserResponseDto> getAllUsers(Pageable pageable);
+
     UserResponseDto getUserById(Long id) throws Exception;
     String login(LoginDTO loginDTO) throws Exception;
 
     UserResponseDto getLoggedInUser(HttpServletRequest request) throws Exception;
 
     Optional<User> getUserByUsername(String username);
-
-    Page<User> getTalentUsers(int page, int size);
-
-    Page<User> getAgentUsers(int page, int size);
-
-    Page<User> getEmployerUsers(int page, int size);
-
 
 }
