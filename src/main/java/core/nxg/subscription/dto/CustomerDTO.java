@@ -18,6 +18,8 @@ public class CustomerDTO {
 
     private String phone;
 
+    private String planType;
+
 //    private Object metadata;
 
 }

@@ -58,10 +58,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<User> userOptional = userService.getUserByUsername(user.getUsername());
         User user1;
 
-        String randomPassword = userService.generateOAuthPassword();
-        String[] name = user.getFirstName().split(" ");
-
-
         int providerPosition;
         if (user.getProvider() != null) {
             OAuth2Provider provider = OAuth2Provider.valueOf(String.valueOf(user.getProvider()));
@@ -70,29 +66,97 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             providerPosition = -1;
         }
 
+        // Check if the user already exists
         if (userOptional.isEmpty()) {
+            // New user
             user1 = new User();
-            user1.setFirstName(name[0]);
+            user1.setUsername(user.getEmail());
+            String[] name = user.getFirstName().split(" ");
+            // Generate a random password for the first-time OAuth users
+            String randomPassword = userService.generateOAuthPassword();
+            user1.setPassword(helper.encodePassword(randomPassword));
+            // Set the flag indicating that the password has been generated
+            user1.setPasswordGenerated(true);
+
+            // Populate other user fields
             user1.setEmail(user.getEmail());
+            user1.setFirstName(name[0]);
             user1.setLastName(name[1]);
             user1.setProfilePicture(user.getProfilePicture());
             user1.setGender(user.getGender());
-            user1.setUsername(user.getEmail());
             user1.setProvider(user.getProvider());
             user1.setProviderId((long) providerPosition);
             user1.setPhoneNumber(user.getPhoneNumber());
-            user1.setPassword(helper.encodePassword(randomPassword));
             user1.setNationality(user.getNationality());
             user1.setDateOfBirth(user.getDateOfBirth());
             user1.setEnabled(true);
             user1.setUserType(user.getUserType());
+
+            // Save the new user
+            userService.saveUser(user1);
+
+            // Send login details email
+            emailService.sendOAuthUSerLoginDetails(user.getFirstName(), user.getEmail(), randomPassword);
         } else {
+            // Existing user
             user1 = userOptional.get();
-            user1.setEmail(user1.getEmail());
-            user1.setProfilePicture(user1.getProfilePicture());
+
+            // If password hasn't been generated before, generate and save it
+            if (!user1.isPasswordGenerated()) {
+                String randomPassword = userService.generateOAuthPassword();
+                user1.setPassword(helper.encodePassword(randomPassword));
+                user1.setPasswordGenerated(true);
+                userService.saveUser(user1);
+
+                // Send login details email
+                emailService.sendOAuthUSerLoginDetails(user1.getFirstName(), user1.getEmail(), randomPassword);
+            }
         }
-        userService.saveUser(user1);
-        emailService.sendOAuthUSerLoginDetails(user.getFirstName(), user.getEmail(), randomPassword);
+
         return user1;
     }
 }
+
+//    private User upsertUser(User user) throws MessagingException, ExpiredJWTException, UnsupportedEncodingException {
+//        Optional<User> userOptional = userService.getUserByUsername(user.getUsername());
+//        User user1;
+//
+//        String randomPassword = userService.generateOAuthPassword();
+//        String[] name = user.getFirstName().split(" ");
+//
+//
+//        int providerPosition;
+//        if (user.getProvider() != null) {
+//            OAuth2Provider provider = OAuth2Provider.valueOf(String.valueOf(user.getProvider()));
+//            providerPosition = provider.getPosition();
+//        } else {
+//            providerPosition = -1;
+//        }
+//
+//        if (userOptional.isEmpty()) {
+//            user1 = new User();
+//            user1.setFirstName(name[0]);
+//            user1.setEmail(user.getEmail());
+//            user1.setLastName(name[1]);
+//            user1.setProfilePicture(user.getProfilePicture());
+//            user1.setGender(user.getGender());
+//            user1.setUsername(user.getEmail());
+//            user1.setProvider(user.getProvider());
+//            user1.setProviderId((long) providerPosition);
+//            user1.setPhoneNumber(user.getPhoneNumber());
+//            user1.setPassword(helper.encodePassword(randomPassword));
+//            user1.setNationality(user.getNationality());
+//            user1.setDateOfBirth(user.getDateOfBirth());
+//            user1.setEnabled(true);
+//            user1.setUserType(user.getUserType());
+//        } else {
+//            user1 = userOptional.get();
+//            user1.setEmail(user1.getEmail());
+//            user1.setProfilePicture(user1.getProfilePicture());
+//        }
+//        userService.saveUser(user1);
+//        emailService.sendOAuthUSerLoginDetails(user.getFirstName(), user.getEmail(), randomPassword);
+//        return user1;
+//    }
+//}
+
