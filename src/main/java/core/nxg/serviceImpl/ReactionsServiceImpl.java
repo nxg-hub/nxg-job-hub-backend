@@ -25,7 +25,7 @@ public class ReactionsServiceImpl implements ReactionsService {
 
     @Override
     public ReactionsDto createReactionOnJobPosting(Long jobID, ReactionsDto reactionsDto) {
-        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(jobID)
+        JobPosting jobPosting = jobPostingRepository.findById(jobID)
                 .orElseThrow(() -> new NotFoundException("Job posting with ID " + jobID + " not found"));
 
         Reactions reactions = new Reactions();
@@ -64,7 +64,7 @@ public class ReactionsServiceImpl implements ReactionsService {
 
     @Override
     public List<ReactionsDto> getReactionsForJobPosting(Long jobID) {
-        JobPosting jobPosting = jobPostingRepository.findJobPostingByJobID(jobID)
+        JobPosting jobPosting = jobPostingRepository.findById(jobID)
                 .orElseThrow(() -> new NotFoundException("Job posting with ID " + jobID + " not found"));
 
         return jobPosting.getReactions()

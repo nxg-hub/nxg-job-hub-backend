@@ -23,6 +23,7 @@ import reactor.core.publisher.Flux;
 
 import java.awt.print.Book;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/job-postings")
@@ -94,7 +95,7 @@ public class JobPostingController {
 
 
     @GetMapping("/stream")
-    public Flux<ServerSentEvent<List<JobPosting>>> streamJobPostings() throws InterruptedException {
+    public Flux<ServerSentEvent<CompletableFuture<List<JobPosting>>>> streamJobPostings() throws InterruptedException {
         return jobPostingService.sendJobPostingEvents();
     }
 }

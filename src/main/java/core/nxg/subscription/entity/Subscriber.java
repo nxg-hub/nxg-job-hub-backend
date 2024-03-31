@@ -5,7 +5,9 @@ import core.nxg.subscription.enums.PlanType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -13,7 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @RequiredArgsConstructor
 @Table(name = "customers")
 public class Subscriber {

@@ -7,6 +7,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface JobPostingService {
     List<JobPostingDto> getAllJobPostings(Pageable pageable);
@@ -19,7 +20,9 @@ public interface JobPostingService {
 
     void deleteJobPosting(Long jobId);
 
-    public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException ;
+
+
+    public Flux<ServerSentEvent<CompletableFuture<List<JobPosting>>>> sendJobPostingEvents() throws InterruptedException ;
 
 //    void deleteJobPosting(JobPostingDto jobPostingDto);
 }

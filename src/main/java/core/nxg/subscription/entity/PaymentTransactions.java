@@ -1,7 +1,10 @@
 package core.nxg.subscription.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.subscription.enums.TransactionStatus;
+import core.nxg.subscription.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +33,7 @@ public class PaymentTransactions {
 
     private Integer transactionAmount;
 
-    private String transactionCurrency;
+//    private String transactionCurrency;
 
     @Temporal(TemporalType.DATE)
     private LocalDate transactionDate;
@@ -40,8 +43,11 @@ public class PaymentTransactions {
 
     private String transactionMessage;
 
-    private String transactionType;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
+
+    @JsonIgnore
     @ManyToOne(targetEntity = Subscriber.class)
     private Subscriber subscriber;
 

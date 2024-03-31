@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -61,8 +61,9 @@ public class User implements UserDetails, OAuth2User {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "roles")
-    private String roles;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private List<Roles> roles;
 
     @Column(name = "user_type")
     @Enumerated(EnumType.STRING)
@@ -80,6 +81,8 @@ public class User implements UserDetails, OAuth2User {
     @OneToOne(mappedBy = "user")
     @JsonIgnore
     private Employer employer;
+
+
 
 
 
@@ -101,7 +104,9 @@ public class User implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+        return new ArrayList<>(roles);
+
     }
     @Override
     public String getUsername() {

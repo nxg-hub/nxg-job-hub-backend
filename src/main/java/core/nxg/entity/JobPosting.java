@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import core.nxg.subscription.enums.JobStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.List;
 @Table(name = "jobPosting")
 public class JobPosting {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long jobID;
 
     @Column(name = "employer_id")
@@ -41,7 +42,7 @@ public class JobPosting {
 
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Reactions> reactions;
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -51,5 +52,11 @@ public class JobPosting {
 
     @OneToOne
     private View view;
+
+    private boolean active;
+
+
+    @Enumerated(EnumType.STRING)
+    private JobStatus jobStatus;
 
 }

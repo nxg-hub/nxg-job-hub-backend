@@ -58,7 +58,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void saveJob(HttpServletRequest request, Long jobPostingId) throws Exception{
         User user = helper.extractLoggedInUser(request);
-        Optional<JobPosting> job = jobRepo.findJobPostingByJobID(jobPostingId);
+        Optional<JobPosting> job = jobRepo.findById(jobPostingId);
         if (job.isEmpty()){
             throw new NotFoundException("Cannot Save a Non-existing Job");
         }
@@ -82,7 +82,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new UserNotFoundException("Applicant cannot be found!");
         }
 
-        Optional<JobPosting> job = jobRepo.findJobPostingByJobID(applicationDTO.getJobPostingId());
+        Optional<JobPosting> job = jobRepo.findById(applicationDTO.getJobPostingId());
         if (job.isEmpty()){
              throw new NotFoundException("Cannot Apply to an Non-existing Job");}
      

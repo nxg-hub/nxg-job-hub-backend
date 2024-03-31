@@ -32,7 +32,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -135,7 +137,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto getJobPostingById(Long jobId) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
         if (optionalJobPosting.isPresent()) {
             return mapToDto(optionalJobPosting.get());
         } else {
@@ -146,7 +148,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto updateJobPosting(Long jobId, JobPostingDto jobPostingDto) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
         if (optionalJobPosting.isPresent()) {
             JobPosting existingJobPosting = optionalJobPosting.get();
 
@@ -162,7 +164,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public void deleteJobPosting(Long jobId) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findJobPostingByJobID(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
         if (optionalJobPosting.isPresent()) {
             JobPosting jobPosting = optionalJobPosting.get();
             jobPostingRepository.delete(jobPosting);
@@ -181,21 +183,22 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
     @Async
-    private List<JobPosting> getJobPostingsForEvents(){
-
-         var toBeDelivered =  jobPostingRepository.findByDeliveredFalse();
-         toBeDelivered.forEach(a -> a.setDelivered(true));
-         jobPostingRepository.saveAll(toBeDelivered);
-         return toBeDelivered;
-    }
+    public CompletableFuture<List<JobPosting>> getJobPostingsForEvents() {
+        return CompletableFuture.supplyAsync(() -> {
+            var toBeDelivered = jobPostingRepository.findByDeliveredFalse();
+            toBeDelivered.forEach(a -> a.setDelivered(true));
+            jobPostingRepository.saveAll(toBeDelivered);
+            return toBeDelivered;
+        });
+        }
    @Override
-    public Flux<ServerSentEvent<List<JobPosting>>> sendJobPostingEvents() throws InterruptedException {
+    public Flux<ServerSentEvent<CompletableFuture<List<JobPosting>>>> sendJobPostingEvents() throws InterruptedException {
             return Flux.interval(Duration.ofSeconds(5))
                     .publishOn(Schedulers.boundedElastic())
-                    .map(sequence -> ServerSentEvent.<List<JobPosting>>builder().id(String.valueOf(sequence))
+                    .map(sequence -> ServerSentEvent.<CompletableFuture<List<JobPosting>>>builder().id(String.valueOf(sequence))
                             .event("jobpostings")
                             .data(
-                                    getJobPostingsForEvents())
+                                   this.getJobPostingsForEvents())
                             .comment("A new job posting event")
                             .build());
 

@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -27,7 +26,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.util.ReflectionUtils;
-import org.thymeleaf.spring6.expression.Fields;
+import core.nxg.enums.Roles;
 
 @Service
 @Slf4j
@@ -101,7 +100,8 @@ public class EmployerServiceImpl implements EmployerService {
             employer.setZipCode(employerDto.getZipCode());
             employer.setCompanyZipCode(employerDto.getCompanyZipCode());
             employer.setVacancies(employerDto.getVacancies());
-            loggedInUser.setRoles(UserType.EMPLOYER.toString());
+            loggedInUser.setRoles(List.of(Roles.USER));
+
             loggedInUser.setUserType(UserType.EMPLOYER);
             userRepository.save(loggedInUser);
 
