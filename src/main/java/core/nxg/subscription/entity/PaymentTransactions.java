@@ -16,7 +16,7 @@ import java.time.LocalTime;
 
 @Entity
 @Data
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @Table(name = "payment_transactions")
 public class PaymentTransactions {
 
