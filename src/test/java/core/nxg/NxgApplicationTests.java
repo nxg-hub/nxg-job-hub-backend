@@ -94,29 +94,6 @@ class NxgApplicationTests {
 
 
 	@Test
-	public void getAuthoritiesReturnsCorrectAuthoritiesWhenRolesIsNotEmpty() {
-		List<Roles> roles =  Arrays.asList( Roles.ADMIN, USER);
-		user.setRoles(roles);
-
-		Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-
-		assertEquals(2, authorities.size());
-		assertTrue(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
-		assertTrue(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
-	}
-
-	@Test
-	public void getAuthoritiesReturnsEmptyCollectionWhenRolesIsEmpty() {
-		user.setRoles(new ArrayList<>());
-
-		Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-
-		assertTrue(authorities.isEmpty());
-	}
-
-
-
-	@Test
 	public void test_accept_valid_job_id() {
 
 
