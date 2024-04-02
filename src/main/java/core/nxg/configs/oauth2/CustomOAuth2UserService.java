@@ -2,6 +2,7 @@ package core.nxg.configs.oauth2;
 
 
 import core.nxg.entity.User;
+import core.nxg.enums.Roles;
 import core.nxg.exceptions.ExpiredJWTException;
 import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +72,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (userOptional.isEmpty()) {
             // New user
             user1 = new User();
+            // Set user roles based on certain conditions
+            if (providerPosition == 3) {
+                user1.setRoles(Roles.USER); // Set roles for Google OAuth users
+            } else {
+                // Set default roles for other users
+                user1.setRoles(Roles.USER);
+            }
             user1.setUsername(user.getEmail());
             String[] name = user.getFirstName().split(" ");
             // Generate a random password for the first-time OAuth users

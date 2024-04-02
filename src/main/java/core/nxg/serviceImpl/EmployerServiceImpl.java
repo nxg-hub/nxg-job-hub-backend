@@ -100,7 +100,7 @@ public class EmployerServiceImpl implements EmployerService {
             employer.setZipCode(employerDto.getZipCode());
             employer.setCompanyZipCode(employerDto.getCompanyZipCode());
             employer.setVacancies(employerDto.getVacancies());
-            loggedInUser.setRoles(List.of(Roles.USER));
+            loggedInUser.setRoles(Roles.USER);
 
             loggedInUser.setUserType(UserType.EMPLOYER);
             userRepository.save(loggedInUser);
