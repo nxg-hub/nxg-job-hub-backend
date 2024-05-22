@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.subscription.enums.APIConstants;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.TransactionDTO;
-import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
-import core.nxg.subscription.repository.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class APIService {
     private String API_KEY;
 
     @Autowired
-    private final SubscriptionRepository repo;
+    private final SubscribeRepository repo;
 
     public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
@@ -97,6 +96,7 @@ public class APIService {
                 JsonNode.class);
 
     }
+
     public JsonNode validateIdentity(Map<String,Object> body, String customer_code){
         return post(body,
                 APIConstants.PAYSTACK_CUSTOMER_URL+ "/" + customer_code + "/identification" ).getBody();

@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class JobPostingController {
 
+
     private final JobPostingService jobPostingService;
     // private final RatingsServiceImpl ratingsService;
 

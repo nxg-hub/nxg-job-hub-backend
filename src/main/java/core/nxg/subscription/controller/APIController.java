@@ -3,9 +3,7 @@ package core.nxg.subscription.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import core.nxg.subscription.enums.EventType;
-import core.nxg.subscription.enums.SubscriptionStatus;
-import core.nxg.subscription.repository.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.service.APIService;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
 import java.util.Map;
 
 
@@ -34,7 +31,10 @@ public class APIController {
 
 
 
-    private final SubscriptionRepository repo;
+    @Autowired
+    private final SubscribeRepository repo;
+
+    @Autowired
     private final APIService apiService;
 
     @Value("${psk.secret.active}")
