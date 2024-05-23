@@ -1,5 +1,6 @@
 package core.nxg.serviceImpl;
 
+import core.nxg.algorithm.JobAlgorithmByContent;
 import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.*;
@@ -40,6 +41,9 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Slf4j
 public class JobPostingServiceImpl implements JobPostingService {
+
+    @Autowired
+    private final JobAlgorithmByContent algorithmByContent;
 
     @Autowired
     private final JobPostingRepository jobPostingRepository;
@@ -203,5 +207,22 @@ public class JobPostingServiceImpl implements JobPostingService {
                             .build());
 
         }
+
+
+     @Override
+    public Object recommendJobPosting(Long userID) throws Exception{
+
+        UserResponseDto userR = userService.getUserById(userID);
+
+        User  user  = mapper.map(userR, User.class);
+
+
+        return algorithmByContent.getJobs(user);
+
+     }
+
+
+
+
 
 }
