@@ -28,7 +28,7 @@ import java.util.Map;
 public class APIService {
 
 
-    @Value("${paystack}")
+    @Value("${psk.secret.activ}")
     private final String API_KEY;
     // private final String API_KEY = System.getenv("PSK_SK_LIVE");
 
