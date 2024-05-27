@@ -37,8 +37,8 @@ public class APIController {
     @Autowired
     private final APIService apiService;
 
-    @Value("${psk.secret.active}")
-    private String secretKey;
+    private final String secretKey =  System.getenv("PSK_SK_LIVE");
+
 
 
     @PostMapping("/event")

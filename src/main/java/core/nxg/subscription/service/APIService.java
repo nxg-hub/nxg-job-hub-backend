@@ -27,8 +27,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class APIService {
 
-    @Value("${psk.secret.active}")
-    private String API_KEY;
+
+    private final String API_KEY = System.getenv("PSK_SK_LIVE");
 
     @Autowired
     private final SubscribeRepository repo;
