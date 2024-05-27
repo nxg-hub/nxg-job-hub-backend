@@ -37,7 +37,7 @@ public class APIService {
     public void init() {
         if (API_KEY == null || API_KEY.isEmpty()) {
 
-            log.error("\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n");
+            log.error("\n\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n\n");
             log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
 
             throw new RuntimeException("API Key is not set");
