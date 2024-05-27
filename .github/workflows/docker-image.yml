@@ -33,5 +33,6 @@ jobs:
         tags: latest
         registry: docker.io
         dockerfile: Dockerfile
+        PSK_SK_LIVE: ${{ secrets.PSK_SK_LIVE }}
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
