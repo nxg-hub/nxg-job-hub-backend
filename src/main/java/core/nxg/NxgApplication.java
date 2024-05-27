@@ -14,9 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class NxgApplication {
 
-	@Autowired
-	private APIService apiService;
-
 	public static void main(String[] args) {
 
 
