@@ -34,13 +34,13 @@ public class APIService {
     private final SubscribeRepository repo;
 
 
-    private void init() {
-        if (API_KEY == null) {
+    public void init() {
+        if (API_KEY == null || API_KEY.isEmpty()) {
 
             log.error("\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n");
             log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
 
-            throw new IllegalStateException("API Key is not set");
+            throw new RuntimeException("API Key is not set");
         }
     }
 
@@ -82,7 +82,6 @@ public class APIService {
 
     private <T> ResponseEntity<JsonNode> get(T body,
                                              String url) {
-        this.init();
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new APIErrorHandler());
         HttpHeaders headers = new HttpHeaders();
@@ -97,7 +96,7 @@ public class APIService {
     private <T> ResponseEntity<JsonNode> post(T body,
                                               String url) {
 
-        this.init();
+
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new APIErrorHandler());
 
