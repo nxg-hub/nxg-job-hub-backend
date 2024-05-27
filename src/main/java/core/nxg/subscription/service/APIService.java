@@ -28,21 +28,21 @@ import java.util.Map;
 public class APIService {
 
 
-    private final String API_KEY = System.getenv("PSK_SK_LIVE");
+    // private final String API_KEY = System.getenv("PSK_SK_LIVE");
 
     @Autowired
     private final SubscribeRepository repo;
 
 
-    public void init() {
-        if (API_KEY == null || API_KEY.isEmpty()) {
+    // public void init() {
+    //     if (API_KEY == null || API_KEY.isEmpty()) {
 
-            log.error("\n\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n\n");
-            log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
+    //         log.error("\n\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n\n");
+    //         log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
 
-            throw new RuntimeException("API Key is not set");
-        }
-    }
+    //         throw new RuntimeException("API Key is not set");
+    //     }
+    // }
 
     public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
