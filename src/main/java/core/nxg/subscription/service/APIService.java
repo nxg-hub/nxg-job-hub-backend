@@ -33,6 +33,17 @@ public class APIService {
     @Autowired
     private final SubscribeRepository repo;
 
+
+    private void init() {
+        if (API_KEY == null) {
+
+            log.error("\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n");
+            log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
+
+            throw new IllegalStateException("API Key is not set");
+        }
+    }
+
     public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_CUSTOMER_URL);
@@ -71,6 +82,7 @@ public class APIService {
 
     private <T> ResponseEntity<JsonNode> get(T body,
                                              String url) {
+        this.init();
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new APIErrorHandler());
         HttpHeaders headers = new HttpHeaders();
@@ -84,6 +96,8 @@ public class APIService {
 
     private <T> ResponseEntity<JsonNode> post(T body,
                                               String url) {
+
+        this.init();
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new APIErrorHandler());
 
