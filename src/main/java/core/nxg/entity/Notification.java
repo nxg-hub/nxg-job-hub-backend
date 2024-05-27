@@ -1,8 +1,6 @@
 package core.nxg.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.enums.NotificationType;
-import core.nxg.enums.UserType;
 import jakarta.persistence.*;
 import lombok.*;
 

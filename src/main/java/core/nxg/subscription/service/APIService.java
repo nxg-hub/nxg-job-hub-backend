@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.subscription.enums.APIConstants;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.TransactionDTO;
-import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
-import core.nxg.subscription.repository.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +27,22 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class APIService {
 
-    @Value("${psk.secret.active}")
-    private String API_KEY;
+
+    private final String API_KEY = System.getenv("PSK_SK_LIVE");
 
     @Autowired
-    private final SubscriptionRepository repo;
+    private final SubscribeRepository repo;
+
+
+    public void init() {
+        if (API_KEY == null || API_KEY.isEmpty()) {
+
+            log.error("\n\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n\n");
+            log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
+
+            throw new RuntimeException("API Key is not set");
+        }
+    }
 
     public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
 
@@ -85,6 +95,8 @@ public class APIService {
 
     private <T> ResponseEntity<JsonNode> post(T body,
                                               String url) {
+
+
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new APIErrorHandler());
 
@@ -97,6 +109,7 @@ public class APIService {
                 JsonNode.class);
 
     }
+
     public JsonNode validateIdentity(Map<String,Object> body, String customer_code){
         return post(body,
                 APIConstants.PAYSTACK_CUSTOMER_URL+ "/" + customer_code + "/identification" ).getBody();

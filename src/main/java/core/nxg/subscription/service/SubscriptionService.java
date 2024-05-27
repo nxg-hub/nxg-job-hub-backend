@@ -8,7 +8,7 @@ import core.nxg.repository.UserRepository;
 import core.nxg.subscription.entity.PaymentTransactions;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.enums.TransactionStatus;
-import core.nxg.subscription.repository.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
 import core.nxg.subscription.dto.TransactionDTO;
@@ -30,7 +30,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,7 +46,7 @@ public class SubscriptionService {
     private final UserRepository userRepo;
 
     @Autowired
-    private final SubscriptionRepository subscriptionRepo;
+    private final SubscribeRepository subscriptionRepo;
 
     @Autowired
     private final TransactionRepository transactionRepo;

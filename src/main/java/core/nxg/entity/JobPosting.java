@@ -37,7 +37,7 @@ public class JobPosting {
     private LocalDate created_at = LocalDate.now();
 
     private String job_location;
-    private String tags;
+    private List<String> tags;
     private String reaction;
 
 
