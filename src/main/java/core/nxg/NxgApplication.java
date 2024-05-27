@@ -32,16 +32,16 @@ public class NxgApplication {
 
 
 
-	@Bean
-	CommandLineRunner run() throws Exception {
+// 	@Bean
+// 	CommandLineRunner run() throws Exception {
 
 
-	return args -> {
-		apiService.init();
+// 	return args -> {
+// 		apiService.init();
 
 
-	};
-}
+// 	};
+// }
 
 
 
