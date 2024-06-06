@@ -21,11 +21,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.Optional;
 
 import static core.nxg.utils.constants.EmailConstant.*;
@@ -57,9 +60,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     Helper helper;
-
-
-
 
 
     @Override
@@ -269,5 +269,7 @@ public class EmailServiceImpl implements EmailService {
 
         }
     }
+
+
 }
 

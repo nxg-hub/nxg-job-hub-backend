@@ -61,7 +61,6 @@ public class User implements UserDetails, OAuth2User {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-//    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Roles roles;
 

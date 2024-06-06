@@ -86,8 +86,6 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
         TechTalentUser techTalentUser = new TechTalentUser();
 
-//     // TODO: YET TO BE TESTED!
-//      TechTalentUser techTalentUser1 = (TechTalentUser)helper.copyFromDto(techTalentDto, techTalentUser1);
 
         techTalentUser.setEmail(loggedInUser.getEmail());
         techTalentUser.setBio(techTalentDto.getBio());
@@ -132,30 +130,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
                 .orElseThrow(() -> new NotFoundException("Tech Talent not found"));
     }
 
-//    @Override
-//    public TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws Exception {
-//        if (techId == null) {
-//            throw new NotFoundException("Tech ID is required");}
-//        Optional<TechTalentUser> techtalent = techTalentRepository.findById(Long.valueOf(techId));
-//        if (techtalent.isPresent()) {
-//            fields.forEach((key, value) -> {
-//                        Field field = ReflectionUtils.findField(TechTalentUser.class, (String) key);
-//
-//                        if (field == null){
-//                            throw new IllegalArgumentException("Fields cannot be null");
-//                        }
-//                        field.setAccessible(true);
-//                        ReflectionUtils.setField(field, techtalent.get(), value);
-//
-//                    }
-//            );
-//             return techTalentRepository.save(techtalent.get());
-//        }else
-//        {
-//            throw new NotFoundException("Tech Talent not found. Can't be updated!");
-//        }
-//
-//    }
+
 
     @Override
     public TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws NotFoundException {
