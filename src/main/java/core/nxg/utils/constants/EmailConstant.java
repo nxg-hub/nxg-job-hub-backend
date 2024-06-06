@@ -177,7 +177,7 @@ public class EmailConstant {
             + "     <h1>New Header Signature Generated</h1>"
             + "   </div>"
             + "   <div class=\"content\">"
-            + "     <p>Dear [[name]],</p>"
+            + "     <p>Dear Tester ,</p>"
             + "     <p>We have generated a new header signature for your account. This signature is used to secure your communications with our server.</p>"
             + "     <p><strong>Header Signature 1:</strong> [[header_signature_ONE]]</p>"
             + "     <p><strong>Header Signature 2:</strong> [[header_signature_TWO]]</p>"

@@ -44,10 +44,12 @@ public class SecretService {
 
 
 
-    @Scheduled(fixedRate = 300000) //
+     //
     public void init()  {
 
         try{
+
+            storage.deleteAll();
 
         log.info("Generating new header signatures");
 

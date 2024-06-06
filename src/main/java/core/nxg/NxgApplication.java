@@ -37,6 +37,17 @@ public class NxgApplication {
 
 
 
+	@PostConstruct
+	public void init(){
+
+		try {
+			log.info("Initializing header service");
+			secretService.init();
+		}catch (Exception ex){
+
+			log.info("Error intializing header service");
+		}
+	}
 
 
 
