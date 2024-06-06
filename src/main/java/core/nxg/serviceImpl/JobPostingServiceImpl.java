@@ -81,11 +81,13 @@ public class JobPostingServiceImpl implements JobPostingService {
         jobPosting.setJob_description(jobPostingDto.getJob_description());
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
-        jobPosting.setJob_location(jobPostingDto.getJob_location());
+      //  jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setJob_description(jobPostingDto.getJob_description());// created new by glory
         jobPosting.setSalary(jobPostingDto.getSalary());
         jobPosting.setJob_location(jobPostingDto.getJob_location());
         jobPosting.setRequirements(jobPostingDto.getRequirements());
         jobPosting.setDeadline(jobPostingDto.getDeadline());
+        jobPosting.setCreated_at(jobPosting.getCreated_at());// created new by glory
         jobPosting.setTags(jobPostingDto.getTags());
         jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
         var savedJobPosting = jobPostingRepository.saveAndFlush(jobPosting);
