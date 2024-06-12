@@ -33,14 +33,14 @@ public class EmailConstant {
             + ".container {margin: 0 auto; width: 50%; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center;}"
             + "h1, p {text-align: center;}"
             + "h1 {color: #333; font-weight: bold;}"
-            + ".button { display: inline-block; background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; transition: background-color 0.3s; }"
+            + ".button { display: inline-block; background-color: #007BFF; color: #fff; font-weight: bold; padding: 10px 10px; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; transition: background-color 0.3s; }"
             + ".button:hover {background-color: #0056b3;}"
-            + ".footer {margin-top: 50px;}"
+            + ".footer {margin-top: 20px;}"
             + ".salutation {text-align: left; margin-left: 5%;}"
             + "</style></head><body><div class=\"container\">"
-            + "<img src=\"cid:${mylogo}\" alt=\"NXG-JOB HUB Logo\" style=\"max-width: 100%; height: auto;\">"
+            + "<img src=\"data:image/png;base64,{{logo}}\" alt=\"NXG-JOB HUB Logo\" style=\"max-width: 100%; height: auto;\">"
             + "<h1>Verify Your Email Address</h1>"
-            + "<p class=\"salutation\">Dear [[name]]</p>"
+            + "<p class=\"salutation\">Dear[[name]],</p>"
             + "<p>Welcome to <strong>NXG-JOB HUB</strong>! To get started, please click the button below to verify your email address.</p>"
             + "<a style=\" color: white; \" href=\"[[URL]]\" class=\"button\">Verify Your Email</a>"
             + "<p class=\"footer\"><strong>This email expires in 24 hrs. If you did not create an account using this address, please ignore it.</strong></p>"
@@ -61,7 +61,7 @@ public class EmailConstant {
             + "</style></head><body>"
             + "<div class=\"container\">"
             + "<h1>New Job Posting at NXG-JOB HUB</h1>"
-            + "<p>Dear [[name]],</p>"
+            + "<p>Dear[[name]],</p>"
             + "<p>We are excited to inform you about a new job posting that might interest you.</p>"
             + "<h2>[[job_title]]</h2>"
             + "<p><strong>Company:</strong> [[company_bio]]</p>"
@@ -99,4 +99,7 @@ public class EmailConstant {
             + "   <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
             + "</body>"
             + "</html>";
+
+
 }
+

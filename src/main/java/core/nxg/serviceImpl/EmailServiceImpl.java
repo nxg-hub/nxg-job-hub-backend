@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static core.nxg.utils.constants.EmailConstant.*;
@@ -136,6 +138,11 @@ public class EmailServiceImpl implements EmailService {
         String subject = "Almost there! Please verify your email address.";
         String toAddress = user.getEmail();
         String content = VERIFICATION_EMAIL_CONTENT;
+        String currentDirectory = System.getProperty("user.dir");
+        String filePath = Paths.get(currentDirectory, "/src/main/resources/images", "ngx-logo.txt").toString();
+
+        String logo = new String(Files.readAllBytes(Paths.get(filePath)));
+
 
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -146,7 +153,10 @@ public class EmailServiceImpl implements EmailService {
 
         // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
 
-        helper.addInline("mylogo", mylogo);
+        //helper.addInline("mylogo", mylogo);
+        //used .Replace instead to replace logo in base64 string
+        content = content.replace("{{logo}}", logo);
+
 
 
         helper.setSubject(subject);
