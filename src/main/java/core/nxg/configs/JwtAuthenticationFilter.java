@@ -1,11 +1,9 @@
 package core.nxg.configs;
 
-import core.nxg.exceptions.ExpiredJWTException;
-import core.nxg.exceptions.TokenExpiredException;
+
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
+
 import jakarta.servlet.FilterChain;
-//import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -66,6 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
+
         }
         catch (ExpiredJwtException e){
             logger.error(e.getMessage());
@@ -75,7 +74,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         catch (UsernameNotFoundException e){
             logger.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            System.out.println(e.getMessage());
 
         }
     }
