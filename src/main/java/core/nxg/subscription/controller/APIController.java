@@ -3,9 +3,7 @@ package core.nxg.subscription.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import core.nxg.subscription.enums.EventType;
-import core.nxg.subscription.enums.SubscriptionStatus;
-import core.nxg.subscription.repository.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.service.APIService;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
 import java.util.Map;
 
 
@@ -34,11 +31,14 @@ public class APIController {
 
 
 
-    private final SubscriptionRepository repo;
+    @Autowired
+    private final SubscribeRepository repo;
+
+    @Autowired
     private final APIService apiService;
 
-    @Value("${psk.secret.active}")
-    private String secretKey;
+    private final String secretKey =  System.getenv("PSK_SK_LIVE");
+
 
 
     @PostMapping("/event")
@@ -87,26 +87,42 @@ public class APIController {
         }
 
 
-        byte[] byteKey = secretKey.getBytes(StandardCharsets.UTF_8);
+        if (secretKey != null && !secretKey.isEmpty()) {
 
-        String HMAC_SHA512 = "HmacSHA512";
-        SecretKeySpec keySpec = new SecretKeySpec(byteKey, HMAC_SHA512);
+            byte[] byteKey = secretKey.getBytes(StandardCharsets.UTF_8);
 
-        Mac sha512_HMAC = Mac.getInstance(HMAC_SHA512);
+            String HMAC_SHA512 = "HmacSHA512";
+            SecretKeySpec keySpec = new SecretKeySpec(byteKey, HMAC_SHA512);
 
-        sha512_HMAC.init(keySpec);
+            Mac sha512_HMAC = Mac.getInstance(HMAC_SHA512);
 
-        byte[] mac_data = sha512_HMAC.
-                doFinal(payload.toString().getBytes(StandardCharsets.UTF_8));
-        log.info("Payload: {}", payload);
+            sha512_HMAC.init(keySpec);
 
-        String result = DatatypeConverter.printHexBinary(mac_data);
+            byte[] mac_data = sha512_HMAC.
+                    doFinal(payload.toString().getBytes(StandardCharsets.UTF_8));
+            log.info("Payload: {}", payload);
 
-        log.info("Result: {} and header {}", result, headerSignature);
+            String result = DatatypeConverter.printHexBinary(mac_data);
 
-        return result.equalsIgnoreCase(headerSignature);
+            log.info("Result: {} and header {}", result, headerSignature);
+
+            return result.equalsIgnoreCase(headerSignature);
+
+        }
+        else{
+
+                log.error("\n\n\t\t=================================== Secret key is missing ===============================\n\n");
+                log.error("\n\n\t================================== Secret key is missing ===============================\n\n");
+                log.error("\n\n\t=================================== Secret key is missing ===============================\n\n");
+
+                throw new RuntimeException("Secret key is missing");
+
+            }
+
+
+        }
     }
-}
+
 
 
 

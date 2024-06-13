@@ -21,6 +21,7 @@ public interface JobPostingService {
     void deleteJobPosting(Long jobId);
 
 
+    Object recommendJobPosting(Long userId) throws Exception;
 
     public Flux<ServerSentEvent<CompletableFuture<List<JobPosting>>>> sendJobPostingEvents() throws InterruptedException ;
 

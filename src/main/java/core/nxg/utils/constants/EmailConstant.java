@@ -77,7 +77,7 @@ public class EmailConstant {
             + "</div></div>"
             + "</body></html>";
 
-    public static final String OAUTH_MAIL_CONTENT = "<html>"
+        public static final String OAUTH_MAIL_CONTENT = "<html >"
             + "<head>"
             + "<style>"
             + "body {"
@@ -99,7 +99,6 @@ public class EmailConstant {
             + "   <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
             + "</body>"
             + "</html>";
-
 
 }
 

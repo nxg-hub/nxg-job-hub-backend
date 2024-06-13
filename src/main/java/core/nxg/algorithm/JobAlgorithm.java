@@ -1,9 +1,21 @@
 package core.nxg.algorithm;
 
+import core.nxg.entity.User;
 import org.springframework.stereotype.Service;
 
-@Service
-public class JobAlgorithm {
+
+public interface JobAlgorithm {
+
+
+    Object getJobs(User user);
+
+    Object removeDuplicate();
+
+
+
+
+
+
 
 
 
