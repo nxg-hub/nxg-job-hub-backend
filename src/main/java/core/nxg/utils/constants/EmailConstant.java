@@ -99,6 +99,5 @@ public class EmailConstant {
             + "   <p style=\"font-weight: bold;\">The NXG-JOB HUB Team</p>"
             + "</body>"
             + "</html>";
-
 }
 
