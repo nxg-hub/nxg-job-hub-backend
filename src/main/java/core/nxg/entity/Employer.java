@@ -91,7 +91,7 @@ public class Employer {
                     nonNullFields++;
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+
                 log.atLevel(Level.TRACE).log("Error accessing field: {}", field.getName(),e);
             }
         }

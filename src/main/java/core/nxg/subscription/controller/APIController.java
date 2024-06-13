@@ -42,7 +42,7 @@ public class APIController {
 
 
     @PostMapping("/event")
-    public ResponseEntity<Void> event(@RequestBody Map<String, Object> payload, @RequestHeader("x-paystack-signature") String headerSignature) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException,  Exception {
+    public ResponseEntity<Void> event(@RequestBody Map<String, Object> payload, @RequestHeader("x-paystack-signature") String headerSignature) throws Exception {
 
 
 
@@ -79,7 +79,7 @@ public class APIController {
             String headerSignature,
             JsonNode payload)
 
-            throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, Exception {
+            throws Exception {
 
 
         if (headerSignature == null || headerSignature.isEmpty()) {
@@ -100,22 +100,19 @@ public class APIController {
 
             byte[] mac_data = sha512_HMAC.
                     doFinal(payload.toString().getBytes(StandardCharsets.UTF_8));
-            log.info("Payload: {}", payload);
+
 
             String result = DatatypeConverter.printHexBinary(mac_data);
-
-            log.info("Result: {} and header {}", result, headerSignature);
-
             return result.equalsIgnoreCase(headerSignature);
 
         }
         else{
 
-                log.error("\n\n\t\t=================================== Secret key is missing ===============================\n\n");
-                log.error("\n\n\t================================== Secret key is missing ===============================\n\n");
-                log.error("\n\n\t=================================== Secret key is missing ===============================\n\n");
+                log.error("\n\n\t\t=================================== Paystack key is missing ===============================\n\n");
+                log.error("\n\n\t================================== Paystack key is missing ===============================\n\n");
+                log.error("\n\n\t=================================== Paystack key is missing ===============================\n\n");
 
-                throw new RuntimeException("Secret key is missing");
+                throw new RuntimeException("Paystack key is missing");
 
             }
 

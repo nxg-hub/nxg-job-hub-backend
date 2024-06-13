@@ -30,35 +30,25 @@ public class APIService {
 
     @Value("${psk.secret.active}")
     private String API_KEY;
-    // private final String API_KEY = System.getenv("PSK_SK_LIVE");
 
     @Autowired
     private final SubscribeRepository repo;
 
 
-    // public void init() {
-    //     if (API_KEY == null || API_KEY.isEmpty()) {
 
-    //         log.error("\n\n\n\t\t======================= API Key is not set. This is bad for prod !========================\n\n\n");
-    //         log.error("\n\n\t\t======================= API-Key is not set !!========================\n\n");
-
-    //         throw new RuntimeException("API Key is not set");
-    //     }
-    // }
-
-    public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
+    public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws  HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_CUSTOMER_URL);
 
     }
 
 
-    public ResponseEntity<JsonNode> plan(Map<String, Object> query) throws JsonProcessingException, HttpClientErrorException {
+    public ResponseEntity<JsonNode> plan(Map<String, Object> query) throws  HttpClientErrorException {
 
         return post(query, APIConstants.PAYSTACK_PLANS_CREATE_PLAN);
 
     }
-    public ResponseEntity<JsonNode> createSubscription(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
+    public ResponseEntity<JsonNode> createSubscription(CustomerDTO dto) throws  HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_SUBSCRIPTIONS_CREATE_SUBSCRIPTION);
 
@@ -66,7 +56,7 @@ public class APIService {
 
 
 
-    public JsonNode initialize(TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
+    public JsonNode initialize(TransactionDTO dto) throws  HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_INIT_TRANSACTIONS).getBody();
 
@@ -120,12 +110,12 @@ public class APIService {
 
 
     public void parseEvents(String event, String email) {
-        System.out.println("Event: " + event);
+        log.info("Event: {}", event);
 
         switch(event){
             case "subscription.create":
-               log.info("Subscription event to be parsed: {}", event);
-               this.repo.findByEmail(email).ifPresent(subscriber -> {
+               log.info("Subscription event to be parsed: {}", event); // we get a subscription create event
+               this.repo.findByEmail(email).ifPresent(subscriber -> {   // we then mark it as active at that instant .
                 subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
                 subscriber.setSubscriptionStarts(LocalDate.now());
                 repo.save(subscriber);});
@@ -141,25 +131,25 @@ public class APIService {
 
 
             case "subscription.disable":
-                System.out.println("Subscription disabled");
+                log.info("Subscription disabled");
                 break;
             case "invoice.create":
-                System.out.println("Invoice created");
+                log.info("Invoice created");
                 break;
             case "invoice.update":
-                System.out.println("Invoice updated");
+                log.info("Invoice updated");
                 break;
             case "invoice.success":
-                System.out.println("Invoice payment failed");
+                log.info("Invoice payment failed");
                 break;
             case "transfer.success":
-                System.out.println("Transfer successful");
+                log.info("Transfer successful");
                 break;
             case "transfer.failed":
-                System.out.println("Transfer failed");
+                log.info("Transfer failed");
                 break;
             case "transfer.reversed":
-                System.out.println("Transfer reversed");
+                log.info("Transfer reversed");
                 break;
             default:
                 log.info("An unrecognized event was received: {}", event);
