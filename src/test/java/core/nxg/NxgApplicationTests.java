@@ -12,6 +12,8 @@ import core.nxg.subscription.entity.PaymentTransactions;
 import core.nxg.subscription.enums.JobStatus;
 import core.nxg.subscription.enums.TransactionType;
 import core.nxg.subscription.repository.TransactionRepository;
+import core.nxg.utils.Helper;
+import core.nxg.utils.SecretService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +46,12 @@ class NxgApplicationTests {
 	@InjectMocks
 	private User user;
 
+	@Mock
+	private SecretService secretService;
 
+
+	@Mock
+	private Helper helper;
 
 
 	@Mock
@@ -73,7 +80,7 @@ class NxgApplicationTests {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(transactionRepository, jobPostingRepository,modelMapper, userRepository);
+		adminService = new AdminServiceImpl(secretService, helper, transactionRepository, jobPostingRepository,modelMapper, userRepository);
 
 
 

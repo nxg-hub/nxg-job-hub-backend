@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.subscription.enums.APIConstants;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.TransactionDTO;
-import core.nxg.subscription.enums.EventType;
 import core.nxg.subscription.enums.SubscriptionStatus;
-import core.nxg.subscription.repository.SubscriptionRepository;
+import core.nxg.subscription.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,25 +27,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class APIService {
 
+
     @Value("${psk.secret.active}")
     private String API_KEY;
 
     @Autowired
-    private final SubscriptionRepository repo;
+    private final SubscribeRepository repo;
 
-    public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
+
+
+    public ResponseEntity<JsonNode> createCustomer(CustomerDTO dto) throws  HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_CUSTOMER_URL);
 
     }
 
 
-    public ResponseEntity<JsonNode> plan(Map<String, Object> query) throws JsonProcessingException, HttpClientErrorException {
+    public ResponseEntity<JsonNode> plan(Map<String, Object> query) throws  HttpClientErrorException {
 
         return post(query, APIConstants.PAYSTACK_PLANS_CREATE_PLAN);
 
     }
-    public ResponseEntity<JsonNode> createSubscription(CustomerDTO dto) throws JsonProcessingException, HttpClientErrorException {
+    public ResponseEntity<JsonNode> createSubscription(CustomerDTO dto) throws  HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_SUBSCRIPTIONS_CREATE_SUBSCRIPTION);
 
@@ -54,7 +56,7 @@ public class APIService {
 
 
 
-    public JsonNode initialize(TransactionDTO dto) throws JsonProcessingException, HttpClientErrorException {
+    public JsonNode initialize(TransactionDTO dto) throws  HttpClientErrorException {
 
         return post(dto, APIConstants.PAYSTACK_INIT_TRANSACTIONS).getBody();
 
@@ -85,6 +87,8 @@ public class APIService {
 
     private <T> ResponseEntity<JsonNode> post(T body,
                                               String url) {
+
+
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new APIErrorHandler());
 
@@ -97,6 +101,7 @@ public class APIService {
                 JsonNode.class);
 
     }
+
     public JsonNode validateIdentity(Map<String,Object> body, String customer_code){
         return post(body,
                 APIConstants.PAYSTACK_CUSTOMER_URL+ "/" + customer_code + "/identification" ).getBody();
@@ -105,12 +110,12 @@ public class APIService {
 
 
     public void parseEvents(String event, String email) {
-        System.out.println("Event: " + event);
+        log.info("Event: {}", event);
 
         switch(event){
             case "subscription.create":
-               log.info("Subscription event to be parsed: {}", event);
-               this.repo.findByEmail(email).ifPresent(subscriber -> {
+               log.info("Subscription event to be parsed: {}", event); // we get a subscription create event
+               this.repo.findByEmail(email).ifPresent(subscriber -> {   // we then mark it as active at that instant .
                 subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
                 subscriber.setSubscriptionStarts(LocalDate.now());
                 repo.save(subscriber);});
@@ -126,25 +131,25 @@ public class APIService {
 
 
             case "subscription.disable":
-                System.out.println("Subscription disabled");
+                log.info("Subscription disabled");
                 break;
             case "invoice.create":
-                System.out.println("Invoice created");
+                log.info("Invoice created");
                 break;
             case "invoice.update":
-                System.out.println("Invoice updated");
+                log.info("Invoice updated");
                 break;
             case "invoice.success":
-                System.out.println("Invoice payment failed");
+                log.info("Invoice payment failed");
                 break;
             case "transfer.success":
-                System.out.println("Transfer successful");
+                log.info("Transfer successful");
                 break;
             case "transfer.failed":
-                System.out.println("Transfer failed");
+                log.info("Transfer failed");
                 break;
             case "transfer.reversed":
-                System.out.println("Transfer reversed");
+                log.info("Transfer reversed");
                 break;
             default:
                 log.info("An unrecognized event was received: {}", event);

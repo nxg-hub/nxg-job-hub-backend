@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +25,6 @@ public class JobPostingDto {
     private LocalDate created_at;
     private String requirements;
     private String job_location;
-    private String tags;
+    private List<String> tags;
 
 }

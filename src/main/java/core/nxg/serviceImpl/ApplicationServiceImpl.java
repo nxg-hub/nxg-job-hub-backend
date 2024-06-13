@@ -129,6 +129,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         return savedJobRepo.findByUser(user, pageable);
 
     }
+
+    // todo: apply to a job posting. and return an email notification to the employer.
+    // todo:
         
 
 

@@ -30,23 +30,24 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class JobPostingController {
 
+
     private final JobPostingService jobPostingService;
     // private final RatingsServiceImpl ratingsService;
 
     @Operation(summary = "Make a job posting as an employer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully created a job posting",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = JobPostingDto.class)) }),
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = JobPostingDto.class))}),
             @ApiResponse(responseCode = "400", description = "An unrecognised or invalid request was sent",
                     content = @Content)})
     @PostMapping("/post")
-    public ResponseEntity<?> createJobPosition(@Valid @NonNull @RequestBody JobPostingDto jobPostingDto) throws Exception{
-        try{
+    public ResponseEntity<?> createJobPosition(@Valid @NonNull @RequestBody JobPostingDto jobPostingDto) throws Exception {
+        try {
             JobPostingDto jobPosting = jobPostingService.createJobPosting(jobPostingDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
-        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -55,12 +56,12 @@ public class JobPostingController {
     @Operation(summary = "All job postings")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found job postings",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = JobPostingDto.class)) }),
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = JobPostingDto.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied",
                     content = @Content)})
     @GetMapping("/all")
-    public ResponseEntity<List<JobPostingDto>> getAllJobPosting(@PageableDefault(size = 10) Pageable page){
+    public ResponseEntity<List<JobPostingDto>> getAllJobPosting(@PageableDefault(size = 10) Pageable page) {
         List<JobPostingDto> jobPostings = jobPostingService.getAllJobPostings(page);
         return ResponseEntity.ok(jobPostings);
     }
@@ -69,8 +70,8 @@ public class JobPostingController {
     @Operation(summary = "Get a job by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the job",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = JobPostingDto.class)), }),
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = JobPostingDto.class)),}),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied")})
     @GetMapping("/get-{jobID}")
     public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable Long jobID) {
@@ -97,6 +98,16 @@ public class JobPostingController {
     @GetMapping("/stream")
     public Flux<ServerSentEvent<CompletableFuture<List<JobPosting>>>> streamJobPostings() throws InterruptedException {
         return jobPostingService.sendJobPostingEvents();
+    }
+
+    @GetMapping("/{userId}/recommend")
+    public ResponseEntity<?> recommendJobPosting(@PathVariable Long userId) throws Exception {
+        try {
+            Object recommendedJobs = jobPostingService.recommendJobPosting(userId);
+            return ResponseEntity.ok(recommendedJobs);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
 

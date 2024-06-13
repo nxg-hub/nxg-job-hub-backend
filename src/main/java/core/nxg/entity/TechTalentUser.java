@@ -6,15 +6,7 @@ import lombok.*;
 
 
 
-//import java.util.Locale.IsoCountryCode;
-import core.nxg.enums.Experience;
-import core.nxg.enums.JobType;
-import core.nxg.enums.ProfessionalCert;
-import core.nxg.enums.Qualification;
-import core.nxg.enums.WorkMode;
 import java.util.List;
-import java.util.Locale;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 

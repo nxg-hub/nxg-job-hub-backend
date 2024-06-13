@@ -1,11 +1,14 @@
 package core.nxg.service;
 
+import core.nxg.dto.LoginDTO;
+import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface AdminService {
+public interface AdminService  {
     Object getTransactionById(Long transactionId);
 
 
@@ -31,5 +34,10 @@ public interface AdminService {
 
     Page<User> getEmployerUsers(int page, int size);
 
+
+     Object createAdmin(UserDTO userDTO, HttpServletRequest request) throws Exception ;
+
+
+     Object login(LoginDTO userDTO, HttpServletRequest request) throws Exception ;
 
 }
