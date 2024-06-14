@@ -156,9 +156,7 @@ public class EmailServiceImpl implements EmailService {
 
         // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
 
-        //helper.addInline("mylogo", mylogo);
-        //used .Replace instead to replace logo in base64 string
-        content = content.replace("{{logo}}", logo);
+        helper.addInline("{mylogo}", mylogo);
 
 
 

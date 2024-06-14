@@ -38,7 +38,7 @@ public class EmailConstant {
             + ".footer {margin-top: 20px;}"
             + ".salutation {text-align: left; margin-left: 5%;}"
             + "</style></head><body><div class=\"container\">"
-            + "<img src=\"data:image/png;base64,{{logo}}\" alt=\"NXG-JOB HUB Logo\" style=\"max-width: 100%; height: auto;\">"
+            + "<img src=\"cid:{mylogo}\" alt=\"NXG-JOB HUB Logo\" style=\"max-width: 100%; height: auto;\">"
             + "<h1>Verify Your Email Address</h1>"
             + "<p class=\"salutation\">Dear[[name]],</p>"
             + "<p>Welcome to <strong>NXG-JOB HUB</strong>! To get started, please click the button below to verify your email address.</p>"
