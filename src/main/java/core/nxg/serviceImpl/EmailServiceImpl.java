@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -50,8 +51,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     JwtService jwtService;
 
-    @Value("classpath:images/mylogo.png")
-    Resource mylogo;
+    @Value("classpath:images/nxg-logo.png")
+    Resource nxgLogo ;
 
     @Autowired
     TechTalentRepository TechTalentRepository;
@@ -124,6 +125,7 @@ public class EmailServiceImpl implements EmailService {
             content = content.replace("[[URL]]", verifyURL);
 
             helper.setText(content, true);
+            helper.addInline("nxgLogo", nxgLogo);
 
             mailSender.send(message);
             verificationRepo.saveAndFlush(verificationCode);
@@ -141,10 +143,7 @@ public class EmailServiceImpl implements EmailService {
         String subject = "Almost there! Please verify your email address.";
         String toAddress = user.getEmail();
         String content = VERIFICATION_EMAIL_CONTENT;
-        String currentDirectory = System.getProperty("user.dir");
-        String filePath = Paths.get(currentDirectory, "/src/main/resources/images", "ngx-logo.txt").toString();
 
-        String logo = new String(Files.readAllBytes(Paths.get(filePath)));
 
 
 
@@ -154,9 +153,7 @@ public class EmailServiceImpl implements EmailService {
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(toAddress);
 
-        // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
 
-        helper.addInline("{mylogo}", mylogo);
 
 
 
@@ -174,6 +171,8 @@ public class EmailServiceImpl implements EmailService {
         content = content.replace("[[URL]]", verifyURL);
 
         helper.setText(content, true);
+        helper.addInline("nxgLogo", nxgLogo);
+
 
         mailSender.send(message);
     }
@@ -197,7 +196,7 @@ public class EmailServiceImpl implements EmailService {
 
 
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
 
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
@@ -219,6 +218,8 @@ public class EmailServiceImpl implements EmailService {
         content = content.replace("[[URL]]", verifyURL);
 
         helper.setText(content, true);
+        helper.addInline("nxgLogo", nxgLogo);
+
 
         verificationRepo.saveAndFlush(code);
 
@@ -229,7 +230,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         String firstName = userRepository.findByEmail(to).get().getFirstName();
         String content = JOBPOSTING_NOTIFICATION_CONTENT.replace("[[name]]", firstName);
 
@@ -243,6 +244,8 @@ public class EmailServiceImpl implements EmailService {
         helper.setSubject("New job posted: " + job.getJob_title());
 
         helper.setText(content, true);
+        helper.addInline("nxgLogo", nxgLogo);
+
         mailSender.send(message);
 
 
@@ -263,19 +266,21 @@ public class EmailServiceImpl implements EmailService {
             String mailSubject = "NXG JOB HUB LOGIN DETAILS";
             String mailto = user.get().getEmail();
             String content = OAUTH_MAIL_CONTENT
-                    .replace("[[name]]", name)  // Replace with user's name
+                    .replace("[[name]]", name)
                     .replace("[[email]]", email)
                     .replace("[[password]]", generatedPassword);
 
 
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
             helper.setTo(mailto);
 
             helper.setSubject(mailSubject);
             helper.setText(content, true);
+            helper.addInline("nxgLogo", nxgLogo);
+
             mailSender.send(message);
 
         }

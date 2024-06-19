@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -39,8 +40,11 @@ public class SecretService {
     @Value("${spring.mail.username}")
     private String FROM_ADDRESS;
 
+    @Value("classpath:images/nxg-logo.png")
+    Resource nxgLogo ;
+
     @Autowired
-    private HeaderSignatureStorage storage;
+    private  HeaderSignatureStorage storage;
 
 
 
@@ -110,7 +114,7 @@ public class SecretService {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
         helper.setFrom(FROM_ADDRESS, "NXG JOB HUB ADMIN SERVICE");
         helper.setTo(FROM_ADDRESS);
@@ -124,6 +128,7 @@ public class SecretService {
         content = content.replace( "[[header_signature_THREE]]",keyToString(  secretKeyTHREE));
 
         helper.setText(content, true);
+        helper.addInline("nxgLogo", nxgLogo);
 
         mailSender.send(mimeMessage);
 
