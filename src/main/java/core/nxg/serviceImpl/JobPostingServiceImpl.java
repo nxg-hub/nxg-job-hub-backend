@@ -13,6 +13,8 @@ import core.nxg.repository.TechTalentRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.JobPostingService;
 import core.nxg.service.UserService;
+import core.nxg.subscription.enums.SubscriptionStatus;
+import core.nxg.subscription.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -47,16 +49,21 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Autowired
     private final JobPostingRepository jobPostingRepository;
+
     @Autowired
     private final EmployerRepository employerRepository;
+
     @Autowired
     private final EmailService emailService;
+
     @Autowired
     private final UserService userService;
 
     @Autowired
     private final TechTalentRepository techRepo;
 
+    @Autowired
+    private final SubscribeRepository subRepo;
     @Autowired
     private final NotificationRepository notificationRepository;
 
@@ -77,11 +84,23 @@ public class JobPostingServiceImpl implements JobPostingService {
         JobPosting jobPosting = new JobPosting();
         String employerId = jobPostingDto.getEmployerID();
         Optional<Employer> optionalEmployer = employerRepository.findById(Long.valueOf(employerId));
-        if (optionalEmployer.isPresent()) {
-            jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
-        } else {
+        if (optionalEmployer.isEmpty()) {
             throw new NotFoundException("Employer does not exist!");
+
         }
+        if (!optionalEmployer.get().isVerified()){
+            throw new RuntimeException("Employer is not verified. Job posting cannot be created");
+        }
+
+
+       var subscription = subRepo.findByEmail(optionalEmployer.get().getEmail());
+
+
+        if (subscription.isPresent() && (SubscriptionStatus.INACTIVE.equals( subscription.get().getSubscriptionStatus()))){
+            throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
+        }
+
+        jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
         jobPosting.setJob_description(jobPostingDto.getJob_description());
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
@@ -116,7 +135,6 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
     private void onJobPosted(Long employerId, JobPosting jobPosting) throws Exception {
-        //TODO send email to only subscribed tech talent agents and tech talent
         Employer poster = employerRepository.findById(employerId).
                 orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
@@ -137,6 +155,7 @@ public class JobPostingServiceImpl implements JobPostingService {
                 throw new RuntimeException("Error sending email to {}" + user.getEmail());
             }
         });
+        emailService.sendJobPostingNotifEmail(poster.getEmail(), jobPosting);
 
 
     }
