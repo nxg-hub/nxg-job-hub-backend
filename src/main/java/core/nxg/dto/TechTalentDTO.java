@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+
 @Data
 @AllArgsConstructor
 public class TechTalentDTO implements Serializable {
@@ -43,6 +44,7 @@ public class TechTalentDTO implements Serializable {
     private String profilePicture;
     private String portfolioLink;
     private String jobInterest;
+    private boolean isVerified;
 
 
 

@@ -5,12 +5,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import core.nxg.enums.ApplicationStatus;
 
+import java.lang.annotation.Documented;
 import java.time.LocalDateTime;
 
 @Entity
+
 @Data
 @RequiredArgsConstructor
 @Table(name = "applications")
+
 public class Application {
 
     @Id

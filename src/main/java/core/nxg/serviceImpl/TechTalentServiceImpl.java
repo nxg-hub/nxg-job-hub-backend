@@ -232,11 +232,16 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         Optional<TechTalentDTO> techTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
         if (techTalentUser.isPresent()){
             techTalentUser.get().setSkills(skills);
-            ;
             techTalentRepository.save(mapper.map(techTalentUser.get(), TechTalentUser.class));
         }
     }
-    
+
+    @Override
+    public Boolean isVerified(long id) {
+        Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(id);
+        return techTalentUser.map(TechTalentUser::isVerified).orElse(false);
+    }
+
 
 }
 
