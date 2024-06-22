@@ -239,7 +239,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     @Override
     public Boolean isVerified(long id) {
         Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(id);
-        return techTalentUser.map(TechTalentUser::isVerified).orElse(false);
+        if(techTalentUser.isPresent()){
+            techTalentUser.get().setVerified(techTalentUser.isPresent());
+            return techTalentUser.isPresent();
+        }
+        return !techTalentUser.isPresent();
     }
 
 
