@@ -10,6 +10,7 @@ import core.nxg.response.TechTalentResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import core.nxg.service.UserService;
+import core.nxg.serviceImpl.TechTalentServiceImpl;
 import core.nxg.utils.Helper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -52,7 +53,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
 
     @Autowired
-    private TechTalentService<T> techTalentService;
+    private TechTalentServiceImpl<T> techTalentService;
 
     @Autowired
     Helper helper;
@@ -103,17 +104,6 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
     }
 
-//    @GetMapping("/get-user")
-//    @ResponseBody
-//    public ResponseEntity<TechTalentDTO> getTechTalent (HttpServletRequest request) throws Exception {
-//        try{
-//            TechTalentDTO techTalent = techTalentService.getTechTalent(request);
-//            return ResponseEntity.ok(techTalent);
-//        }catch(Exception e){
-//            log.error("Error while getting TechTalent: {}", e.getMessage());
-//            return ResponseEntity.badRequest().body(null);
-//        }
-//    }
 
     @Operation(summary = "Update a Tech Talent ",
             description = "This endpoint updates an existing Tech Talent")
@@ -212,6 +202,17 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
             return ResponseEntity.ok().body("New skills added successfully");
         }catch(Exception e){
             return  ResponseEntity.badRequest().body("You have made an Invalid request!");
+        }
+    }
+
+
+
+    @GetMapping("verify/{techID}")
+    public ResponseEntity<?> isTechtalentVerified(@PathVariable Long techID) {
+        try {
+            return ResponseEntity.ok(techTalentService.isTechtalentVerified(techID));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid!");
         }
     }
 

@@ -62,6 +62,8 @@ public class TechTalentUser{
     private String portfolioLink;
     private String jobInterest;
 
+    private boolean isVerified;
+
 
 //     public void addSkill(Skill<String> skill) {
 //        skills.add(skill);
