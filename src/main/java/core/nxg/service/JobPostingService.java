@@ -25,5 +25,7 @@ public interface JobPostingService {
 
     public Flux<ServerSentEvent<CompletableFuture<List<JobPosting>>>> sendJobPostingEvents() throws InterruptedException ;
 
+    List<JobPosting> getNearbyJobPostings(String userCity);
+
 //    void deleteJobPosting(JobPostingDto jobPostingDto);
 }

@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.scheduling.annotation.Async;
@@ -27,15 +26,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +57,8 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Autowired
     private final ModelMapper mapper;
+
+    private final GeonamesService geonamesService;
 
 
     @Override
@@ -225,6 +222,19 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
 
+    @Override
+    public List<JobPosting> getNearbyJobPostings(String userCity) {
+        var jobPostings = jobPostingRepository.findAll();
+
+        // Get the list of nearby cities
+        List<String> nearbyCities = geonamesService.getNearbyCities(userCity);
+        nearbyCities.add(userCity); // Include the user's city itself
+
+        // Filter job postings by city
+        return jobPostings.stream()
+                .filter(job -> nearbyCities.contains(job.getJob_location()))
+                .collect(Collectors.toList());
+    }
 
 
 }

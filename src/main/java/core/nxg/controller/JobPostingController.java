@@ -24,6 +24,7 @@ import reactor.core.publisher.Flux;
 import java.awt.print.Book;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/job-postings")
@@ -108,6 +109,32 @@ public class JobPostingController {
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/recommend-nearby-jobs")
+    public ResponseEntity<List<JobPostingDto>> getNearbyJobPostings(@RequestParam String userCity) {
+        List<JobPosting> nearbyJobPostings = jobPostingService.getNearbyJobPostings(userCity);
+
+        // Convert entities to DTOs
+        List<JobPostingDto> nearbyJobPostingDtos = nearbyJobPostings.stream().map(this::convertToDto).collect(Collectors.toList());
+
+        return ResponseEntity.ok(nearbyJobPostingDtos);
+    }
+
+    private JobPostingDto convertToDto(JobPosting jobPosting) {
+        JobPostingDto dto = new JobPostingDto();
+        dto.setEmployerID(jobPosting.getEmployerID());
+        dto.setJob_title(jobPosting.getJob_title());
+        dto.setJob_description(jobPosting.getJob_description());
+        dto.setCompany_bio(jobPosting.getCompany_bio());
+        dto.setSalary(jobPosting.getSalary());
+        dto.setJob_type(jobPosting.getJob_type());
+        dto.setDeadline(jobPosting.getDeadline());
+        dto.setCreated_at(jobPosting.getCreated_at());
+        dto.setRequirements(jobPosting.getRequirements());
+        dto.setJob_location(jobPosting.getJob_location());
+        dto.setTags(jobPosting.getTags());
+        return dto;
     }
 }
 
