@@ -13,6 +13,7 @@ public interface AdminService  {
 
 
     Object getAllTransactions(Pageable pageable);
+    Object getSubscriptions(Pageable pageable);
 
     Page<UserResponseDto> getAllUsers(Pageable pageable) ;
 

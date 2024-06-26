@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestValueException;
@@ -120,8 +121,8 @@ public class AdminController {
 
 
             Object response = adminService.createAdmin(dto, request);
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-            } catch (Exception e) {
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
@@ -140,6 +141,16 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/subscriptions")
+    public ResponseEntity<?> getAllSubscriptions(@PageableDefault(size = 5) Pageable pageable) {
+        try {
+            var response = adminService.getSubscriptions(pageable);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+
+    }
 }
 
 

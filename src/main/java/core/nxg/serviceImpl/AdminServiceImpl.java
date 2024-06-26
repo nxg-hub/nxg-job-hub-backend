@@ -14,6 +14,7 @@ import core.nxg.repository.UserRepository;
 import core.nxg.service.AdminService;
 import core.nxg.service.UserService;
 import core.nxg.subscription.enums.JobStatus;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.repository.TransactionRepository;
 import core.nxg.utils.Helper;
 import core.nxg.utils.SecretService;
@@ -43,6 +44,8 @@ public class AdminServiceImpl implements AdminService {
     private final SecretService secretService;
     @Autowired
     private final Helper helper;
+    @Autowired
+    private final SubscribeRepository subRepo;
     @Autowired
     private final TransactionRepository transactionRepository;
     @Autowired
@@ -232,6 +235,13 @@ public class AdminServiceImpl implements AdminService {
     protected boolean isAdmin(User user){
         return user.getRoles().equals(Roles.ADMIN);
     }
+
+    public Object getSubscriptions(Pageable pageable){
+
+        return subRepo.findAll(pageable);
+
+    }
+
 }
 
 
