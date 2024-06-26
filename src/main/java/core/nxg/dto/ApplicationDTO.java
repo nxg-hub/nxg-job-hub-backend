@@ -10,7 +10,7 @@ public class ApplicationDTO {
    private Long jobPostingId;
    private String applicationStatus;
    private String timestamp;
-   // private TechTalentUser applicant;
+    //applicant is the logged-in user:
 
     
 }

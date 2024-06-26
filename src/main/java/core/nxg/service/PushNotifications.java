@@ -3,6 +3,7 @@ package core.nxg.service;
 import core.nxg.dto.NotificationDTO;
 import core.nxg.entity.Notification;
 import core.nxg.entity.User;
+import core.nxg.enums.SenderType;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.NotificationRepository;
 import core.nxg.repository.UserRepository;
@@ -38,12 +39,13 @@ public class PushNotifications {
 
 
 
-    public void pushNotification(NotificationDTO dto){
+    public void pushNotification(NotificationDTO dto, SenderType senderType){
 
         var notification = Notification.builder()
                 .notificationType(dto.getNotificationType())
                 .delivered(false)
                 .referencedUserID(dto.getReferencedUserID())
+                .senderType(senderType)
                 .senderID(dto.getSenderID())
                 .dateTime(LocalDateTime.now())
                 .message(dto.getMessage())
@@ -77,12 +79,7 @@ public class PushNotifications {
         return Flux.interval(Duration.ofSeconds(3)).map(sequence -> ServerSentEvent.<List<Notification>>builder()
                 .id(String.valueOf(sequence)).event("notifications").data(new ArrayList<>()).build());
     }
-    public List<Notification> getNotificationsByUserID(String userID) {
 
-        User user = userRepository.findById(Long.valueOf(userID))
-                .orElseThrow(() -> new RuntimeException("User not found!"));
-        return notificationRepository.findByReferencedUserID(user.getId());
-    }
 
     public Notification changeNotifStatusToRead(String notifID) {
         var notification = notificationRepository.findById(Long.valueOf(notifID))
@@ -91,11 +88,7 @@ public class PushNotifications {
         return notificationRepository.saveAndFlush(notification);
     }
 
-    public List<Notification> getNotificationsByUserIDNotRead(String userID) {
-        User user = userRepository.findById(Long.valueOf(userID))
-                .orElseThrow(() -> new UserNotFoundException("User Not Found!"));
-        return notificationRepository.findByReferencedUserIDAndSeenFalse(user.getId());
-    }
+
 
 
     public void clear() {

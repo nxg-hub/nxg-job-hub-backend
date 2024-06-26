@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.scheduling.annotation.Async;
@@ -29,15 +28,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -144,7 +139,7 @@ public class JobPostingServiceImpl implements JobPostingService {
             try {
                 log.info("Preparing to send an email to {}", user.getEmail());
 
-                emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
+                emailService.sendJobRelatedNotifEmail(user.getEmail(), jobPosting);
 
                 notify(user.getUser(), jobPosting, poster.getUser());
 
@@ -155,7 +150,7 @@ public class JobPostingServiceImpl implements JobPostingService {
                 throw new RuntimeException("Error sending email to {}" + user.getEmail());
             }
         });
-        emailService.sendJobPostingNotifEmail(poster.getEmail(), jobPosting);
+        emailService.sendJobRelatedNotifEmail(poster.getEmail(), jobPosting);
 
 
     }

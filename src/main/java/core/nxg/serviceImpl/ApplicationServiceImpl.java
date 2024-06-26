@@ -1,35 +1,36 @@
 package core.nxg.serviceImpl;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import core.nxg.dto.NotificationDTO;
 import core.nxg.dto.TechTalentDTO;
+import core.nxg.entity.*;
+import core.nxg.enums.NotificationType;
+import core.nxg.enums.SenderType;
+import core.nxg.repository.*;
+import core.nxg.service.EmailService;
+import core.nxg.service.PushNotifications;
+import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import core.nxg.dto.ApplicationDTO;
 import core.nxg.enums.ApplicationStatus;
-import core.nxg.entity.Application;
-import core.nxg.entity.JobPosting;
-import core.nxg.entity.SavedJobs;
-import core.nxg.entity.TechTalentUser;
-import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
-import core.nxg.repository.ApplicationRepository;
-import core.nxg.repository.JobPostingRepository;
-import core.nxg.repository.SavedJobRepository;
-import core.nxg.repository.TechTalentRepository;
-import core.nxg.repository.UserRepository;
 import core.nxg.service.ApplicationService;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
-public class ApplicationServiceImpl implements ApplicationService {
+public class ApplicationServiceImpl implements ApplicationService  {
+
 
 
     @Autowired
@@ -53,9 +54,17 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Autowired
     private ModelMapper mapper;
 
+    private PushNotifications notificationService;
+    @Autowired
+    private EmployerRepository employerRepository;
+
+    @Autowired
+    private EmailServiceImpl emailService;
 
 
-    @Override
+
+
+        @Override
     public void saveJob(HttpServletRequest request, Long jobPostingId) throws Exception{
         User user = helper.extractLoggedInUser(request);
         Optional<JobPosting> job = jobRepo.findById(jobPostingId);
@@ -72,19 +81,28 @@ public class ApplicationServiceImpl implements ApplicationService {
         newSavedJob.setUser(user);
         savedJobRepo.saveAndFlush(newSavedJob);
     }
+
+
     @Override
     public void createApplication(HttpServletRequest request, ApplicationDTO applicationDTO) throws Exception {
+
+        final long SYSTEM_PROCESS_ID = 100L;
+
+
         User user = helper.extractLoggedInUser(request);
         
         
         Optional<TechTalentDTO> techTalentUser = techRepo.findByUser(user);
         if (techTalentUser.isEmpty()){
-            throw new UserNotFoundException("Applicant cannot be found!");
+            throw new UserNotFoundException("Type of user cannot apply to jobs!");
         }
 
         Optional<JobPosting> job = jobRepo.findById(applicationDTO.getJobPostingId());
+
+
         if (job.isEmpty()){
-             throw new NotFoundException("Cannot Apply to an Non-existing Job");}
+             throw new NotFoundException("Job posting with jobID cannot be found");
+        }
      
             
         
@@ -95,15 +113,38 @@ public class ApplicationServiceImpl implements ApplicationService {
         newApplication.setApplicant(user);
         newApplication.setTimestamp(LocalDateTime.now());
 
-        appRepo.saveAndFlush(newApplication);
+
+        var employeR = employerRepository.findById(Long.valueOf(job.get().getEmployerID()));
+
+        NotificationDTO notificationDTO = new NotificationDTO();
+        if (employeR.isPresent()) {
+
+            notificationDTO.setReferencedUserID(
+                    employeR
+                            .map(employer -> employer.getUser().getId()).orElse(null));
+
+
+            notificationDTO.setSenderID(SYSTEM_PROCESS_ID);
+            notificationDTO.setNotificationType(NotificationType.JOB_APPLICATION);
+            notificationDTO.setMessage(
+                    user.getFirstName() + " "
+                            + user.getLastName() +
+                            " has applied to your job posting: " + job.get().getJob_title());
+
+
+            notificationService.pushNotification(notificationDTO, SenderType.SYSTEM_PROCESS);
+
+            emailService.sendEmailAfterApplied(employeR.get().getEmail(), user.getEmail() );
+
+            appRepo.saveAndFlush(newApplication);
+        }
             
 
     }
 
-    @Override
-    public void updateApplication(ApplicationDTO applicationDTO){
 
-         }
+
+
     
 
     @Override
@@ -130,9 +171,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     }
 
-    // todo: apply to a job posting. and return an email notification to the employer.
-    // todo:
-        
+
+
+
 
 
         

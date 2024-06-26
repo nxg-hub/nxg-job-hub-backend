@@ -6,16 +6,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.subscription.enums.TransactionStatus;
 import core.nxg.subscription.enums.TransactionType;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor(force = true)
 @Table(name = "payment_transactions")
 public class PaymentTransactions {
@@ -31,7 +30,7 @@ public class PaymentTransactions {
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
 
-    private Integer transactionAmount;
+    private double transactionAmount;
 
 //    private String transactionCurrency;
 
@@ -47,7 +46,6 @@ public class PaymentTransactions {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    @JsonIgnore
     @ManyToOne(targetEntity = Subscriber.class)
     private Subscriber subscriber;
 

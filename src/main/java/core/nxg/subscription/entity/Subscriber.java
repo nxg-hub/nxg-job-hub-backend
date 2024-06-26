@@ -1,5 +1,6 @@
 package core.nxg.subscription.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.entity.User;
 import core.nxg.subscription.enums.PlanType;
 import core.nxg.subscription.enums.SubscriptionStatus;
@@ -44,6 +45,7 @@ public class Subscriber {
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL)
     private List<PaymentTransactions> transactions;
 

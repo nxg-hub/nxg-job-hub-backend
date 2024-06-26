@@ -1,6 +1,7 @@
 package core.nxg.entity;
 
 import core.nxg.enums.NotificationType;
+import core.nxg.enums.SenderType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,10 @@ public class Notification {
 
 
 	private Long contentId;
+
+
+	@Enumerated(EnumType.STRING)
+	private SenderType senderType;
 
 	@Enumerated(EnumType.STRING)
 	private NotificationType notificationType;

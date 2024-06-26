@@ -1,13 +1,17 @@
 package core.nxg.controller;
 
+import core.nxg.dto.ApplicationDTO;
 import core.nxg.dto.JobPostingDto;
+import core.nxg.dto.NotificationDTO;
 import core.nxg.entity.JobPosting;
 import core.nxg.service.JobPostingService;
+import core.nxg.serviceImpl.ApplicationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
@@ -32,6 +36,8 @@ public class JobPostingController {
 
 
     private final JobPostingService jobPostingService;
+
+    private final ApplicationServiceImpl applicationService;
     // private final RatingsServiceImpl ratingsService;
 
     @Operation(summary = "Make a job posting as an employer")
@@ -107,6 +113,34 @@ public class JobPostingController {
             return ResponseEntity.ok(recommendedJobs);
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/{jobID}/apply")
+    public ResponseEntity<?> apply(@Valid @PathVariable Long jobID, HttpServletRequest request, @RequestBody ApplicationDTO dto) throws Exception {
+
+        try {
+
+
+            applicationService.createApplication(request, dto);
+            return ResponseEntity.ok("Application Successful!");
+
+        } catch (Exception ex) {
+
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @PostMapping("/{jobID}/save")
+    public ResponseEntity<?> saveJob(HttpServletRequest request, @PathVariable Long jobID) throws Exception {
+        try {
+
+            applicationService.saveJob(request, jobID);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

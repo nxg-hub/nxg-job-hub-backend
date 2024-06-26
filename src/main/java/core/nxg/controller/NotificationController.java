@@ -28,16 +28,7 @@ public class NotificationController {
     private final PushNotifications service;
 
 
-   @PostMapping("/push")
-   public ResponseEntity<?> push(@RequestBody NotificationDTO dto) {
-       try {
-           service.pushNotification(dto);
-           return ResponseEntity.ok("Pushed successfully");
-       } catch (Exception ex) {
-           return ResponseEntity.badRequest().build();
 
-       }
-   }
     @GetMapping("/stream/{userID}")
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserID(@PathVariable String userID) throws InterruptedException {
 
