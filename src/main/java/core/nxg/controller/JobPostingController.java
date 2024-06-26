@@ -1,17 +1,13 @@
 package core.nxg.controller;
 
-import core.nxg.dto.ApplicationDTO;
 import core.nxg.dto.JobPostingDto;
-import core.nxg.dto.NotificationDTO;
 import core.nxg.entity.JobPosting;
 import core.nxg.service.JobPostingService;
-import core.nxg.serviceImpl.ApplicationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
@@ -36,8 +32,6 @@ public class JobPostingController {
 
 
     private final JobPostingService jobPostingService;
-
-    private final ApplicationServiceImpl applicationService;
     // private final RatingsServiceImpl ratingsService;
 
     @Operation(summary = "Make a job posting as an employer")
@@ -114,6 +108,32 @@ public class JobPostingController {
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/recommend-nearby-jobs")
+    public ResponseEntity<List<JobPostingDto>> getNearbyJobPostings(@RequestParam String userCity) {
+        List<JobPosting> nearbyJobPostings = jobPostingService.getNearbyJobPostings(userCity);
+
+        // Convert entities to DTOs
+        List<JobPostingDto> nearbyJobPostingDtos = nearbyJobPostings.stream().map(this::convertToDto).collect(Collectors.toList());
+
+        return ResponseEntity.ok(nearbyJobPostingDtos);
+    }
+
+    private JobPostingDto convertToDto(JobPosting jobPosting) {
+        JobPostingDto dto = new JobPostingDto();
+        dto.setEmployerID(jobPosting.getEmployerID());
+        dto.setJob_title(jobPosting.getJob_title());
+        dto.setJob_description(jobPosting.getJob_description());
+        dto.setCompany_bio(jobPosting.getCompany_bio());
+        dto.setSalary(jobPosting.getSalary());
+        dto.setJob_type(jobPosting.getJob_type());
+        dto.setDeadline(jobPosting.getDeadline());
+        dto.setCreated_at(jobPosting.getCreated_at());
+        dto.setRequirements(jobPosting.getRequirements());
+        dto.setJob_location(jobPosting.getJob_location());
+        dto.setTags(jobPosting.getTags());
+        return dto;
     }
 
     @PostMapping("/{jobID}/apply")

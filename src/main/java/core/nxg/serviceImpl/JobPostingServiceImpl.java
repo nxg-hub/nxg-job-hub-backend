@@ -65,6 +65,8 @@ public class JobPostingServiceImpl implements JobPostingService {
     @Autowired
     private final ModelMapper mapper;
 
+    private final GeonamesService geonamesService;
+
 
     @Override
     public List<JobPostingDto> getAllJobPostings(Pageable pageable) {
@@ -239,6 +241,19 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
 
+    @Override
+    public List<JobPosting> getNearbyJobPostings(String userCity) {
+        var jobPostings = jobPostingRepository.findAll();
+
+        // Get the list of nearby cities
+        List<String> nearbyCities = geonamesService.getNearbyCities(userCity);
+        nearbyCities.add(userCity); // Include the user's city itself
+
+        // Filter job postings by city
+        return jobPostings.stream()
+                .filter(job -> nearbyCities.contains(job.getJob_location()))
+                .collect(Collectors.toList());
+    }
 
 
 }
