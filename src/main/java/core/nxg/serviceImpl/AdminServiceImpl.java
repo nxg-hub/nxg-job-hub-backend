@@ -40,20 +40,13 @@ import java.util.NoSuchElementException;
 public class AdminServiceImpl implements AdminService {
 
 
-    @Autowired
     private final SecretService secretService;
-    @Autowired
     private final Helper helper;
-    @Autowired
     private final SubscribeRepository subRepo;
-    @Autowired
     private final TransactionRepository transactionRepository;
-    @Autowired
     private final JobPostingRepository jobPostingRepository;
-    @Autowired
     private final ModelMapper modelMapper;
 
-    @Autowired
     private final UserRepository userRepository;
 
     @Override

@@ -11,6 +11,7 @@ import core.nxg.serviceImpl.AdminServiceImpl;
 import core.nxg.subscription.entity.PaymentTransactions;
 import core.nxg.subscription.enums.JobStatus;
 import core.nxg.subscription.enums.TransactionType;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.repository.TransactionRepository;
 import core.nxg.utils.Helper;
 import core.nxg.utils.SecretService;
@@ -68,6 +69,9 @@ class NxgApplicationTests {
 	@Mock
 	private  ModelMapper modelMapper;
 
+	@Mock
+	private SubscribeRepository subscribeRepository;
+
 
 	@Mock
 	 private JobPostingRepository jobPostingRepository;
@@ -80,7 +84,7 @@ class NxgApplicationTests {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(secretService, helper, transactionRepository, jobPostingRepository,modelMapper, userRepository);
+		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, userRepository);
 
 
 
