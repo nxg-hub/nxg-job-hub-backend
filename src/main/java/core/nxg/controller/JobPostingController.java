@@ -1,13 +1,16 @@
 package core.nxg.controller;
 
+import core.nxg.dto.ApplicationDTO;
 import core.nxg.dto.JobPostingDto;
 import core.nxg.entity.JobPosting;
 import core.nxg.service.JobPostingService;
+import core.nxg.serviceImpl.ApplicationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
@@ -24,6 +27,7 @@ import reactor.core.publisher.Flux;
 import java.awt.print.Book;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/job-postings")
@@ -33,6 +37,8 @@ public class JobPostingController {
 
     private final JobPostingService jobPostingService;
     // private final RatingsServiceImpl ratingsService;
+
+    private final ApplicationServiceImpl applicationService;
 
     @Operation(summary = "Make a job posting as an employer")
     @ApiResponses(value = {
@@ -137,7 +143,7 @@ public class JobPostingController {
     }
 
     @PostMapping("/{jobID}/apply")
-    public ResponseEntity<?> apply(@Valid @PathVariable Long jobID, HttpServletRequest request, @RequestBody ApplicationDTO dto) throws Exception {
+    public ResponseEntity<?> apply(@Valid HttpServletRequest request, @RequestBody ApplicationDTO dto) throws Exception {
 
         try {
 

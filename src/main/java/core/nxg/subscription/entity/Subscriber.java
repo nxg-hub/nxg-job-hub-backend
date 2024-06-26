@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,8 @@ public class Subscriber {
     @Temporal(TemporalType.DATE)
     private LocalDate subscriptionStarts;
 
+    @Temporal(TemporalType.DATE)
+    private LocalDate subscriptionDues;
 
 
     @Enumerated(EnumType.STRING)

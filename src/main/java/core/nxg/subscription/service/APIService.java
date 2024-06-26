@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import core.nxg.subscription.enums.APIConstants;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.TransactionDTO;
+import core.nxg.subscription.enums.PlanType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,13 +117,19 @@ public class APIService {
         switch(event){
             case "subscription.create":
                log.info("Subscription event to be parsed: {}", event); // we get a subscription create event
-               this.repo.findByEmail(email).ifPresent(subscriber -> {   // we then mark it as active at that instant .
-                subscriber.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
-                subscriber.setSubscriptionStarts(LocalDate.now());
-                repo.save(subscriber);});
+               repo.findByEmail(email)
+                       .ifPresent(subscriber -> {   // we then mark it as active at that instant .
+                subscriber
+                        .setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+                subscriber
+                        .setSubscriptionStarts(LocalDate.now());
+                subscriber
+                        .setSubscriptionDues(updateDueDate(subscriber.getSubscriptionStarts(), subscriber.getPlanType()));
+                repo
+                        .save(subscriber);});
                 break;
 
-                case "charge.failed":
+            case "charge.failed":
 
                 log.info("A Charge event received {}", event);
                 break;
@@ -158,5 +166,12 @@ public class APIService {
         }
 
 
+    }
+    private LocalDate updateDueDate(LocalDate startDate, PlanType planType) {
+        return switch (planType) {
+            case SILVER -> startDate.plus(Period.ofMonths(3));
+            case  GOLD -> startDate.plus(Period.ofMonths(6));
+            case PLATINUM -> startDate.plus(Period.ofMonths(12));
+        };
     }
 }

@@ -121,7 +121,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
             notificationDTO.setReferencedUserID(
                     employeR
-                            .map(employer -> employer.getUser().getId()).orElse(null));
+                            .map(employer -> employer.getUser().getId()).orElse(SYSTEM_PROCESS_ID));
 
 
             notificationDTO.setSenderID(SYSTEM_PROCESS_ID);

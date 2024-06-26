@@ -8,6 +8,7 @@ import core.nxg.repository.UserRepository;
 import core.nxg.subscription.entity.PaymentTransactions;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.enums.TransactionStatus;
+import core.nxg.subscription.enums.TransactionType;
 import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
@@ -163,6 +164,7 @@ public class SubscriptionService {
             tranx.setTransactionMessage(subscriber.getPlanType() + " plan subscription ");
             tranx.setTransactionDate(LocalDate.now());
             tranx.setTransactionTime(LocalTime.now());
+            tranx.setTransactionType(TransactionType.SUBSCRIPTION);
             tranx.setSubscriber(subscriber);
             subscriptionRepo.save(subscriber);
             transactionRepo.save(tranx);

@@ -32,7 +32,7 @@ public class PaymentTransactions {
 
     private double transactionAmount;
 
-//    private String transactionCurrency;
+
 
     @Temporal(TemporalType.DATE)
     private LocalDate transactionDate;
