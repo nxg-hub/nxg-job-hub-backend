@@ -181,8 +181,8 @@ public class EmployerServiceImpl implements EmployerService {
             applications.addAndGet(applicationsForJob.size());
             // FOR EACH JOB WE FIND THE APPLICATIONS THAT ARE APPROVED. WE ADD THE SIZE OF THE APPROVED APPLICATIONS TO THE ATOMIC INTEGER. WE HAVE NUMBER OF APPROVED APPLICATIONS
                 noOfApprovedJobs.addAndGet(applicationsForJob.stream()
-                        .filter(x -> x.getApplicationStatus()
-                                .equals(ApplicationStatus.APPROVED)).toList().size());}
+                        .filter(x -> (ApplicationStatus.APPROVED).equals(x.getApplicationStatus()))
+                                .toList().size());}
             catch (Exception ex){
                 log.error("Error occurred while fetching applications for job posting with ID: {}", jobPosting.getJobID());
 
@@ -203,6 +203,18 @@ public class EmployerServiceImpl implements EmployerService {
         return jobPosting.orElseGet(ArrayList::new);
 
 
+
+        }
+
+
+        public boolean isEmployerVerified(String employerId) {
+
+            Optional<Employer> employer = employerRepository.findById(Long.valueOf(employerId));
+            if (employer.isPresent()) {
+                return employer.get().isVerified();
+            } else {
+                throw new NotFoundException("Employer with employer Id is not found");
+            }
 
         }
 

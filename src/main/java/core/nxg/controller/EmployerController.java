@@ -7,6 +7,7 @@ import core.nxg.response.EmployerResponse;
 import core.nxg.response.EngagementForEmployer;
 import core.nxg.response.JobPostingResponse;
 import core.nxg.service.EmployerService;
+import core.nxg.serviceImpl.EmployerServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/api/employers")
 public class EmployerController {
 
-    private final EmployerService employerService;
+    private final EmployerServiceImpl employerService;
 
 //    @GetMapping("/verify")
 //    public ResponseEntity<String> verifyEmployer(HttpServletRequest request, @RequestParam("email") String email) {
@@ -153,6 +154,27 @@ public class EmployerController {
             return ResponseEntity.ok(employerService.getJobPostings(employerId));
         } catch (NotFoundException | NullPointerException e) {
             log.error("Error while getting job postings: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Verify an existing employer by their ID",
+            description ="This endpoint returns a boolean value indicating if the employer is verified or not.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employer is verified",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Boolean.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied/Employer not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = @Content) })
+    @GetMapping("/verify/{employerId}")
+    @ResponseBody
+    public ResponseEntity<?> isEmployerVerified( @Valid @PathVariable String employerId) {
+        try {
+            return ResponseEntity.ok(employerService.isEmployerVerified(employerId));
+        } catch (Exception e) {
+            log.error("Error while verifying employer: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

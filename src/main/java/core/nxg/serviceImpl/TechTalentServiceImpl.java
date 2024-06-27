@@ -207,7 +207,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             .slash("my-dashboard")
             .withSelfRel();
 
-        
+
         Link myApplicationsLink = linkTo(
         methodOn(TechTalentController.class)
             .getJobApplicationsForUser(request, pageable))
@@ -236,10 +236,14 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             techTalentRepository.save(mapper.map(techTalentUser.get(), TechTalentUser.class));
         }
     }
-    
+
+    public boolean isTechtalentVerified(Long techTalentId){
+        Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(techTalentId);
+        return techTalentUser.map(TechTalentUser::isVerified).orElseThrow(() -> new NotFoundException("TechTalent with ID : "+ techTalentId + "not found"));
 
 }
 
+}
 
 
 
