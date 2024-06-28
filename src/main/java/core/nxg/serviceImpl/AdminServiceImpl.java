@@ -54,76 +54,91 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private final UserRepository userRepository;
 
+    private static final String INVALID_HEADER_RESPONSE = "Header is Empty or Invalid. Please retry with a valid one or contact the support ";
+
     @Override
     public Object getAllTransactions(Pageable pageable, HttpServletRequest request) {
-        validateRequest(request);
-        return transactionRepository.findAll(pageable);
+        if (validateAdminRequest(request)) {
+            return transactionRepository.findAll(pageable);
 
+        }
+        return INVALID_HEADER_RESPONSE;
     }
 
     public Object getTransactionById(Long transactionId, HttpServletRequest request) {
-        validateRequest(request);
-        return transactionRepository.findById(String.valueOf(transactionId))
-                .orElseThrow(() -> new NoSuchElementException("Transaction with ID not found"));
+        if (validateAdminRequest(request)) {
+            return transactionRepository.findById(String.valueOf(transactionId))
+                    .orElseThrow(() -> new NoSuchElementException("Transaction with ID not found"));
 
+        }
+        return INVALID_HEADER_RESPONSE;
     }
 
     @Override
     public Object getAllJobs(Pageable pageable, HttpServletRequest request) {
-        validateRequest(request);
+        if (validateAdminRequest(request)) {
 
 
-        return jobPostingRepository.findAll(pageable);
+            return jobPostingRepository.findAll(pageable);
+        }
+        return INVALID_HEADER_RESPONSE;
     }
 
     @Override
     public void acceptJob(Long jobId, HttpServletRequest request) {
-        validateRequest(request);
 
-        var job = jobPostingRepository.findById(String.valueOf(jobId))
-                .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
-        job.setJobStatus(JobStatus.ACCEPTED);
-        job.setActive(true);
-        jobPostingRepository.save(job);
+
+
+        if (validateAdminRequest(request)) {
+            var job = jobPostingRepository.findById(String.valueOf(jobId))
+                    .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
+            job.setJobStatus(JobStatus.ACCEPTED);
+            job.setActive(true);
+            jobPostingRepository.save(job);
+        }
     }
 
     @Override
     public void rejectJob(Long jobId, HttpServletRequest request) {
-        validateRequest(request);
 
-        var job = jobPostingRepository.findById(String.valueOf(jobId))
-                .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
-        job.setJobStatus(JobStatus.REJECTED);
-        job.setActive(false);
-        jobPostingRepository.save(job);
 
+        if (validateAdminRequest(request)) {
+            var job = jobPostingRepository.findById(String.valueOf(jobId))
+                    .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
+            job.setJobStatus(JobStatus.REJECTED);
+            job.setActive(false);
+            jobPostingRepository.save(job);
+
+        }
     }
 
 
     @Override
     public void suspendJob(Long jobId, HttpServletRequest request) {
 
-        validateRequest(request);
 
-        var job = jobPostingRepository.findById(String.valueOf(jobId))
-                .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
-        job.setJobStatus(JobStatus.SUSPENDED);
-        job.setActive(false);
-        jobPostingRepository.save(job);
+        if (validateAdminRequest(request)) {
+            var job = jobPostingRepository.findById(String.valueOf(jobId))
+                    .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
+            job.setJobStatus(JobStatus.SUSPENDED);
+            job.setActive(false);
+            jobPostingRepository.save(job);
 
+        }
     }
 
 
     @Override
     public void suspendUser(Long userId, HttpServletRequest request) {
 
-        
-        var user = userRepository.findById(String.valueOf(userId))
-                .orElseThrow(() -> new UserNotFoundException("User with ID not found"));
-        user.setEnabled(false);
-        userRepository.save(user);
+        if (validateAdminRequest(request)) {
+            var user = userRepository.findById(String.valueOf(userId))
+                    .orElseThrow(() -> new UserNotFoundException("User with ID not found"));
+            user.setEnabled(false);
+            userRepository.save(user);
 
 
+        }
     }
 
     @Override
@@ -140,21 +155,27 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Page<User> getTalentUsers(int page, int size, HttpServletRequest request) {
-        validateRequest(request);
-        return getUsersByType(UserType.TECHTALENT, page, size);
+        if (validateAdminRequest(request)) {
+            return getUsersByType(UserType.TECHTALENT, page, size);
+        }
+        return Page.empty();
     }
 
     @Override
     public Page<User> getAgentUsers(int page, int size, HttpServletRequest request) {
-        validateRequest(request);
-        return getUsersByType(UserType.AGENT, page, size);
+        if (validateAdminRequest(request)) {
+            return getUsersByType(UserType.AGENT, page, size);
+        }
+        return Page.empty();
     }
 
 
     @Override
     public Page<User> getEmployerUsers(int page, int size, HttpServletRequest request) {
-        validateRequest(request);
-        return getUsersByType(UserType.EMPLOYER, page, size);
+        if (validateAdminRequest(request)) {
+            return getUsersByType(UserType.EMPLOYER, page, size);
+        }
+        return Page.empty();
     }
 
 
@@ -162,65 +183,66 @@ public class AdminServiceImpl implements AdminService {
     public Object createAdmin(UserDTO userDto, HttpServletRequest request) throws Exception {
 
 
+        if (validateAdminRequest(request)) {
 
 
-        validateRequest(request);
+            userRepository.findByEmail(userDto.getEmail()).ifPresentOrElse(
+                    existingAdmin -> {
 
 
-        userRepository.findByEmail(userDto.getEmail()).ifPresentOrElse(
-                existingAdmin -> {
+                        existingAdmin.setFirstName(userDto.getFirstName());
+                        existingAdmin.setLastName(userDto.getLastName());
+                        existingAdmin.setPhoneNumber(userDto.getPhoneNumber());
 
+                    },
+                    () -> {
+                        User admin = new User();
 
-                    existingAdmin.setFirstName(userDto.getFirstName());
-                    existingAdmin.setLastName(userDto.getLastName());
-                    existingAdmin.setPhoneNumber(userDto.getPhoneNumber());
+                        admin.setEmail(userDto.getEmail());
+                        admin.setFirstName(userDto.getFirstName());
+                        admin.setLastName(userDto.getLastName());
+                        admin.setPhoneNumber(userDto.getPhoneNumber());
 
-                },
-                () -> {
-                    User admin = new User();
+                        admin.setPassword(helper.encodePassword(userDto.getPassword()));
+                        admin.setRoles(Roles.ADMIN);
+                        admin.setEnabled(true);
 
-                    admin.setEmail(userDto.getEmail());
-                    admin.setFirstName(userDto.getFirstName());
-                    admin.setLastName(userDto.getLastName());
-                    admin.setPhoneNumber(userDto.getPhoneNumber());
+                        userRepository.save(admin);
 
-                    admin.setPassword(helper.encodePassword(userDto.getPassword()));
-                    admin.setRoles(Roles.ADMIN);
-                    admin.setEnabled(true);
+                    }
 
-                    userRepository.save(admin);
+            );
 
-                }
-
-        );
-
-        return userDto;
+            return userDto;
+        }
+        return INVALID_HEADER_RESPONSE;
     }
 
 
     @Override
-    public Object login(LoginDTO dto, HttpServletRequest request){
+    public Object login(LoginDTO dto, HttpServletRequest request) {
 
 
-       
+        if (validateAdminRequest(request)) {
 
-        validateRequest(request);
+            var user = userRepository.findByEmail(dto.getEmail())
+                    .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
 
-        var user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
+            if (!helper.encoder.matches(dto.getPassword(), user.getPassword())) {
+                log.error("Invalid Password!");
+                throw new RuntimeException("Invalid email or password!");
+            }
 
-        if (!helper.encoder.matches(dto.getPassword(), user.getPassword())) {
-            log.error("Invalid Password!");
-            throw new RuntimeException("Invalid email or password!");
+            if (isAdmin(user)) {
+                return user;
+            } else {
+                log.error("User is not an admin");
+                throw new RuntimeException("User is not an admin");
+            }
+
+
         }
-
-        if (isAdmin(user)) {
-            return user;
-        } else {
-            log.error("User is not an admin");
-            throw new RuntimeException("User is not an admin");
-        }
-
+        return INVALID_HEADER_RESPONSE;
 
 
     }
@@ -229,21 +251,21 @@ public class AdminServiceImpl implements AdminService {
         return (Roles.ADMIN).equals(user.getRoles());
     }
     
-    protected void validateRequest(HttpServletRequest request) {
+    protected boolean validateAdminRequest(HttpServletRequest request) {
 
-        if (!secretService.decodeKeyFromHeaderAndValidate(request)) {
-            log.error("**via registration. Header Is Invalid");
-            throw new RuntimeException("**via registration. Header Is Invalid. Please retry with a valid one or contact the support ");
-        }
+        return secretService.decodeKeyFromHeaderAndValidate(request);
+
     }
     
 
     @Override
     public Object getSubscriptions(Pageable pageable, HttpServletRequest request){
 
-        validateRequest(request);
-        return subRepo.findAll(pageable);
+        if (validateAdminRequest(request)) {
+            return subRepo.findAll(pageable);
 
+        }
+        return INVALID_HEADER_RESPONSE;
     }
     
     public void verifyTechTalent(Long techID){

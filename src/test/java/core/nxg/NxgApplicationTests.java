@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.*;
 
@@ -71,8 +72,8 @@ class NxgApplicationTests {
 	@Mock
 	 private JobPostingRepository jobPostingRepository;
 
-
-	private HttpServletRequest request;
+	@Mock
+	private MockHttpServletRequest request;
 	@Mock
 	private JobPosting jobPosting;
 	@BeforeEach
@@ -82,7 +83,8 @@ class NxgApplicationTests {
 
 		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository);
 
-
+		request = new MockHttpServletRequest();
+		request.addHeader("nxg-header", "xg...:");
 
 	}
 	@Test
@@ -107,12 +109,13 @@ class NxgApplicationTests {
 	JobPosting job = new JobPosting();
         job.setJobStatus(JobStatus.PENDING);
         job.setActive(false);
+		job.setJobID("1");
+	when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 	when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
 
-	// Act
-        adminService.acceptJob(Long.valueOf(job.getJobID()), request);
+	adminService.acceptJob(Long.valueOf(job.getJobID()), request);
 
-	// Assert
+		verify(jobPostingRepository).save(job);
 	assertEquals(JobStatus.ACCEPTED, job.getJobStatus());
 	assertTrue(job.isActive());
 	verify(jobPostingRepository, times(1)).save(job);
@@ -126,8 +129,10 @@ class NxgApplicationTests {
 
 		JobPosting job = new JobPosting();
 		job.setJobStatus(JobStatus.PENDING);
-		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
+		job.setJobID("1");
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 
+		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
 		adminService.rejectJob(Long.valueOf(job.getJobID()), request);
 
 		verify(jobPostingRepository).save(job);
@@ -140,8 +145,9 @@ class NxgApplicationTests {
 
 		JobPosting job = new JobPosting();
 		job.setJobStatus(JobStatus.ACCEPTED);
+		job.setJobID("1");
 		when(jobPostingRepository.findById( job.getJobID())).thenReturn(Optional.of(job));
-
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 		adminService.suspendJob(Long.valueOf(job.getJobID()), request);
 
 		verify(jobPostingRepository).save(job);
@@ -152,8 +158,9 @@ class NxgApplicationTests {
 	public void suspendUserChangesUserStatusToDisabled() {
 		User user = new User();
 		user.setEnabled(true);
+		user.setId("1");
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 		adminService.suspendUser(Long.valueOf(user.getId()), request);
 
 		verify(userRepository).save(user);
@@ -162,6 +169,8 @@ class NxgApplicationTests {
 
 	@Test
 	public void acceptJobThrowsExceptionWhenJobNotFound() {
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
+
 		when(jobPostingRepository.findById(anyString())).thenReturn(Optional.empty());
 
 		assertThrows(NoSuchElementException.class, () -> adminService.acceptJob(1L, request));
@@ -169,6 +178,8 @@ class NxgApplicationTests {
 
 	@Test
 	public void suspendUserThrowsExceptionWhenUserNotFound() {
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
+
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
 		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(1L, request));
