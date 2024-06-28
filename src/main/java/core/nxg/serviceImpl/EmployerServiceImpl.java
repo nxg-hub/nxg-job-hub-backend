@@ -106,7 +106,7 @@ public class EmployerServiceImpl implements EmployerService {
             userRepository.save(loggedInUser);
 
             employer.setUser(loggedInUser);
-            employerRepository.saveAndFlush(employer);
+            employerRepository.save(employer);
             loggedInUser.setEmployer(employer);
             userRepository.save(loggedInUser);
             return "Employer created successfully!";
@@ -122,10 +122,10 @@ public class EmployerServiceImpl implements EmployerService {
 
 
     @Override
-    public Employer patchEmployer(String employerId, Map<Object, Object> fields) throws Exception {
+    public Employer patchEmployer(String employerId, Map<Object, Object> fields) {
             if (employerId == null) {
                 throw new NotFoundException("Employer ID is required");}
-            Optional<Employer> employer = employerRepository.findById(Long.valueOf(employerId));
+            Optional<Employer> employer = employerRepository.findById(employerId);
             if (employer.isPresent()) {
                 fields.forEach((key, value) -> {
                     Field field = ReflectionUtils.findField(Employer.class, String.valueOf(key));
@@ -150,14 +150,14 @@ public class EmployerServiceImpl implements EmployerService {
 
     @Override
     public void deleteEmployer(Long employerId) {
-        Employer employer = employerRepository.findById(employerId)
+        Employer employer = employerRepository.findById(String.valueOf(employerId))
                 .orElseThrow(() -> new NotFoundException("Employer with ID " + employerId + " not found"));
 
         employerRepository.delete(employer);
     }
 
     public EngagementForEmployer getEngagements(Long employerId, Pageable pageable) throws Exception {
-        Employer employer = employerRepository.findById(employerId)
+        Employer employer = employerRepository.findById(String.valueOf(employerId))
                 .orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
         Optional<List<JobPosting>> existingJobPostings = jobPostingRepository.findByEmployerID(String.valueOf(employerId));
@@ -209,7 +209,7 @@ public class EmployerServiceImpl implements EmployerService {
 
         public boolean isEmployerVerified(String employerId) {
 
-            Optional<Employer> employer = employerRepository.findById(Long.valueOf(employerId));
+            Optional<Employer> employer = employerRepository.findById(employerId);
             if (employer.isPresent()) {
                 return employer.get().isVerified();
             } else {
@@ -218,9 +218,11 @@ public class EmployerServiceImpl implements EmployerService {
 
         }
 
+        public void verifyEmployer(String employerID){
 
 
-
-
+            employerRepository.findById(employerID)
+                    .ifPresent( employer ->  employer.setVerified(true) );
+        }
 }
 

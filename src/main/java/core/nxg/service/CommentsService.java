@@ -11,11 +11,11 @@ public interface CommentsService {
 
     Comments createComments(CommentsDto commentsDto);
 
-    List<CommentsDto> getAllCommentsByJobId(Long JobId);
+    List<CommentsDto> getAllCommentsByJobId(String JobId);
 
-    CommentsDto updateComments(CommentsDto commentsDto, Long Id);
+    CommentsDto updateComments(CommentsDto commentsDto, String Id);
 
-    void deleteCommentById(Long Id);
+    void deleteCommentById(String Id);
 
     Page<CommentsDto> getAllCommentsPage(int page, int size);
 }

@@ -1,22 +1,22 @@
 package core.nxg.entity;
 
 import core.nxg.enums.ReactionType;
-import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 
-
-@Data
-@Entity
-@Table(name = "reaction")
+@Getter
+@Setter
+@Document(collection = "reaction")
 @RequiredArgsConstructor
 public class Reactions{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     private ReactionType reactionType;
 
 

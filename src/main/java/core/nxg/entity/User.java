@@ -3,9 +3,13 @@ package core.nxg.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.enums.*;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -16,69 +20,60 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-@Entity
-@Data
-@Table(name = "users")
+@Getter
+@Setter
+@Document(collection = "users")
 public class User implements UserDetails, OAuth2User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
     private String firstName;
 
-    @Column(nullable = false, unique = true)
-    @Email
     private String email;
 
     private String lastName;
 
-    @Column(name = "username")
     private String username;
 
     private String profilePicture;
 
-    @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
     private OAuth2Provider provider;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long providerId;
 
     private String phoneNumber;
 
 
-    @Column(nullable = false)
     private String password;
 
     private boolean passwordGenerated;
 
-    @Column(name = "nationality")
+
     private String nationality;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date_of_birth")
+
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
     private Roles roles;
 
-    @Column(name = "user_type")
-    @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToOne(mappedBy = "user")
+
     @JsonIgnore
+    @DBRef
     private TechTalentAgent techTalentAgent;
 
 
-    @OneToOne(mappedBy = "user")
+
     @JsonIgnore
+    @DBRef
     private TechTalentUser techTalent;
 
-    @OneToOne(mappedBy = "user")
+
     @JsonIgnore
+    @DBRef
     private Employer employer;
 
 
@@ -101,12 +96,7 @@ public class User implements UserDetails, OAuth2User {
         return null;
     }
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//
-//        return new ArrayList<>(roles);
-//
-//    }
+
     @Override
     public String getUsername() {
         return email;
@@ -134,7 +124,6 @@ public class User implements UserDetails, OAuth2User {
         return false;
     }
 
-    @Column(name = "enabled")
     public boolean enabled;
     @Override
     public boolean isEnabled() {
@@ -142,7 +131,6 @@ public class User implements UserDetails, OAuth2User {
         return enabled;
     }
 
-    // Add getter and setter for passwordGenerated field
     public boolean isPasswordGenerated() {
         return passwordGenerated;
     }

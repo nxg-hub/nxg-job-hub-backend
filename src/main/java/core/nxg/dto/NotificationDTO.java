@@ -18,8 +18,8 @@ public class NotificationDTO {
     private String message;
     private NotificationType notificationType;
 
-    private Long referencedUserID;
-    private Long senderID;
+    private String referencedUserID;
+    private String senderID;
 
 
 

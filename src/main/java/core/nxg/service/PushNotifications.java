@@ -50,12 +50,12 @@ public class PushNotifications {
                 .dateTime(LocalDateTime.now())
                 .message(dto.getMessage())
                 .build();
-        notificationRepository.saveAndFlush(notification);
+        notificationRepository.save(notification);
 
     }
 
     @Async
-    private List<Notification> getNotifs(String userID) {
+    protected List<Notification> getNotifs(String userID) {
 
 
         var notifications = notificationRepository.findByReferencedUserIDAndDeliveredFalse(Long.valueOf(userID));
@@ -82,10 +82,10 @@ public class PushNotifications {
 
 
     public Notification changeNotifStatusToRead(String notifID) {
-        var notification = notificationRepository.findById(Long.valueOf(notifID))
+        var notification = notificationRepository.findById(notifID)
                 .orElseThrow(() -> new RuntimeException("No Notifications at the moment!"));
         notification.setSeen(true);
-        return notificationRepository.saveAndFlush(notification);
+        return notificationRepository.save(notification);
     }
 
 

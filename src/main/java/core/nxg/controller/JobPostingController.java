@@ -107,7 +107,7 @@ public class JobPostingController {
     }
 
     @GetMapping("/{userId}/recommend")
-    public ResponseEntity<?> recommendJobPosting(@PathVariable Long userId) throws Exception {
+    public ResponseEntity<?> recommendJobPosting(@PathVariable String userId) throws Exception {
         try {
             Object recommendedJobs = jobPostingService.recommendJobPosting(userId);
             return ResponseEntity.ok(recommendedJobs);
@@ -159,7 +159,7 @@ public class JobPostingController {
     }
 
     @PostMapping("/{jobID}/save")
-    public ResponseEntity<?> saveJob(HttpServletRequest request, @PathVariable Long jobID) throws Exception {
+    public ResponseEntity<?> saveJob(HttpServletRequest request, @PathVariable String jobID) throws Exception {
         try {
 
             applicationService.saveJob(request, jobID);

@@ -1,7 +1,9 @@
 package core.nxg.entity;
 
 import lombok.*;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.UUID;
@@ -12,30 +14,28 @@ import java.time.temporal.ChronoUnit;
 
 
 
-@Data
-@RequiredArgsConstructor
-@Entity
-@Table(name = "verification_code")
+@Getter
+@Setter
+@Document(collection = "verification_code")
 public class VerificationCode {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
     private String code;
 
-    @ManyToOne(targetEntity = User.class ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @PrimaryKeyJoinColumn
+//    yToOne(targetEntity = User.class ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+//    @PrimaryKeyJoinColumn
     private User user;
 
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     private Instant expiryDate;
  
 
-    @Column(name = "is_expired")
+//    @Column(name = "is_expired")
     public boolean isExpired() {
     if (expiryDate == null) {
         return true;

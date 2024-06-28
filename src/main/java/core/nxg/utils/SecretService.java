@@ -3,6 +3,7 @@ package core.nxg.utils;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class SecretService {
 
         HeaderSignature sigTHREE = new HeaderSignature(secretKeyTHREE);
 
-        storage.saveAllAndFlush(List.of( sigONE, sigTWO,sigTHREE));
+        storage.saveAll(List.of( sigONE, sigTWO,sigTHREE));
 
         log.info("New header signatures generated");
 
@@ -136,7 +137,14 @@ public class SecretService {
 
     }
 
-    public boolean decodeKeyFromHeaderAndValidate(String header) {
+    public boolean decodeKeyFromHeaderAndValidate(HttpServletRequest request) {
+
+        var header = request.getHeader("x-nxg-header");
+
+        if (header.isEmpty() || header.isBlank()) {
+            log.error("**via registration. Header Is Empty" );
+            return false;
+        }
         byte[] decodedKey = Base64.getDecoder().decode(header);
 
         SecretKey secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "HmacSHA256");

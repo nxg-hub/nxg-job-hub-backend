@@ -84,7 +84,7 @@ public class SubscriptionService {
                                     subscriber.setPlanType(PlanType.valueOf(arg.get("planType").toString().toUpperCase()));
                                     subscriber.setUser(user);
                                     userRepo.save(user);
-                                    subscriptionRepo.saveAndFlush(subscriber);
+                                    subscriptionRepo.save(subscriber);
                                     log.info("Subscriber created successfully");
                                 });
                 return response.getBody();

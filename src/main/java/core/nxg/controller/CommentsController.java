@@ -35,17 +35,17 @@ public class CommentsController {
 //    }
 
     @GetMapping("/job/{jobId}")
-    public List<CommentsDto> getAllCommentsByJobId(@PathVariable Long jobId) {
+    public List<CommentsDto> getAllCommentsByJobId(@PathVariable String jobId) {
         return commentsService.getAllCommentsByJobId(jobId);
     }
 
     @PutMapping("/{id}")
-    public CommentsDto updateComments(@RequestBody CommentsDto commentsDto, @PathVariable Long id) {
+    public CommentsDto updateComments(@RequestBody CommentsDto commentsDto, @PathVariable String id) {
         return commentsService.updateComments(commentsDto, id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCommentById(@PathVariable Long id) {
+    public void deleteCommentById(@PathVariable String id) {
         commentsService.deleteCommentById(id);
     }
 

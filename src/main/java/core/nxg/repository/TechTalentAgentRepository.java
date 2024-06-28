@@ -1,17 +1,19 @@
 package core.nxg.repository;
 
+import com.mongodb.lang.NonNull;
 import core.nxg.entity.TechTalentAgent;
 import core.nxg.enums.IndustryType;
 import core.nxg.enums.JobType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-@Repository
-public interface TechTalentAgentRepository extends JpaRepository<TechTalentAgent, Long> {
+public interface TechTalentAgentRepository extends MongoRepository<TechTalentAgent, String> {
     Optional<TechTalentAgent> findByJobTypeAndIndustryType(JobType jobType, IndustryType industryType);
-    Optional<TechTalentAgent> findById(Long id);
+
+
+    Optional<TechTalentAgent> findById(@NonNull Long id);
 
     Optional<TechTalentAgent> findByUserEmail(String email);
 

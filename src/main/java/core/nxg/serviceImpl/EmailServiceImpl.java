@@ -131,7 +131,7 @@ public class EmailServiceImpl implements EmailService {
             helper.addInline("nxgLogo", nxgLogo);
 
             mailSender.send(message);
-            verificationRepo.saveAndFlush(verificationCode);
+            verificationRepo.save(verificationCode);
         }
     }
 
@@ -219,7 +219,7 @@ public class EmailServiceImpl implements EmailService {
         helper.addInline("nxgLogo", nxgLogo);
 
 
-        verificationRepo.saveAndFlush(code);
+        verificationRepo.save(code);
 
         mailSender.send(message);
     }

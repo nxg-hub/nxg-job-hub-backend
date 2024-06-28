@@ -1,6 +1,5 @@
 package core.nxg.serviceImpl;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -10,14 +9,11 @@ import core.nxg.entity.*;
 import core.nxg.enums.NotificationType;
 import core.nxg.enums.SenderType;
 import core.nxg.repository.*;
-import core.nxg.service.EmailService;
 import core.nxg.service.PushNotifications;
-import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -65,7 +61,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
 
         @Override
-    public void saveJob(HttpServletRequest request, Long jobPostingId) throws Exception{
+    public void saveJob(HttpServletRequest request, String jobPostingId) throws Exception{
         User user = helper.extractLoggedInUser(request);
         Optional<JobPosting> job = jobRepo.findById(jobPostingId);
         if (job.isEmpty()){
@@ -79,14 +75,14 @@ public class ApplicationServiceImpl implements ApplicationService  {
         SavedJobs newSavedJob = new SavedJobs();
         newSavedJob.setJobPosting(job.get());
         newSavedJob.setUser(user);
-        savedJobRepo.saveAndFlush(newSavedJob);
+        savedJobRepo.save(newSavedJob);
     }
 
 
     @Override
     public void createApplication(HttpServletRequest request, ApplicationDTO applicationDTO) throws Exception {
 
-        final long SYSTEM_PROCESS_ID = 100L;
+        final String SYSTEM_PROCESS_ID = "SYSTEM_PROCESS";
 
 
         User user = helper.extractLoggedInUser(request);
@@ -114,7 +110,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
         newApplication.setTimestamp(LocalDateTime.now());
 
 
-        var employeR = employerRepository.findById(Long.valueOf(job.get().getEmployerID()));
+        var employeR = employerRepository.findById(job.get().getEmployerID());
 
         NotificationDTO notificationDTO = new NotificationDTO();
         if (employeR.isPresent()) {
@@ -136,7 +132,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
             emailService.sendEmailAfterApplied(employeR.get().getEmail(), user.getEmail() );
 
-            appRepo.saveAndFlush(newApplication);
+            appRepo.save(newApplication);
         }
             
 

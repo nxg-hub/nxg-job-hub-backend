@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.NonNull;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import core.nxg.entity.Notification;
 import core.nxg.entity.User;
 
 @Repository
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+public interface NotificationRepository extends MongoRepository<Notification, String> {
 	
 	List<Notification> findByReferencedUserIDOrderByDateTimeDesc(Long referencedUserID);
 

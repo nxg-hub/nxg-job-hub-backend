@@ -82,7 +82,7 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
         userRepository.save(loggedInUser);
         techTalentAgent.setUser(loggedInUser);
 
-        techTalentAgentRepository.saveAndFlush(techTalentAgent);
+        techTalentAgentRepository.save(techTalentAgent);
 
 
         return "Agent successfully registered";

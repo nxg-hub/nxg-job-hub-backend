@@ -2,29 +2,31 @@ package core.nxg.entity;
 
 import core.nxg.enums.IndustryType;
 import core.nxg.enums.JobType;
-import jakarta.persistence.*;
+
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 
-@Entity
-@Data
+
 @RequiredArgsConstructor
-@Table(name = "agents")
+@Getter
+@Setter
+@Document(collection = "agents")
 public class TechTalentAgent{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String email;
-   // private String agentID;
-    //private String gender;
-    //private String userId;
+
     private JobType jobType;
     private IndustryType industryType;
     private String address;
     private String zipCode;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+//    ToOne
+//    @JoinColumn(name = "user_id")
+    @DBRef
     private User user;
 
 }

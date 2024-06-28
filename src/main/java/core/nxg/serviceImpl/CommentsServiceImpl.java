@@ -38,11 +38,11 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     public Comments createComments(CommentsDto commentsDto) { // Assuming Comments are made on job postings only
-        JobPosting jobPosting = jobPostingRepository.findById(Long.parseLong(String.valueOf(commentsDto.getJobID())))
+        JobPosting jobPosting = jobPostingRepository.findById(String.valueOf(commentsDto.getJobID()))
                 .orElseThrow(() -> new NotFoundException("Job posting with Id " + commentsDto.getJobID() + " not found"));
 
 
-        var commenter = userRepository.findById(commentsDto.getCommenterID())
+        var commenter = userRepository.findById(String.valueOf(commentsDto.getCommenterID()))
                 .orElseThrow(() -> new NotFoundException("User with id " + commentsDto.getCommenterID() + " not found"));
         Comments comments = new Comments();
         comments.setComment(commentsDto.getComment());
@@ -56,7 +56,7 @@ public class CommentsServiceImpl implements CommentsService {
 
     private void notify(Comments comment, JobPosting jobPosting, User commenter){
 
-        var employer = employerRepository.findById(Long.valueOf(jobPosting.getEmployerID()))
+        var employer = employerRepository.findById(jobPosting.getEmployerID())
                 .orElseThrow(() -> new NotFoundException("Employer with id " + jobPosting.getEmployerID()+ " not found"));
         var notification = Notification.builder()
                 .notificationType(NotificationType.COMMENT)
@@ -66,14 +66,14 @@ public class CommentsServiceImpl implements CommentsService {
                 .senderID(commenter.getId())
                 .contentId(comment.getId())
                 .build();
-        notificationRepository.saveAndFlush(notification);
+        notificationRepository.save(notification);
     }
 
 
 
 
     @Override
-    public List<CommentsDto> getAllCommentsByJobId(Long JobId) {
+    public List<CommentsDto> getAllCommentsByJobId(String JobId) {
         JobPosting jobPosting = jobPostingRepository.findById(JobId).orElseThrow(
                 ()-> new NotFoundException("Job Posting not found")
         );
@@ -82,7 +82,7 @@ public class CommentsServiceImpl implements CommentsService {
     }
 
     @Override
-    public CommentsDto updateComments(CommentsDto commentsDto, Long Id) {
+    public CommentsDto updateComments(CommentsDto commentsDto, String Id) {
         Comments comments = commentsRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Comments with ID " + Id + " not found"));
 
@@ -93,7 +93,7 @@ public class CommentsServiceImpl implements CommentsService {
 
 
     @Override
-    public void deleteCommentById(Long Id) {
+    public void deleteCommentById(String Id) {
         Comments comments = commentsRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Comments with ID " + Id + " not found"));
         commentsRepository.delete(comments);

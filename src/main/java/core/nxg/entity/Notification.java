@@ -2,44 +2,45 @@ package core.nxg.entity;
 
 import core.nxg.enums.NotificationType;
 import core.nxg.enums.SenderType;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-@Table(name = "notifications")
+@Getter
+@Setter
+@Document(collection = "notifications")
 public class Notification {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	private Long referencedUserID; // we're using User id for ease. Profile
+	private String referencedUserID; // we're using User id for ease. Profile
 
 
-	private Long senderID; 	// picture, fName, lName, would be easy to fetch that way.
+	private String senderID; 	// picture, fName, lName, would be easy to fetch that way.
 
 							// less db query.
 
 	private String message;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+//	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime dateTime;
 
 
 	private Long contentId;
 
 
-	@Enumerated(EnumType.STRING)
+//	umerated(EnumType.STRING)
 	private SenderType senderType;
 
-	@Enumerated(EnumType.STRING)
+//	umerated(EnumType.STRING)
 	private NotificationType notificationType;
 
 
