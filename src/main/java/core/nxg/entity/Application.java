@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Application {
 
     @Id
-    private Long applicationId;
+    private String applicationId;
 
 
     private LocalDateTime timestamp;

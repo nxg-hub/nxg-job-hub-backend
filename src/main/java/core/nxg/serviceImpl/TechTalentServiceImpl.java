@@ -75,7 +75,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             throw new UserAlreadyExistException("An Employer account already exists!");
         }
 
-        Optional<TechTalentAgent> agent_account = agentRepository.findByUserEmail(loggedInUser.getEmail()); // confirm
+        Optional<TechTalentAgent> agent_account = agentRepository.findByEmail(loggedInUser.getEmail()); // confirm
         if (agent_account.isPresent()){  // an agent account does not exist
             throw new UserAlreadyExistException("An Agent account already exists!");
         }

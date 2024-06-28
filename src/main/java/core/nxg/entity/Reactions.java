@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @RequiredArgsConstructor
 public class Reactions{
     @Id
-    private Long id;
+    private String id;
 
     private ReactionType reactionType;
 

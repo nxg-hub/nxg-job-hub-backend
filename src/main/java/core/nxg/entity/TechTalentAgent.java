@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "agents")
 public class TechTalentAgent{
     @Id
-    private Long id;
+    private String id;
     private String email;
 
     private JobType jobType;

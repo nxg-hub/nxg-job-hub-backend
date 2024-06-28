@@ -67,7 +67,7 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
             throw new UserAlreadyExistException("Tech talent account already exists!");
 
 
-        Optional<TechTalentAgent> agent_account = techTalentAgentRepository.findByUserEmail(loggedInUser.getEmail()); // confirm
+        Optional<TechTalentAgent> agent_account = techTalentAgentRepository.findByEmail(loggedInUser.getEmail()); // confirm
         if (agent_account.isPresent()) {
             throw new AlreadyExistException("An Agent account already exists!");}
 
@@ -96,7 +96,7 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
     public TechTalentAgent patchAgent(String agentId, Map<Object, Object> fields) {
         if (agentId == null) {
             throw new NotFoundException("Agent ID is required");}
-        Optional<TechTalentAgent> agent = techTalentAgentRepository.findById(Long.valueOf(agentId));
+        Optional<TechTalentAgent> agent = techTalentAgentRepository.findById(agentId);
         if (agent.isPresent()) {
             fields.forEach((key, value) -> {
                         Field field = ReflectionUtils.findField(TechTalentAgent.class, String.valueOf(key));
@@ -120,14 +120,14 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
 
     @Override
     public void deleteTechTalentAgent(Long techTalentAgentId) {
-        TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(techTalentAgentId)
+        TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(String.valueOf(techTalentAgentId))
                 .orElseThrow(() -> new NotFoundException("TechTalentAgent with ID " + techTalentAgentId + " not found"));
        techTalentAgentRepository.delete(techTalentAgent);
     }
 
     @Override
     public TechTalentAgentDto getTechTalentAgentById(Long Id) {
-        TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(Id)
+        TechTalentAgent techTalentAgent = techTalentAgentRepository.findById(String.valueOf(Id))
                 .orElseThrow(() -> new NotFoundException("TechTalentAgent with ID " + Id + " not found"));
         return mapper.map(techTalentAgent, TechTalentAgentDto.class);
     }

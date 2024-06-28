@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class OTP {
 
     @Id
-    private Long id;
+    private String id;
     private String email;
     private String otp;
     private String phoneNumber;

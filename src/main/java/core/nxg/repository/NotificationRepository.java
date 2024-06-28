@@ -22,7 +22,7 @@ public interface NotificationRepository extends MongoRepository<Notification, St
 
 	List<Notification> findByReferencedUserIDAndSeenFalse(Long userID);
 
-	List<Notification> findByReferencedUserIDAndDeliveredFalse(Long userID);
+	List<Notification> findByReferencedUserIDAndDeliveredFalse(String referencedUserID);
 
 
 }

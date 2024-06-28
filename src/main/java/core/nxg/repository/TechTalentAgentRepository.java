@@ -13,9 +13,8 @@ public interface TechTalentAgentRepository extends MongoRepository<TechTalentAge
     Optional<TechTalentAgent> findByJobTypeAndIndustryType(JobType jobType, IndustryType industryType);
 
 
-    Optional<TechTalentAgent> findById(@NonNull Long id);
+    Optional<TechTalentAgent> findById(@NonNull String id);
 
-    Optional<TechTalentAgent> findByUserEmail(String email);
 
 
     boolean existsByEmail(String email);

@@ -58,7 +58,7 @@ public class PushNotifications {
     protected List<Notification> getNotifs(String userID) {
 
 
-        var notifications = notificationRepository.findByReferencedUserIDAndDeliveredFalse(Long.valueOf(userID));
+        var notifications = notificationRepository.findByReferencedUserIDAndDeliveredFalse(userID);
         notifications.forEach(x -> x.setDelivered(true));
         notificationRepository.saveAll(notifications);
         return notifications;

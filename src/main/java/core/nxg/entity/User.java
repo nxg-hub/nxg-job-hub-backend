@@ -56,6 +56,7 @@ public class User implements UserDetails, OAuth2User {
 
     private LocalDate dateOfBirth;
 
+
     private Roles roles;
 
     private UserType userType;

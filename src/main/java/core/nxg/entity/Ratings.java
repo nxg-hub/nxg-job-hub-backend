@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "ratings")
 public class Ratings {
     @Id
-    private Long id;
+    private String id;
 
     private Rating rating;
 

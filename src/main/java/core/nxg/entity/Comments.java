@@ -14,7 +14,7 @@ import java.util.List;
 @Document(collection = "comments")
 public class Comments{
     @Id
-    private Long id;
+    private String id;
     private String comment;
 
 //    yToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

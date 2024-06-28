@@ -31,7 +31,7 @@ public class Employer {
     private static final double FRACTION_THRESHOLD = 0.75;
 
     @Id
-    private Long employerID;
+    private String employerID;
 
 //    @Column(name="email")
     private String email;

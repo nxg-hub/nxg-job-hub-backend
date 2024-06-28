@@ -72,7 +72,7 @@ public class EmployerServiceImpl implements EmployerService {
                 throw new UserAlreadyExistException("A TechTalent account already exists!");
             }
 
-            Optional<TechTalentAgent> agent_account = agentRepository.findByUserEmail(loggedInUserEmail); // confirm
+            Optional<TechTalentAgent> agent_account = agentRepository.findByEmail(loggedInUserEmail); // confirm
             if (agent_account.isPresent()){  // an agent account does not exist
                 throw new UserAlreadyExistException("An Agent account already exists!");
             }

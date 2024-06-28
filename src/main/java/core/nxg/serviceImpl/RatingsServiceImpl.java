@@ -40,7 +40,7 @@ public RatingsDto createRatings(RatingsDto ratingsDto) {
     ratings.setRating(Rating.valueOf(ratingsDto.getRating())); // Assuming Rating is an enum type
 
     Ratings savedRatings = ratingsRepository.save(ratings);
-    notify(savedRatings.getId(), employer, employer.getUser());
+    notify(Long.valueOf(savedRatings.getId()), employer, employer.getUser());
     return mapToDto(savedRatings);
 }
 

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Notification {
 
 	@Id
-	private Long id;
+	private String id;
 
 	private String referencedUserID; // we're using User id for ease. Profile
 

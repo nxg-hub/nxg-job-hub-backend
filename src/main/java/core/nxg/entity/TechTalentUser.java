@@ -21,7 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class TechTalentUser{
 
     @Id
-    private Long techId;
+    private String techId;
 
 //    @Column(name="email")
     private String email;

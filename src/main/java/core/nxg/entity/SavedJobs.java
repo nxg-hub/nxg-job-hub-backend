@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
@@ -17,13 +18,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "saved_jobs")
 public class SavedJobs {
     @Id
-    private Long id;
+    private String id;
 
 //    yToOne
     @JsonIgnore
+    @DBRef
     private User user;
-//
-//    yToOne
-//    @JoinColumn(name = "jobPosting_id")
+
+    @DBRef
+    @JsonIgnore
     private JobPosting jobPosting;
 }
