@@ -2,18 +2,17 @@ package core.nxg.dto;
 import core.nxg.entity.User;
 import core.nxg.enums.Gender;
 import core.nxg.enums.UserType;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class UserResponseDto {
 
-        private Long id;
+        private String id;
         private String firstName;
         private String lastName;
         private String profilePicture;

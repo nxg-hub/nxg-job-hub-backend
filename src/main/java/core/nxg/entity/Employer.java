@@ -69,12 +69,15 @@ public class Employer {
 
     private String companyMemorandum;
 
+
+    @JsonIgnore
     private boolean verified;
 
 
     private List<Ratings> ratings;
 
 
+    @JsonProperty("verified")
     public boolean isVerified() {
 
         if (CACCertificate == null || taxClearanceCertificate == null || TIN == null || namesOfDirectors == null) {
