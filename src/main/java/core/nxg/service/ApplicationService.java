@@ -11,14 +11,13 @@ public interface ApplicationService {
 
     void createApplication(HttpServletRequest request, ApplicationDTO applicationDTO) throws Exception;
 
-    void updateApplication(ApplicationDTO applicationDTO);
+    void saveJob(HttpServletRequest request, String jobPostingId) throws Exception;
 
-    void saveJob(HttpServletRequest request, Long jobPostingId) throws Exception;
-
-    Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable)throws Exception;
+    Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws Exception;
 
     Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception;
 
 
-    
+
+
 }

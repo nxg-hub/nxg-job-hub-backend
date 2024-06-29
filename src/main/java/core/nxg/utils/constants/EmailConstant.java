@@ -78,7 +78,32 @@ public class EmailConstant {
             + "<p><strong>The NXG-JOB HUB Team</strong></p>"
             + "</div></div>"
             + "</body></html>";
-        public static final String OAUTH_MAIL_CONTENT = "<html >"
+
+
+    public static final String JOB_APPLICATION_EMAIL_CONTENT ="<!DOCTYPE html>"
+            + "<html><head><style>"
+            + "body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f9f9f9;}"
+            + ".container {width: 90%; max-width: 600px; margin: 40px auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}"
+            + ".container h1, .container h2 {color: #007BFF; margin-bottom: 20px;}"
+            + ".container p {margin-bottom: 20px; text-align: left;}"
+            + ".button {display: inline-block; background-color: #007BFF; color: #fff; font-weight: bold; padding: 15px 25px; text-decoration: none; border-radius: 5px; transition: background-color 0.3s;}"
+            + ".button:hover {background-color: #0056b3;}"
+            + ".footer {margin-top: 30px; text-align: center; color: #555;}"
+            + "</style></head><body>"
+            + "<div class=\"container\">"
+            + "<img src='cid:nxgLogo' alt=\"logo\" style=\"display: block; margin: 0 auto;\">"
+            + "<p> It pleases us to inform you about a new application for one of your jobs. </p>"
+            + "<p style=\"text-indent: 50px;\">[[job_description]]</p>"
+            + "<p>For more details and to apply, please click the button below.</p>"
+            + "<a href=\"[[jobURL]]\" class=\"button\">Apply Now</a>"
+            + "<div class=\"footer\">"
+            + "<p>If you have any questions, please feel free to contact us.</p>"
+            + "<p>Thanks,</p>"
+            + "<p><strong>The NXG-JOB HUB Team</strong></p>"
+            + "</div></div>"
+            + "</body></html>";
+
+    public static final String OAUTH_MAIL_CONTENT = "<html >"
             + "<head>"
             + "<style>"
             + "body {"

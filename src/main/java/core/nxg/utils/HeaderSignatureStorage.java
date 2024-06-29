@@ -1,14 +1,14 @@
 package core.nxg.utils;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Repository
-public interface HeaderSignatureStorage extends JpaRepository<HeaderSignature, Long> {
-    @Query("select (count(h) > 0) from HeaderSignature h where upper(h.signature) = upper(:signature)")
+
+public interface HeaderSignatureStorage extends MongoRepository<HeaderSignature, String> {
+    @Query("{ 'signature' : { $regex: ?0, $options: 'i' } }")
     boolean existsByValueIgnoreCase(@Param("signature") String signature);
 }

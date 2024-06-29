@@ -2,23 +2,30 @@ package core.nxg.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-@Entity
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+
 @RequiredArgsConstructor
-@Data
+@Getter
+@Setter
+@Document(collection = "saved_jobs")
 public class SavedJobs {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne
+//    yToOne
     @JsonIgnore
+    @DBRef
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "jobPosting_id")
+    @DBRef
+    @JsonIgnore
     private JobPosting jobPosting;
 }

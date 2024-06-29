@@ -8,6 +8,7 @@ import core.nxg.repository.UserRepository;
 import core.nxg.subscription.entity.PaymentTransactions;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.enums.TransactionStatus;
+import core.nxg.subscription.enums.TransactionType;
 import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.dto.CustomerDTO;
 import core.nxg.subscription.dto.SubscribeDTO;
@@ -83,7 +84,7 @@ public class SubscriptionService {
                                     subscriber.setPlanType(PlanType.valueOf(arg.get("planType").toString().toUpperCase()));
                                     subscriber.setUser(user);
                                     userRepo.save(user);
-                                    subscriptionRepo.saveAndFlush(subscriber);
+                                    subscriptionRepo.save(subscriber);
                                     log.info("Subscriber created successfully");
                                 });
                 return response.getBody();
@@ -141,19 +142,19 @@ public class SubscriptionService {
         }
 
         try {
-            log.info("Creating a " + subscriber.getPlanType()+ " plan...");
+            log.info("Creating a {} plan...", subscriber.getPlanType());
             response = createPlan(setPlan(subscriber.getPlanType()));
-            log.info("Created a " + subscriber.getPlanType() + " plan..." + response);
+            log.info("Created a {} plan...{}", subscriber.getPlanType(), response);
             String reference = "txID" + System.currentTimeMillis();
 
             TransactionDTO transactionDTO = new TransactionDTO();
             transactionDTO.setEmail(dto.getEmail());
             log.info("Initializing transaction...");
             transactionDTO.setPlan(response.get("data").get("plan_code").asText());
-            log.info("Initialized transaction..." + transactionDTO.getPlan());
+            log.info("Initialized transaction...{}", transactionDTO.getPlan());
             transactionDTO.setCallback_url(dto.getCallback_url());
             transactionDTO.setAmount(response.get("data").get("amount").asInt());
-            log.info("Initialized transaction..." + transactionDTO.getAmount());
+            log.info("Initialized transaction...{}", transactionDTO.getAmount());
             transactionDTO.setReference(reference);
 
             PaymentTransactions tranx = new PaymentTransactions();
@@ -163,6 +164,7 @@ public class SubscriptionService {
             tranx.setTransactionMessage(subscriber.getPlanType() + " plan subscription ");
             tranx.setTransactionDate(LocalDate.now());
             tranx.setTransactionTime(LocalTime.now());
+            tranx.setTransactionType(TransactionType.SUBSCRIPTION);
             tranx.setSubscriber(subscriber);
             subscriptionRepo.save(subscriber);
             transactionRepo.save(tranx);
@@ -182,11 +184,12 @@ public class SubscriptionService {
     }
 
     private Map<String, Object> setPlan(PlanType planType) throws Exception{
-        int amount;
+        double amount;  /* * * *  AMOUNT IS BEING HARDCODED AT THE BACKEND * * *
+                           *** #9K for PLATINUM ***
+                           *** #7K for GOLD ***
+                           *** #2.5K for SILVER *** * * * */
         String name;
         String interval;
-//        String currency = "NGN"; // removed currency to check if user can specify the currency.
-                                    ;//based on the currency { usd,ngn } integration bound to the paystack key
         String description;
 
         switch (planType) {
@@ -216,7 +219,6 @@ public class SubscriptionService {
         query.put("name", name);
         query.put("amount", amount);
         query.put("interval", interval);
-//        query.put("currency", currency); //to be tested in live environment. See update above.
         query.put("description", description);
 
         return query;

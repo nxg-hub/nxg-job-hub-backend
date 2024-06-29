@@ -3,7 +3,6 @@ package core.nxg.dto;
 import core.nxg.entity.Employer;
 import core.nxg.entity.User;
 import core.nxg.enums.UserType;
-import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 

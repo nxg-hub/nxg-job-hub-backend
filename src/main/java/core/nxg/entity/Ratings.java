@@ -1,28 +1,30 @@
 package core.nxg.entity;
 
 import core.nxg.enums.Rating;
-import jakarta.persistence.*;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Data
+
 @RequiredArgsConstructor
-@Table(name = "ratings")
+@Getter
+@Setter
+@Document(collection = "ratings")
 public class Ratings {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Enumerated(EnumType.STRING)
     private Rating rating;
 
-    @ManyToOne
-    @JoinColumn(name = "employer_id")
+//    yToOne
+//    @JoinColumn(name = "employer_id")
     private Employer employer;
 
-    @ManyToOne
+//    yToOne
     private User rater;
 
     @Getter

@@ -3,37 +3,28 @@ package core.nxg;
 import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
-import core.nxg.repository.EmployerRepository;
 import core.nxg.repository.JobPostingRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.AdminService;
 import core.nxg.serviceImpl.AdminServiceImpl;
-import core.nxg.subscription.entity.PaymentTransactions;
+import core.nxg.serviceImpl.EmployerServiceImpl;
+import core.nxg.serviceImpl.TechTalentServiceImpl;
 import core.nxg.subscription.enums.JobStatus;
-import core.nxg.subscription.enums.TransactionType;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.repository.TransactionRepository;
 import core.nxg.utils.Helper;
 import core.nxg.utils.SecretService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.GrantedAuthority;
-import core.nxg.enums.Roles;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.*;
 
-import static core.nxg.enums.Roles.USER;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -68,11 +59,21 @@ class NxgApplicationTests {
 	@Mock
 	private  ModelMapper modelMapper;
 
+	@Mock
+	private SubscribeRepository subscribeRepository;
+	@Mock
+	private TechTalentServiceImpl<?> techTalentService;
+
+	@Mock
+	private EmployerServiceImpl employerService;
+
+
 
 	@Mock
 	 private JobPostingRepository jobPostingRepository;
 
-
+	@Mock
+	private MockHttpServletRequest request;
 	@Mock
 	private JobPosting jobPosting;
 	@BeforeEach
@@ -80,9 +81,10 @@ class NxgApplicationTests {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(secretService, helper, transactionRepository, jobPostingRepository,modelMapper, userRepository);
+		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository);
 
-
+		request = new MockHttpServletRequest();
+		request.addHeader("nxg-header", "xg...:");
 
 	}
 	@Test
@@ -107,15 +109,16 @@ class NxgApplicationTests {
 	JobPosting job = new JobPosting();
         job.setJobStatus(JobStatus.PENDING);
         job.setActive(false);
+		job.setJobID("1");
+	when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 	when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
 
-	// Act
-        adminService.acceptJob(job.getJobID());
+	adminService.acceptJob(Long.valueOf(job.getJobID()), request);
 
-	// Assert
+		verify(jobPostingRepository).save(job);
 	assertEquals(JobStatus.ACCEPTED, job.getJobStatus());
 	assertTrue(job.isActive());
-	verify(jobPostingRepository, times(1)).saveAndFlush(job);
+	verify(jobPostingRepository, times(1)).save(job);
 }
 
 
@@ -126,9 +129,11 @@ class NxgApplicationTests {
 
 		JobPosting job = new JobPosting();
 		job.setJobStatus(JobStatus.PENDING);
-		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
+		job.setJobID("1");
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 
-		adminService.rejectJob(job.getJobID());
+		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
+		adminService.rejectJob(Long.valueOf(job.getJobID()), request);
 
 		verify(jobPostingRepository).save(job);
 		assertEquals(JobStatus.REJECTED, job.getJobStatus());
@@ -140,9 +145,10 @@ class NxgApplicationTests {
 
 		JobPosting job = new JobPosting();
 		job.setJobStatus(JobStatus.ACCEPTED);
+		job.setJobID("1");
 		when(jobPostingRepository.findById( job.getJobID())).thenReturn(Optional.of(job));
-
-		adminService.suspendJob(job.getJobID());
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
+		adminService.suspendJob(Long.valueOf(job.getJobID()), request);
 
 		verify(jobPostingRepository).save(job);
 		assertEquals(JobStatus.SUSPENDED, job.getJobStatus());
@@ -152,9 +158,10 @@ class NxgApplicationTests {
 	public void suspendUserChangesUserStatusToDisabled() {
 		User user = new User();
 		user.setEnabled(true);
+		user.setId("1");
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-
-		adminService.suspendUser(user.getId());
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
+		adminService.suspendUser(Long.valueOf(user.getId()), request);
 
 		verify(userRepository).save(user);
 		assertFalse(user.isEnabled());
@@ -162,16 +169,20 @@ class NxgApplicationTests {
 
 	@Test
 	public void acceptJobThrowsExceptionWhenJobNotFound() {
-		when(jobPostingRepository.findById(anyLong())).thenReturn(Optional.empty());
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 
-		assertThrows(NoSuchElementException.class, () -> adminService.acceptJob(1L));
+		when(jobPostingRepository.findById(anyString())).thenReturn(Optional.empty());
+
+		assertThrows(NoSuchElementException.class, () -> adminService.acceptJob(1L, request));
 	}
 
 	@Test
 	public void suspendUserThrowsExceptionWhenUserNotFound() {
-		when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 
-		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(1L));
+		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+
+		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(1L, request));
 	}
 
 

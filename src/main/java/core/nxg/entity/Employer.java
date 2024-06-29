@@ -3,13 +3,15 @@ package core.nxg.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import core.nxg.enums.Rating;
-import jakarta.persistence.*;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -19,20 +21,19 @@ import java.util.Set;
 
 
 @Slf4j
-@Setter
-@Getter
+
 @RequiredArgsConstructor
-@Entity
-@Table(name = "employer")
+@Getter
+@Setter
+@Document(collection = "employer")
 public class Employer {
 
     private static final double FRACTION_THRESHOLD = 0.75;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long employerID;
+    private String employerID;
 
-    @Column(name="email")
+//    @Column(name="email")
     private String email;
 
     private String companyName;
@@ -47,8 +48,8 @@ public class Employer {
 
     private String jobBoard;
     
-    @OneToOne
-    @JoinColumn(name = "user_id")
+//    ToOne
+//    @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
@@ -68,12 +69,12 @@ public class Employer {
 
     private String companyMemorandum;
 
+    private boolean verified;
 
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Ratings> ratings;
 
-    @JsonProperty("isVerified")
+
     public boolean isVerified() {
 
         if (CACCertificate == null || taxClearanceCertificate == null || TIN == null || namesOfDirectors == null) {
@@ -99,6 +100,6 @@ public class Employer {
 
         double fraction = (double) nonNullFields / totalFields;
 
-        return fraction > FRACTION_THRESHOLD;
+        return (fraction > FRACTION_THRESHOLD ) || verified;
     }
 }

@@ -2,7 +2,6 @@ package core.nxg.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import core.nxg.dto.ApplicationDTO;
 import core.nxg.entity.Application;
@@ -14,11 +13,11 @@ import java.util.Optional;
 import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.enums.ApplicationStatus;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 
-@Repository
-public interface ApplicationRepository extends JpaRepository<Application, Long>{
+public interface ApplicationRepository extends MongoRepository<Application, String> {
     Page<Application> findByApplicant(User applicant, Pageable pageable) throws Exception;
     Optional<List<Application> >findByJobPosting(JobPosting jobPosting, Pageable pageable) throws Exception;
     Optional<List<Application>>findByApplicationStatus(ApplicationStatus applicationStatus, Pageable pageable);

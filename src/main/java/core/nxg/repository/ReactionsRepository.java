@@ -1,8 +1,8 @@
 package core.nxg.repository;
 
 import core.nxg.entity.Reactions;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ReactionsRepository extends JpaRepository<Reactions, Long> {
+public interface ReactionsRepository extends MongoRepository<Reactions, String> {
 }
 

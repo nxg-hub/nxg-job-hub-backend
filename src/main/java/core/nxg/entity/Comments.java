@@ -1,30 +1,30 @@
 package core.nxg.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Entity
-@Data
+
 @RequiredArgsConstructor
-@Table(name = "comments")
+@Getter
+@Setter
+@Document(collection = "comments")
 public class Comments{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String comment;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "job_posting_id")
+//    yToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "job_posting_id")
     private JobPosting jobPosting;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "comments_reactions_mapping",
-    joinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "reaction_id", referencedColumnName = "id"))
-    @ToString.Exclude
+//    yToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "comments_reactions_mapping",
+//    joinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"),
+//    inverseJoinColumns = @JoinColumn(name = "reaction_id", referencedColumnName = "id"))
+//    @ToString.Exclude
     private List<Reactions> reactions;
 }

@@ -1,13 +1,16 @@
 package core.nxg.controller;
 
+import core.nxg.dto.ApplicationDTO;
 import core.nxg.dto.JobPostingDto;
 import core.nxg.entity.JobPosting;
 import core.nxg.service.JobPostingService;
+import core.nxg.serviceImpl.ApplicationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
@@ -34,6 +37,8 @@ public class JobPostingController {
 
     private final JobPostingService jobPostingService;
     // private final RatingsServiceImpl ratingsService;
+
+    private final ApplicationServiceImpl applicationService;
 
     @Operation(summary = "Make a job posting as an employer")
     @ApiResponses(value = {
@@ -102,7 +107,7 @@ public class JobPostingController {
     }
 
     @GetMapping("/{userId}/recommend")
-    public ResponseEntity<?> recommendJobPosting(@PathVariable Long userId) throws Exception {
+    public ResponseEntity<?> recommendJobPosting(@PathVariable String userId) throws Exception {
         try {
             Object recommendedJobs = jobPostingService.recommendJobPosting(userId);
             return ResponseEntity.ok(recommendedJobs);
@@ -135,6 +140,34 @@ public class JobPostingController {
         dto.setJob_location(jobPosting.getJob_location());
         dto.setTags(jobPosting.getTags());
         return dto;
+    }
+
+    @PostMapping("/{jobID}/apply")
+    public ResponseEntity<?> apply(@Valid HttpServletRequest request, @RequestBody ApplicationDTO dto) throws Exception {
+
+        try {
+
+
+            applicationService.createApplication(request, dto);
+            return ResponseEntity.ok("Application Successful!");
+
+        } catch (Exception ex) {
+
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @PostMapping("/{jobID}/save")
+    public ResponseEntity<?> saveJob(HttpServletRequest request, @PathVariable String jobID) throws Exception {
+        try {
+
+            applicationService.saveJob(request, jobID);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
 

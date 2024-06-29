@@ -16,12 +16,11 @@ import lombok.Setter;
 public class NotificationDTO {
 
     private String message;
-    private String email;
     private NotificationType notificationType;
 
-    private Long referencedUserID;
-    private Long senderID;
-    private Long contentID;
+    private String referencedUserID;
+    private String senderID;
+
 
 
 

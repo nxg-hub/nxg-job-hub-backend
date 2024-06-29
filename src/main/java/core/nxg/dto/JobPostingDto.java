@@ -1,6 +1,5 @@
 package core.nxg.dto;
 
-import jakarta.persistence.Temporal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

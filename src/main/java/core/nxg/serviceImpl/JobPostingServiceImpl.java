@@ -80,7 +80,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
         JobPosting jobPosting = new JobPosting();
         String employerId = jobPostingDto.getEmployerID();
-        Optional<Employer> optionalEmployer = employerRepository.findById(Long.valueOf(employerId));
+        Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
         if (optionalEmployer.isEmpty()) {
             throw new NotFoundException("Employer does not exist!");
 
@@ -110,7 +110,7 @@ public class JobPostingServiceImpl implements JobPostingService {
         jobPosting.setCreated_at(jobPosting.getCreated_at());// created new by glory
         jobPosting.setTags(jobPostingDto.getTags());
         jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
-        var savedJobPosting = jobPostingRepository.saveAndFlush(jobPosting);
+        var savedJobPosting = jobPostingRepository.save(jobPosting);
         onJobPosted(Long.valueOf(employerId), savedJobPosting);
         return mapper.map(savedJobPosting, JobPostingDto.class);
     }
@@ -121,18 +121,18 @@ public class JobPostingServiceImpl implements JobPostingService {
                 .notificationType(NotificationType.JOB_POST)
                 .delivered(false)
                 .message(jobPosting.getJob_title())
-                .contentId(jobPosting.getJobID())
+                .contentId(Long.valueOf(jobPosting.getJobID()))
                 .referencedUserID(subscriber.getId())
                 .senderID(sender.getId())
                 .dateTime(LocalDateTime.now())
                 .build();
-        notificationRepository.saveAndFlush(notification);
+        notificationRepository.save(notification);
 
     }
 
 
     private void onJobPosted(Long employerId, JobPosting jobPosting) throws Exception {
-        Employer poster = employerRepository.findById(employerId).
+        Employer poster = employerRepository.findById(String.valueOf(employerId)).
                 orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
         List<TechTalentUser> users = techRepo.findAll();
@@ -141,7 +141,7 @@ public class JobPostingServiceImpl implements JobPostingService {
             try {
                 log.info("Preparing to send an email to {}", user.getEmail());
 
-                emailService.sendJobPostingNotifEmail(user.getEmail(), jobPosting);
+                emailService.sendJobRelatedNotifEmail(user.getEmail(), jobPosting);
 
                 notify(user.getUser(), jobPosting, poster.getUser());
 
@@ -152,14 +152,14 @@ public class JobPostingServiceImpl implements JobPostingService {
                 throw new RuntimeException("Error sending email to {}" + user.getEmail());
             }
         });
-        emailService.sendJobPostingNotifEmail(poster.getEmail(), jobPosting);
+        emailService.sendJobRelatedNotifEmail(poster.getEmail(), jobPosting);
 
 
     }
 
     @Override
     public JobPostingDto getJobPostingById(Long jobId) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(String.valueOf(jobId));
         if (optionalJobPosting.isPresent()) {
             return mapToDto(optionalJobPosting.get());
         } else {
@@ -170,7 +170,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public JobPostingDto updateJobPosting(Long jobId, JobPostingDto jobPostingDto) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(String.valueOf(jobId));
         if (optionalJobPosting.isPresent()) {
             JobPosting existingJobPosting = optionalJobPosting.get();
 
@@ -186,7 +186,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     @Override
     public void deleteJobPosting(Long jobId) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(String.valueOf(jobId));
         if (optionalJobPosting.isPresent()) {
             JobPosting jobPosting = optionalJobPosting.get();
             jobPostingRepository.delete(jobPosting);
@@ -228,7 +228,7 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
      @Override
-    public Object recommendJobPosting(Long userID) throws Exception{
+    public Object recommendJobPosting(String userID) throws Exception{
 
         UserResponseDto userR = userService.getUserById(userID);
 

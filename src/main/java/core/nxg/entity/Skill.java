@@ -1,24 +1,28 @@
 package core.nxg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Data
+
 @RequiredArgsConstructor
-@Entity
-@Table(name = "skills")
+@Getter
+@Setter
+@Document(collection = "skills")
 public class Skill<E> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "skill_name")
+
     private String skillName; //if skill ! in available skill add skill to available skill
    
     private List<String> availableSkills = Arrays.asList(
@@ -26,9 +30,7 @@ public class Skill<E> {
             "Python",
             "C Sharp"
     );
-    @ManyToOne
-    @JsonIgnore
-    @PrimaryKeyJoinColumn(name = "techId")
+
     private TechTalentUser techTalentUser;
     
     public Skill(String skillName, ArrayList<E> availableSkills){
@@ -42,11 +44,6 @@ public class Skill<E> {
             availableSkills.add(skillName);
         }
     }
-    
-    public Skill<E> addAllSkillsIfNotExist(List<Skill<E>> skills) {
-        for (Skill<?> skill : skills) {
-            addSkillIfNotExists((String) skill.getSkillName());
-        }
-        return this;
-    }
+
+
 } 

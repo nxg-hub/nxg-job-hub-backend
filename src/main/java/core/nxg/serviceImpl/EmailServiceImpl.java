@@ -45,6 +45,9 @@ import static core.nxg.utils.constants.EmailConstant.*;
 public class EmailServiceImpl implements EmailService {
     private static final String GENERAL_FROM_ADDRESS = "josgolf3@gmail.com";
     private static final String GENERAL_FROM_NAME = "NXG HUB DIGITECH";
+
+    @Value("${server.url}")
+    private String DEFAULT_SERVER_URL ;
     @Autowired
     JavaMailSender mailSender;
 
@@ -52,7 +55,7 @@ public class EmailServiceImpl implements EmailService {
     JwtService jwtService;
 
     @Value("classpath:images/nxg-logo.png")
-    Resource nxgLogo ;
+    Resource nxgLogo;
 
     @Autowired
     TechTalentRepository TechTalentRepository;
@@ -128,7 +131,7 @@ public class EmailServiceImpl implements EmailService {
             helper.addInline("nxgLogo", nxgLogo);
 
             mailSender.send(message);
-            verificationRepo.saveAndFlush(verificationCode);
+            verificationRepo.save(verificationCode);
         }
     }
 
@@ -145,16 +148,11 @@ public class EmailServiceImpl implements EmailService {
         String content = VERIFICATION_EMAIL_CONTENT;
 
 
-
-
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME);
         helper.setTo(toAddress);
-
-
-
 
 
         helper.setSubject(subject);
@@ -221,14 +219,14 @@ public class EmailServiceImpl implements EmailService {
         helper.addInline("nxgLogo", nxgLogo);
 
 
-        verificationRepo.saveAndFlush(code);
+        verificationRepo.save(code);
 
         mailSender.send(message);
     }
 
 
     @Override
-    public void sendJobPostingNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException {
+    public void sendJobRelatedNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException, MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         String firstName = userRepository.findByEmail(to).get().getFirstName();
@@ -238,6 +236,8 @@ public class EmailServiceImpl implements EmailService {
         content = content.replace("[[job_description]]", job.getJob_description());
         content = content.replace("[[job_location]]", job.getJob_location());
         content = content.replace("[[company_bio]]", job.getCompany_bio());
+        content = content.replace("[[jobURL]]", DEFAULT_SERVER_URL+ "/job/"+ job.getJobID() );
+
 
         helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + "Job Posting Notification");
         helper.setTo(to);
@@ -252,7 +252,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendOAuthUSerLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+    public void sendOAuthUserLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
 
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
@@ -285,6 +285,32 @@ public class EmailServiceImpl implements EmailService {
 
         }
     }
+
+
+    public void sendEmailAfterApplied(String employerEmail, String applicantEmail) throws MessagingException, UnsupportedEncodingException {
+
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        String firstNameEmpl = userRepository.findByEmail(employerEmail).get().getFirstName();
+        String firstNameAppl = userRepository.findByEmail(applicantEmail).get().getFirstName();
+
+        String content = JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameEmpl);
+
+
+
+        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + "Application Notification");
+        helper.setTo(employerEmail);
+        helper.setSubject("You have a new application from " + firstNameAppl);
+
+        helper.setText(content, true);
+        helper.addInline("nxgLogo", nxgLogo);
+
+        mailSender.send(message);
+
+
+
+}
 
 
 }

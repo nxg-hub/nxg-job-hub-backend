@@ -1,6 +1,6 @@
 package core.nxg.entity;
 
-import jakarta.persistence.*;
+
 import lombok.*;
 
 
@@ -8,20 +8,22 @@ import lombok.*;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 
-@Setter
-@Getter
+
 @RequiredArgsConstructor
-@Entity
-(name = "tech_talent")
+@Getter
+@Setter
+@Document(collection = "tech_talent")
 public class TechTalentUser{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long techId;
+    private String techId;
 
-    @Column(name="email")
+//    @Column(name="email")
     private String email;
 
     private String bio;
@@ -42,9 +44,10 @@ public class TechTalentUser{
     
     private List<String> skills ;
 
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id")
+//    ToOne(orphanRemoval = true, cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "user_id")
     @JsonIgnore
+    @DBRef
     private User user;
 
     private String resume;

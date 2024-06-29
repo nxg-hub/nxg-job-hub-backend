@@ -13,12 +13,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @SpringBootApplication
 @EnableScheduling
+@EnableMongoRepositories
 public class NxgApplication {
 
 	@Autowired
@@ -50,7 +52,8 @@ public class NxgApplication {
 			secretService.init();
 		}catch (Exception ex){
 
-			log.info("Error intializing header service");
+			log.info("Error initializing header service: ", ex);
+
 		}
 	}
 

@@ -1,34 +1,33 @@
 package core.nxg.entity;
 
 
-import jakarta.persistence.*;
+
 import lombok.*;
 import core.nxg.enums.ApplicationStatus;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Data
+
+@Getter
+@Setter
 @RequiredArgsConstructor
-@Table(name = "applications")
+@Document(collection = "applications")
 public class Application {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long applicationId;
+    private String applicationId;
 
-    @Column(name = "application_date")
+
     private LocalDateTime timestamp;
 
-    @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+
     private User applicant;
 
 
-    @ManyToOne
-    @PrimaryKeyJoinColumn
+
     private JobPosting jobPosting;
 }

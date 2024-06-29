@@ -75,7 +75,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             throw new UserAlreadyExistException("An Employer account already exists!");
         }
 
-        Optional<TechTalentAgent> agent_account = agentRepository.findByUserEmail(loggedInUser.getEmail()); // confirm
+        Optional<TechTalentAgent> agent_account = agentRepository.findByEmail(loggedInUser.getEmail()); // confirm
         if (agent_account.isPresent()){  // an agent account does not exist
             throw new UserAlreadyExistException("An Agent account already exists!");
         }
@@ -113,8 +113,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         loggedInUser.setUserType(UserType.TECHTALENT);
         loggedInUser.setTechTalent(techTalentUser);
         techTalentUser.setUser(loggedInUser);
-        techTalentRepository.saveAndFlush(techTalentUser);
-        userRepo.saveAndFlush(loggedInUser);
+        techTalentRepository.save(techTalentUser);
+        userRepo.save(loggedInUser);
 
         return "TechTalent User created successfully";
     }
@@ -139,7 +139,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         }
 
         Long techTalentId = Long.valueOf(techId);
-        Optional<TechTalentUser> techTalentOptional = techTalentRepository.findById(techTalentId);
+        Optional<TechTalentUser> techTalentOptional = techTalentRepository.findById(String.valueOf(techTalentId));
 
         if (techTalentOptional.isEmpty()) {
             throw new NotFoundException("Tech Talent not found with ID: " + techId);
@@ -167,7 +167,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
     @Override
     public void deleteTechTalentUser(Long ID){
-        TechTalentUser user = techTalentRepository.findById(ID)
+        TechTalentUser user = techTalentRepository.findById(String.valueOf(ID))
             .orElseThrow(() -> new UserNotFoundException("User not found"));
         techTalentRepository.delete(user);
     }
@@ -238,10 +238,17 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     }
 
     public boolean isTechtalentVerified(Long techTalentId){
-        Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(techTalentId);
+        Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(String.valueOf(techTalentId));
         return techTalentUser.map(TechTalentUser::isVerified).orElseThrow(() -> new NotFoundException("TechTalent with ID : "+ techTalentId + "not found"));
 
 }
+
+    public void verifyTechTalent(Long techTalentID){
+        techTalentRepository.findById(String.valueOf(techTalentID)).
+                ifPresent(techTalentUser -> techTalentUser.setVerified(true));
+
+
+    }
 
 }
 

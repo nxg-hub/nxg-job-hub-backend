@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @Service
 public class GeonamesService {
 
-//    private static final String GEONAMES_USERNAME = "josgolf";
 @Value("${geonames.username}")
 private String GEONAMES_USERNAME;
 

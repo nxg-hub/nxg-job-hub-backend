@@ -75,7 +75,7 @@ public class APIController {
     }
 
 
-    public boolean paystackIsValidated(
+    private boolean paystackIsValidated(
             String headerSignature,
             JsonNode payload)
 

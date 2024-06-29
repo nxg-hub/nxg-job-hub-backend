@@ -10,7 +10,6 @@ import core.nxg.utils.Helper;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -18,8 +17,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,7 +102,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userService.saveUser(user1);
 
             // Send login details email
-            emailService.sendOAuthUSerLoginDetails(user.getFirstName(), user.getEmail(), randomPassword);
+            emailService.sendOAuthUserLoginDetails(user.getFirstName(), user.getEmail(), randomPassword);
         } else {
             // Existing user
             user1 = userOptional.get();
@@ -118,54 +115,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 userService.saveUser(user1);
 
                 // Send login details email
-                emailService.sendOAuthUSerLoginDetails(user1.getFirstName(), user1.getEmail(), randomPassword);
+                emailService.sendOAuthUserLoginDetails(user1.getFirstName(), user1.getEmail(), randomPassword);
             }
         }
 
         return user1;
     }
 }
-
-//    private User upsertUser(User user) throws MessagingException, ExpiredJWTException, UnsupportedEncodingException {
-//        Optional<User> userOptional = userService.getUserByUsername(user.getUsername());
-//        User user1;
-//
-//        String randomPassword = userService.generateOAuthPassword();
-//        String[] name = user.getFirstName().split(" ");
-//
-//
-//        int providerPosition;
-//        if (user.getProvider() != null) {
-//            OAuth2Provider provider = OAuth2Provider.valueOf(String.valueOf(user.getProvider()));
-//            providerPosition = provider.getPosition();
-//        } else {
-//            providerPosition = -1;
-//        }
-//
-//        if (userOptional.isEmpty()) {
-//            user1 = new User();
-//            user1.setFirstName(name[0]);
-//            user1.setEmail(user.getEmail());
-//            user1.setLastName(name[1]);
-//            user1.setProfilePicture(user.getProfilePicture());
-//            user1.setGender(user.getGender());
-//            user1.setUsername(user.getEmail());
-//            user1.setProvider(user.getProvider());
-//            user1.setProviderId((long) providerPosition);
-//            user1.setPhoneNumber(user.getPhoneNumber());
-//            user1.setPassword(helper.encodePassword(randomPassword));
-//            user1.setNationality(user.getNationality());
-//            user1.setDateOfBirth(user.getDateOfBirth());
-//            user1.setEnabled(true);
-//            user1.setUserType(user.getUserType());
-//        } else {
-//            user1 = userOptional.get();
-//            user1.setEmail(user1.getEmail());
-//            user1.setProfilePicture(user1.getProfilePicture());
-//        }
-//        userService.saveUser(user1);
-//        emailService.sendOAuthUSerLoginDetails(user.getFirstName(), user.getEmail(), randomPassword);
-//        return user1;
-//    }
-//}
 

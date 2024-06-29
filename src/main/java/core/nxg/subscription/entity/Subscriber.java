@@ -1,50 +1,50 @@
 package core.nxg.subscription.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.entity.User;
 import core.nxg.subscription.enums.PlanType;
 import core.nxg.subscription.enums.SubscriptionStatus;
-import jakarta.persistence.*;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-@Entity
+
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "customers")
+@Document(collection = "customers")
 public class Subscriber {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long Id;
+    private String Id;
 
     private String customerCode;
 
     private String email;
 
-    @Enumerated(EnumType.STRING)
     private PlanType planType;
 
-    @ManyToOne(targetEntity = User.class)
     private User user;
 
 
-    @Temporal(TemporalType.DATE)
     private LocalDate subscriptionStarts;
 
+    private LocalDate subscriptionDues;
 
 
-    @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
 
-    @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PaymentTransactions> transactions;
 
 

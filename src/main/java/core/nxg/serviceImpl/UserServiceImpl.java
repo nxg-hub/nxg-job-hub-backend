@@ -4,8 +4,6 @@ import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.VerificationCode;
-import core.nxg.enums.Provider;
-import core.nxg.enums.UserType;
 import core.nxg.exceptions.*;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
@@ -16,9 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +40,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Autowired
-    private final Helper helper;
+    private final Helper<?,?> helper;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -91,8 +86,8 @@ public class UserServiceImpl implements UserService {
 
         VerificationCode verificationCode = new VerificationCode(user);
         emailService.sendVerificationEmail(verificationCode, siteURL);
-        userRepository.saveAndFlush(user);
-        verificationRepo.saveAndFlush(verificationCode);
+        userRepository.save(user);
+        verificationRepo.save(verificationCode);
 
         return "User saved Successfully";
 
@@ -184,7 +179,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserById(Long id) throws Exception {
+    public UserResponseDto getUserById(String id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
         return modelMapper.map(user, UserResponseDto.class);
     }
