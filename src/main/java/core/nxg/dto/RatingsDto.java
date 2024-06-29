@@ -14,9 +14,9 @@ public class RatingsDto {
     private String rating;
 
 
-    private Long employerID;
+    private String employerID;
 
-    private Long raterID;
+    private String raterID;
 
 
 }

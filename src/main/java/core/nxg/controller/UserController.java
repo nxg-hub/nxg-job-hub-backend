@@ -74,14 +74,28 @@ public class UserController {
 
     @Operation(summary = "GET THE LOGGED IN USER INSTANCE .", description ="THIS CONTAINS ONLY COMMON ATTRIBUTES AMONGST EVERY " +
             "USER INSTANCE IN THE APPLICATION")
+//    @GetMapping("/get-user")
+//    public ResponseEntity<UserResponseDto> getLoggedInUser(HttpServletRequest request){
+//        try {
+//            UserResponseDto response = userService.getLoggedInUser(request);
+//            return ResponseEntity.status(HttpStatus.OK).body(response);
+//        }catch(Exception e){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
+//    }
     @GetMapping("/get-user")
-    public ResponseEntity<UserResponseDto> getLoggedInUser(HttpServletRequest request){
+    public ResponseEntity<Object> getLoggedInUser(HttpServletRequest request) {
         try {
             UserResponseDto response = userService.getLoggedInUser(request);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
+
 
     @Operation(summary = "Upload a new photo for a loggedIn User .",
             description ="The jwt is to be passed in the header")

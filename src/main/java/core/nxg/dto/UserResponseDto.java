@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class UserResponseDto {
 
-        private Long id;
+        private String id;
         private String firstName;
         private String lastName;
         private String profilePicture;

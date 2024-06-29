@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ViewDTO {
 
-    private Long viewId;
+    private String viewId;
     private int viewCount;
     
 }
