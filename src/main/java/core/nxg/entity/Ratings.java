@@ -28,7 +28,7 @@ public class Ratings {
     private User rater;
 
     @Getter
-    private Long raterID;
+    private String raterID;
 
 
 
