@@ -182,7 +182,7 @@ public class EmailConstant {
             + "   </div>"
             + "   <div class=\"footer\">"
             + "     <p>Thanks,</p>"
-            + "     <p>The NXT-JOB HUB Team</p>"
+            + "     <p>The NXG-JOB HUB Team</p>"
             + "   </div>"
             + " </div>"
             + "</body>"
