@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class EmployerResponse {
-    private Long employerID;
+    private String employerID;
     private String companyName;
     private String companyDescription;
     private String position;
