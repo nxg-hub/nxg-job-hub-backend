@@ -3,7 +3,6 @@ package core.nxg.repository;
 import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.User;
-import core.nxg.enums.Provider;
 import core.nxg.enums.UserType;
 import jakarta.validation.constraints.Email;
 import org.springframework.data.domain.Page;

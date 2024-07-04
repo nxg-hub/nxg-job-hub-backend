@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 public interface HeaderSignatureStorage extends MongoRepository<HeaderSignature, String> {
-    @Query("{ 'signature' : { $regex: ?0, $options: 'i' } }")
-    boolean existsByValueIgnoreCase(@Param("signature") String signature);
+//    @Query("{ 'signature' : { $regex: ?0, $options: 'i' } }")
+//    boolean existsByValueIgnoreCase(@Param("signature") String signature);
+    boolean existsBySignature(String signature);
 }
+

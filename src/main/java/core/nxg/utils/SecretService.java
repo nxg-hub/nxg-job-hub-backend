@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
@@ -20,7 +18,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalTime;
 import java.util.Base64;
@@ -31,10 +28,13 @@ import static core.nxg.utils.constants.EmailConstant.HEADER_SIGNATURE_DELIVERY_C
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SecretService {
 
     @Autowired
     private  JavaMailSender mailSender ;
+
+    private final Helper helper;
 
 
 
@@ -58,11 +58,11 @@ public class SecretService {
 
         log.info("Generating new header signatures");
 
-        var secretKeyONE = generateSecret();
+        SecretKey secretKeyONE = generateSecret();
 
         HeaderSignature sigONE = new HeaderSignature(secretKeyONE);
 
-        var secretKeyTWO = generateSecret();
+        SecretKey secretKeyTWO =  generateSecret();
 
         HeaderSignature sigTWO = new HeaderSignature(secretKeyTWO);
 
@@ -108,8 +108,8 @@ public class SecretService {
 
     public void deliverHeaderSignatures(
             SecretKey secretKeyONE,
-    SecretKey secretKeyTWO,
-   SecretKey secretKeyTHREE) throws MessagingException, UnsupportedEncodingException {
+            SecretKey secretKeyTWO,
+            SecretKey secretKeyTHREE) throws MessagingException, UnsupportedEncodingException {
 
 
 
@@ -126,7 +126,7 @@ public class SecretService {
 
         content = content.replace( "[[header_signature_TWO]]", keyToString(secretKeyTWO));
 
-        content = content.replace( "[[header_signature_THREE]]",keyToString(  secretKeyTHREE));
+        content = content.replace( "[[header_signature_THREE]]",keyToString( secretKeyTHREE));
 
         helper.setText(content, true);
         helper.addInline("nxgLogo", nxgLogo);
@@ -137,21 +137,39 @@ public class SecretService {
 
     }
 
-    public boolean decodeKeyFromHeaderAndValidate(HttpServletRequest request) {
+//    public boolean decodeKeyFromHeaderAndValidate(HttpServletRequest request) {
+//
+//        var header = request.getHeader("x-nxg-header");
+//
+//        if (header.isEmpty() || header.isBlank()) {
+//            log.error("**via registration. Header Is Empty" );
+//            return false;
+//        }
+//        byte[] decodedKey = Base64.getDecoder().decode(header);
+//
+//        SecretKey secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "HmacSHA256");
+//
+//        return  storage.existsByValueIgnoreCase(Base64.getEncoder().encodeToString(secretKey.getEncoded()));
+//
+//
+//    }
+public boolean decodeKeyFromHeaderAndValidate(HttpServletRequest request) {
+    String header = request.getHeader("x-nxg-header");
 
-        var header = request.getHeader("x-nxg-header");
-
-        if (header.isEmpty() || header.isBlank()) {
-            log.error("**via registration. Header Is Empty" );
-            return false;
-        }
-        byte[] decodedKey = Base64.getDecoder().decode(header);
-
-        SecretKey secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "HmacSHA256");
-
-        return  storage.existsByValueIgnoreCase(Base64.getEncoder().encodeToString(secretKey.getEncoded()));
-
-
+    if (header == null || header.isEmpty() || header.isBlank()) {
+        log.error("**via registration. Header Is Empty");
+        return false;
     }
+
+    try {
+        byte[] decodedKey = Base64.getDecoder().decode(header);
+        SecretKey secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "HmacSHA256");
+        String encodedSignature = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+        return storage.existsBySignature(encodedSignature);
+    } catch (IllegalArgumentException e) {
+        log.error("**via registration. Invalid Header Format", e);
+        return false;
+    }
+}
 
 }
