@@ -1,6 +1,7 @@
 package core.nxg.serviceImpl;
 
 
+import core.nxg.configs.JwtService;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
@@ -53,6 +54,8 @@ public class AdminServiceImpl implements AdminService {
     private final EmployerServiceImpl employerService;
     @Autowired
     private final UserRepository userRepository;
+
+    private final JwtService jwt;
 
     private static final String INVALID_HEADER_RESPONSE = "Header is Empty or Invalid. Please retry with a valid one or contact the support ";
 
@@ -218,45 +221,85 @@ public class AdminServiceImpl implements AdminService {
         return INVALID_HEADER_RESPONSE;
     }
 
+//
+//    @Override
+//    public Object login(LoginDTO dto, HttpServletRequest request) {
+//        var userEmail = userRepository.findByEmail(dto.getEmail());
+//
+//        if (validateAdminRequest(request)) {
+//
+//            var user = userRepository.findByEmail(dto.getEmail())
+//                    .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
+//
+//            if (!helper.encoder.matches(dto.getPassword(), user.getPassword())) {
+//                log.error("Invalid Password!");
+//                throw new RuntimeException("Invalid email or password!");
+//            }
+//
+//            if (isAdmin(user)) {
+////                return user;
+//                // Generate JWT Token
+//                String token = jwt.generateToken(userEmail.get());
+//                return token; // Return the token
+//            } else {
+//                log.error("User is not an admin");
+//                throw new RuntimeException("User is not an admin");
+//            }
+//
+//
+//        }
+//        return INVALID_HEADER_RESPONSE;
+//
+//
+//    }
 
     @Override
-    public Object login(LoginDTO dto, HttpServletRequest request) {
+    public String login(LoginDTO dto, HttpServletRequest request) {
 
-
+        // Check if the request contains a valid header
         if (validateAdminRequest(request)) {
 
+            // Retrieve the user from the repository based on email
             var user = userRepository.findByEmail(dto.getEmail())
                     .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
 
+            // Validate the password
             if (!helper.encoder.matches(dto.getPassword(), user.getPassword())) {
                 log.error("Invalid Password!");
                 throw new RuntimeException("Invalid email or password!");
             }
 
+            // Check if the user is an admin
             if (isAdmin(user)) {
-                return user;
+                // Generate and return JWT Token
+                try {
+                    String token = jwt.generateToken(user); // Ensure your jwt.generateToken method accepts a User object
+                    return token;
+                } catch (Exception e) {
+                    log.error("Token generation failed", e);
+                    throw new RuntimeException("Token generation failed");
+                }
             } else {
                 log.error("User is not an admin");
                 throw new RuntimeException("User is not an admin");
             }
 
-
         }
+
         return INVALID_HEADER_RESPONSE;
-
-
     }
+
 
     protected boolean isAdmin(User user){
         return (Roles.ADMIN).equals(user.getRoles());
     }
-    
+
     protected boolean validateAdminRequest(HttpServletRequest request) {
 
         return secretService.decodeKeyFromHeaderAndValidate(request);
 
     }
-    
+
 
     @Override
     public Object getSubscriptions(Pageable pageable, HttpServletRequest request){

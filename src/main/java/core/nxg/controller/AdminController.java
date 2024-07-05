@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestValueException;
@@ -136,12 +137,13 @@ public class AdminController {
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@NonNull @RequestBody LoginDTO dto, HttpServletRequest request) throws MissingRequestValueException {
 
+    @PostMapping("/login")
+    @CrossOrigin(exposedHeaders = "Authorization")
+    public ResponseEntity<?> login(@NonNull @RequestBody LoginDTO dto, HttpServletRequest request) {
         try {
-            Object response = adminService.login(dto, request);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            String token = adminService.login(dto, request);
+            return ResponseEntity.ok().body("Bearer " + token);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
