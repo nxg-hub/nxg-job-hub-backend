@@ -208,7 +208,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
 
 
     @GetMapping("verify/{techID}")
-    public ResponseEntity<?> isTechtalentVerified(@PathVariable Long techID) {
+    public ResponseEntity<?> isTechtalentVerified(@PathVariable String techID) {
         try {
             return ResponseEntity.ok(techTalentService.isTechtalentVerified(techID));
         } catch (Exception e) {

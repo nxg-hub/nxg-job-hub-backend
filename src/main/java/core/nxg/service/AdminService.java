@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AdminService  {
-    Object getTransactionById(Long transactionId, HttpServletRequest request);
+    Object getTransactionById(String transactionId, HttpServletRequest request);
 
 
     Object getAllTransactions(Pageable pageable, HttpServletRequest request);
@@ -20,13 +20,13 @@ public interface AdminService  {
 
     Object getAllJobs(Pageable pageable, HttpServletRequest request);
 
-    void acceptJob(Long jobId, HttpServletRequest request);
+    void acceptJob(String jobId, HttpServletRequest request);
 
-    void rejectJob(Long jobId, HttpServletRequest request);
+    void rejectJob(String jobId, HttpServletRequest request);
 
-    void suspendUser(Long userId, HttpServletRequest request);
+    void suspendUser(String userId, HttpServletRequest request);
 
-     void suspendJob(Long jobId, HttpServletRequest request);
+     void suspendJob(String jobId, HttpServletRequest request);
 
 
     Page<User> getTalentUsers(int page, int size, HttpServletRequest request);

@@ -113,7 +113,7 @@ public class EmployerController {
     }
 
     @DeleteMapping("/{employerId}")
-    public ResponseEntity<Void> deleteEmployer(@Valid @PathVariable Long employerId) {
+    public ResponseEntity<Void> deleteEmployer(@Valid @PathVariable String employerId) {
         employerService.deleteEmployer(employerId);
         return ResponseEntity.noContent().build();
     }
@@ -129,7 +129,7 @@ public class EmployerController {
             @ApiResponse(responseCode = "404", description = "Employer not found",
                     content = @Content) })
     @GetMapping("engagements/{employerId}")
-    public ResponseEntity<?> getEngagements(@PathVariable Long employerId, Pageable pageable) throws Exception {
+    public ResponseEntity<?> getEngagements(@PathVariable String employerId, Pageable pageable) throws Exception {
         try {
             return ResponseEntity.ok(employerService.getEngagements(employerId, pageable));
         } catch (Exception e) {

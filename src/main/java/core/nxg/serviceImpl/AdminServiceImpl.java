@@ -68,7 +68,7 @@ public class AdminServiceImpl implements AdminService {
         return INVALID_HEADER_RESPONSE;
     }
 
-    public Object getTransactionById(Long transactionId, HttpServletRequest request) {
+    public Object getTransactionById(String transactionId, HttpServletRequest request) {
         if (validateAdminRequest(request)) {
             return transactionRepository.findById(String.valueOf(transactionId))
                     .orElseThrow(() -> new NoSuchElementException("Transaction with ID not found"));
@@ -88,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void acceptJob(Long jobId, HttpServletRequest request) {
+    public void acceptJob(String jobId, HttpServletRequest request) {
 
 
 
@@ -102,7 +102,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void rejectJob(Long jobId, HttpServletRequest request) {
+    public void rejectJob(String jobId, HttpServletRequest request) {
 
 
         if (validateAdminRequest(request)) {
@@ -117,7 +117,7 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public void suspendJob(Long jobId, HttpServletRequest request) {
+    public void suspendJob(String jobId, HttpServletRequest request) {
 
 
         if (validateAdminRequest(request)) {
@@ -132,7 +132,7 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public void suspendUser(Long userId, HttpServletRequest request) {
+    public void suspendUser(String userId, HttpServletRequest request) {
 
         if (validateAdminRequest(request)) {
             var user = userRepository.findById(String.valueOf(userId))
@@ -311,15 +311,15 @@ public class AdminServiceImpl implements AdminService {
         return INVALID_HEADER_RESPONSE;
     }
     
-    public void verifyTechTalent(Long techID){
+    public void verifyTechTalent(String techID){
         
         techTalentService.verifyTechTalent(techID);
         
     }
     
-    public void verifyEmployer(Long employerID){
+    public void verifyEmployer(String employerID){
         
-         employerService.verifyEmployer(String.valueOf(employerID));
+         employerService.verifyEmployer((employerID));
     }
 
 }

@@ -149,15 +149,15 @@ public class EmployerServiceImpl implements EmployerService {
 
 
     @Override
-    public void deleteEmployer(Long employerId) {
+    public void deleteEmployer(String employerId) {
         Employer employer = employerRepository.findById(String.valueOf(employerId))
                 .orElseThrow(() -> new NotFoundException("Employer with ID " + employerId + " not found"));
 
         employerRepository.delete(employer);
     }
 
-    public EngagementForEmployer getEngagements(Long employerId, Pageable pageable) throws Exception {
-        Employer employer = employerRepository.findById(String.valueOf(employerId))
+    public EngagementForEmployer getEngagements(String employerId, Pageable pageable) throws Exception {
+        Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
         Optional<List<JobPosting>> existingJobPostings = jobPostingRepository.findByEmployerID(String.valueOf(employerId));

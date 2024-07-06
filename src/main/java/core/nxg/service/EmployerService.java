@@ -21,12 +21,12 @@ public interface EmployerService {
 
     Employer patchEmployer(String employerId, Map<Object, Object> fields) throws Exception;
 
-    EngagementForEmployer getEngagements(Long employerId,Pageable pageable) throws Exception;
+    EngagementForEmployer getEngagements(String employerId,Pageable pageable) throws Exception;
 
     List<JobPosting> getJobPostings(String employerId) throws Exception;
 
 
-        void deleteEmployer(Long employerId);
+        void deleteEmployer(String employerId);
 }
 
 

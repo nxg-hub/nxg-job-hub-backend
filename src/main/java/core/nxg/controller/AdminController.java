@@ -63,7 +63,7 @@ public class AdminController {
 
     @GetMapping("/transactions/{transactionId}")
     public ResponseEntity<Object> getTransactionById(
-            @PathVariable Long transactionId,
+            @PathVariable String transactionId,
             HttpServletRequest request) {
         try {
             var response = adminService.getTransactionById(transactionId, request);
@@ -84,14 +84,14 @@ public class AdminController {
 
     @PostMapping("/jobs/{jobId}/accept")
     public ResponseEntity<Object> acceptJob(
-            @PathVariable Long jobId, HttpServletRequest request) {
+            @PathVariable String jobId, HttpServletRequest request) {
         adminService.acceptJob(jobId, request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/jobs/{jobId}/reject")
     public ResponseEntity<Object> rejectJob(
-            @PathVariable Long jobId,
+            @PathVariable String jobId,
             HttpServletRequest request) {
         adminService.rejectJob(jobId, request);
         return ResponseEntity.ok().build();
@@ -99,7 +99,7 @@ public class AdminController {
 
     @PostMapping("/jobs/{jobId}/suspend")
     public ResponseEntity<Object> suspendJob(
-            @PathVariable Long jobId,
+            @PathVariable String jobId,
             HttpServletRequest request) {
         try {
             adminService.suspendJob(jobId, request);
@@ -114,7 +114,7 @@ public class AdminController {
     public ResponseEntity<Object> suspendUser(
             @PathVariable String userId, HttpServletRequest request) {
         try {
-            adminService.suspendUser(Long.valueOf(userId),request );
+            adminService.suspendUser((userId),request );
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -162,27 +162,24 @@ public class AdminController {
     }
 
     @GetMapping("/techtalent/{ID}/verify")
-    public ResponseEntity<?> verifyTechTalent(@PathVariable Long ID) {
+    public ResponseEntity<?> verifyTechTalent(@PathVariable String ID) {
         try {
             adminService.verifyTechTalent(ID);
             return ResponseEntity.ok().build();
         } catch (Exception ex) {
 
             return ResponseEntity.badRequest().body(ex.getMessage());
-
         }
     }
 
     @GetMapping("/employer/{ID}/verify")
-    public ResponseEntity<?> isEmployerVerified(@PathVariable Long ID) {
+    public ResponseEntity<?> isEmployerVerified(@PathVariable String ID) {
 
         try {
             adminService.verifyEmployer(ID);
             return ResponseEntity.ok().build();
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
-
-
         }
     }
 }
