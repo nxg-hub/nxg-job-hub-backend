@@ -143,7 +143,9 @@ public class AdminController {
     public ResponseEntity<?> login(@NonNull @RequestBody LoginDTO dto, HttpServletRequest request) {
         try {
             String token = adminService.login(dto, request);
-            return ResponseEntity.ok().body("Bearer " + token);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
