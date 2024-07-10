@@ -311,15 +311,16 @@ public class AdminServiceImpl implements AdminService {
         return INVALID_HEADER_RESPONSE;
     }
     
-    public void verifyTechTalent(String techID){
+    public String verifyTechTalent(String techID){
         
         techTalentService.verifyTechTalent(techID);
-        
-    }
+
+    return "Tech Talent Verified Successfully";}
     
-    public void verifyEmployer(String employerID){
+    public String verifyEmployer(String employerID){
         
          employerService.verifyEmployer((employerID));
+        return "Employer Verified Successfully";
     }
 
 }

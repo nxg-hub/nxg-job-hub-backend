@@ -163,23 +163,43 @@ public class AdminController {
 
     }
 
-    @GetMapping("/techtalent/{ID}/verify")
-    public ResponseEntity<?> verifyTechTalent(@PathVariable String ID) {
-        try {
-            adminService.verifyTechTalent(ID);
-            return ResponseEntity.ok().build();
-        } catch (Exception ex) {
+//    @GetMapping("/techtalent/{ID}/verify")
+//    public ResponseEntity<?> verifyTechTalent(@PathVariable String ID) {
+//        try {
+//            adminService.verifyTechTalent(ID);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception ex) {
+//
+//            return ResponseEntity.badRequest().body(ex.getMessage());
+//        }
+//    }
 
+    @GetMapping("/techtalent/{ID}/verify")
+    public ResponseEntity<String> verifyTechTalent(@PathVariable String ID) {
+        try {
+            String result = adminService.verifyTechTalent(ID);
+            return ResponseEntity.ok(result);
+        } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
-    @GetMapping("/employer/{ID}/verify")
-    public ResponseEntity<?> isEmployerVerified(@PathVariable String ID) {
+//    @GetMapping("/employer/{ID}/verify")
+//    public ResponseEntity<?> isEmployerVerified(@PathVariable String ID) {
+//
+//        try {
+//            adminService.verifyEmployer(ID);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception ex) {
+//            return ResponseEntity.badRequest().body(ex.getMessage());
+//        }
+//    }
 
+    @GetMapping("/employer/{ID}/verify")
+    public ResponseEntity<String> verifyEmployer(@PathVariable String ID) {
         try {
-            adminService.verifyEmployer(ID);
-            return ResponseEntity.ok().build();
+            String result = adminService.verifyEmployer(ID);
+            return ResponseEntity.ok(result);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }

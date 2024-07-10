@@ -9,7 +9,6 @@ import core.nxg.repository.TechTalentAgentRepository;
 import core.nxg.repository.TechTalentRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.response.EmployerResponse;
-import core.nxg.response.TechTalentResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -243,12 +242,13 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 }
 
-    public void verifyTechTalent(String techTalentID){
-        techTalentRepository.findById(techTalentID).
-                ifPresent(techTalentUser -> techTalentUser.setVerified(true));
-
-
+    public void verifyTechTalent(String techTalentID) {
+        techTalentRepository.findById(techTalentID).ifPresent(techTalentUser -> {
+            techTalentUser.setVerified(true);
+            techTalentRepository.save(techTalentUser);  // Save the updated entity back to the repository
+        });
     }
+
 
 }
 

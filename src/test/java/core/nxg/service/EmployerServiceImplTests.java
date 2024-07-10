@@ -18,4 +18,36 @@
 
          assertFalse(result);
      }
+
+     @Test
+     void createEmployer() {
+     }
+
+     @Test
+     void getEmployer() {
+     }
+
+     @Test
+     void patchEmployer() {
+     }
+
+     @Test
+     void deleteEmployer() {
+     }
+
+     @Test
+     void getEngagements() {
+     }
+
+     @Test
+     void getJobPostings() {
+     }
+
+     @Test
+     void isEmployerVerified() {
+     }
+
+     @Test
+     void verifyEmployer() {
+     }
  }

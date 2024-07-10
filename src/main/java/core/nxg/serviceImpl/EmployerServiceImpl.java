@@ -218,11 +218,12 @@ public class EmployerServiceImpl implements EmployerService {
 
         }
 
-        public void verifyEmployer(String employerID){
+    public void verifyEmployer(String employerID) throws RuntimeException {
+        employerRepository.findById(employerID).ifPresent(employer -> {
+            employer.setVerified(true);
+            employerRepository.save(employer);  // Save the updated entity back to the repository
+        });
+    }
 
-
-            employerRepository.findById(employerID)
-                    .ifPresent( employer ->  employer.setVerified(true) );
-        }
 }
 
