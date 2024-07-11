@@ -1,18 +1,23 @@
 package core.nxg.service;
 
+import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 public interface AdminService  {
     Object getTransactionById(String transactionId, HttpServletRequest request);
 
 
     Object getAllTransactions(Pageable pageable, HttpServletRequest request);
+
     Object getSubscriptions(Pageable pageable, HttpServletRequest request);
 
     Page<UserResponseDto> getAllUsers(Pageable pageable) ;
@@ -41,4 +46,5 @@ public interface AdminService  {
 
      Object login(LoginDTO userDTO, HttpServletRequest request) throws Exception ;
 
+   JobPosting jobPosting (JobPostingDto jobPostingDto);
 }
