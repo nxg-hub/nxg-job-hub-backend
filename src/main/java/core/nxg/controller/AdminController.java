@@ -1,7 +1,9 @@
 package core.nxg.controller;
 
+import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
+import core.nxg.entity.JobPosting;
 import core.nxg.service.UserService;
 import core.nxg.serviceImpl.AdminServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +17,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -114,7 +115,7 @@ public class AdminController {
     public ResponseEntity<Object> suspendUser(
             @PathVariable String userId, HttpServletRequest request) {
         try {
-            adminService.suspendUser((userId),request );
+            adminService.suspendUser((userId), request);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -204,4 +205,15 @@ public class AdminController {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
-}
+
+        @PostMapping("/post-job")
+        public ResponseEntity<?> createJobPosition(@RequestBody JobPostingDto jobPostingDto) throws Exception {
+            try {
+                JobPosting jobPosting = adminService.jobPosting(jobPostingDto);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+        }
+    }

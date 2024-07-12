@@ -2,9 +2,11 @@ package core.nxg.serviceImpl;
 
 
 import core.nxg.configs.JwtService;
+import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.enums.Roles;
 import core.nxg.enums.UserType;
@@ -287,6 +289,26 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return INVALID_HEADER_RESPONSE;
+    }
+
+
+    @Override
+    public JobPosting jobPosting(JobPostingDto jobPostingDto) {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setJob_description(jobPostingDto.getJob_description());
+        jobPosting.setJob_title(jobPostingDto.getJob_title());
+        jobPosting.setJob_type(jobPostingDto.getJob_type());
+        jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setJob_description(jobPostingDto.getJob_description());// created new by glory
+        jobPosting.setSalary(jobPostingDto.getSalary());
+        jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setRequirements(jobPostingDto.getRequirements());
+        jobPosting.setDeadline(jobPostingDto.getDeadline());
+        jobPosting.setCreated_at(jobPosting.getCreated_at());// created new by glory
+        jobPosting.setTags(jobPostingDto.getTags());
+        jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
+        return jobPostingRepository.save(jobPosting);
+
     }
 
 

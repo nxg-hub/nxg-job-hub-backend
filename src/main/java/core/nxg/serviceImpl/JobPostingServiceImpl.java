@@ -72,6 +72,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     public List<JobPostingDto> getAllJobPostings(Pageable pageable) {
         List<JobPosting> jobPostings = jobPostingRepository.findAll();
         return jobPostings.stream().map(this::mapToDto).collect(Collectors.toList());
+        // replicate this methode.
     }
 
     @Override
