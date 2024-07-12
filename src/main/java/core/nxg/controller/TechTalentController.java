@@ -205,6 +205,11 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         }
     }
 
+    @GetMapping("/{id}/is-verified")
+    public Boolean isVerified(@PathVariable long id){
+        return techTalentService.isVerified(id);
+    }
+
 
 
     @GetMapping("verify/{techID}")
