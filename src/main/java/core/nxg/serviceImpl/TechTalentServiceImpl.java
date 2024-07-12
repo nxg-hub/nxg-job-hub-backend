@@ -22,6 +22,7 @@ import org.springframework.hateoas.Link;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import core.nxg.exceptions.NotFoundException;
@@ -30,6 +31,7 @@ import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.utils.Helper;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -244,8 +246,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
     public void verifyTechTalent(String techTalentID) {
         techTalentRepository.findById(techTalentID).ifPresent(techTalentUser -> {
+            String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
             techTalentUser.setVerified(true);
-            techTalentRepository.save(techTalentUser);  // Save the updated entity back to the repository
+            techTalentUser.setTechTalentApprovingOfficer(loggedInUser);
+            techTalentUser.setTechTalentDateOfApproval(LocalDate.now());
+            techTalentRepository.save(techTalentUser);
         });
     }
 

@@ -19,9 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -219,8 +221,11 @@ public class EmployerServiceImpl implements EmployerService {
         }
 
     public void verifyEmployer(String employerID) throws RuntimeException {
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         employerRepository.findById(employerID).ifPresent(employer -> {
             employer.setVerified(true);
+            employer.setEmployerApprovingOfficer(loggedInUser);
+            employer.setEmployerDateOfApproval(LocalDate.now());
             employerRepository.save(employer);  // Save the updated entity back to the repository
         });
     }

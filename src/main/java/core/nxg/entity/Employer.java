@@ -14,6 +14,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +65,8 @@ public class Employer {
     private String companyZipCode;
     private String taxClearanceCertificate;
     private String TIN;
+    private String employerApprovingOfficer;
+    private LocalDate employerDateOfApproval;
     private List<String> vacancies;
     private List<String> namesOfDirectors;
 
