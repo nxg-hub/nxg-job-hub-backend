@@ -4,10 +4,7 @@ import core.nxg.configs.JwtService;
 import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
-import core.nxg.repository.EmployerApprovalHistoryRepository;
-import core.nxg.repository.JobPostingRepository;
-import core.nxg.repository.TechTalentApprovalHistoryRepository;
-import core.nxg.repository.UserRepository;
+import core.nxg.repository.*;
 import core.nxg.service.AdminService;
 import core.nxg.serviceImpl.AdminServiceImpl;
 import core.nxg.serviceImpl.EmployerServiceImpl;
@@ -45,7 +42,7 @@ class NxgApplicationTests {
 
 
 	@Mock
-	private Helper helper;
+	private Helper <?,?>helper;
 
 
 	@Mock
@@ -74,6 +71,9 @@ class NxgApplicationTests {
 	private JwtService jwtService;
 
 	@Mock
+	private EmployerRepository employerRepository;
+
+	@Mock
 	private TechTalentApprovalHistoryRepository techTalentApprovalHistoryRepository;
 
 	@Mock
@@ -93,7 +93,7 @@ class NxgApplicationTests {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository, jwtService, employerApprovalHistoryRepository, techTalentApprovalHistoryRepository);
+		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository,employerRepository, jwtService, employerApprovalHistoryRepository, techTalentApprovalHistoryRepository);
 
 		request = new MockHttpServletRequest();
 		request.addHeader("nxg-header", "xg...:");
