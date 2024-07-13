@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.awt.print.Book;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -47,14 +50,16 @@ public class JobPostingController {
                             schema = @Schema(implementation = JobPostingDto.class))}),
             @ApiResponse(responseCode = "400", description = "An unrecognised or invalid request was sent",
                     content = @Content)})
-    @PostMapping("/post")
-    public ResponseEntity<?> createJobPosition(@Valid @NonNull @RequestBody JobPostingDto jobPostingDto) throws Exception {
+
+    @PostMapping("/employer-post-job")
+    public ResponseEntity<?> createJobPosition(@Valid @NonNull @RequestBody JobPostingDto jobPostingDto) {
         try {
             JobPostingDto jobPosting = jobPostingService.createJobPosting(jobPostingDto);
-
             return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
@@ -135,7 +140,7 @@ public class JobPostingController {
         dto.setSalary(jobPosting.getSalary());
         dto.setJob_type(jobPosting.getJob_type());
         dto.setDeadline(jobPosting.getDeadline());
-        dto.setCreated_at(jobPosting.getCreated_at());
+        dto.setCreatedAt(jobPosting.getCreatedAt());
         dto.setRequirements(jobPosting.getRequirements());
         dto.setJob_location(jobPosting.getJob_location());
         dto.setTags(jobPosting.getTags());
@@ -168,6 +173,15 @@ public class JobPostingController {
         } catch (Exception ex) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/recent-job-postings")
+    public ResponseEntity<Object> getRecentJobPostings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<JobPosting> jobPostings = jobPostingService.getRecentJobPostings(page, size);
+        return ResponseEntity.ok(jobPostings.getContent());
     }
 }
 

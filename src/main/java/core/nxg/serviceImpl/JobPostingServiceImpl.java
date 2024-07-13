@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.scheduling.annotation.Async;
@@ -75,27 +77,72 @@ public class JobPostingServiceImpl implements JobPostingService {
         // replicate this methode.
     }
 
+//    @Override
+//    public JobPostingDto createJobPosting(JobPostingDto jobPostingDto) throws Exception {
+//
+//
+//        JobPosting jobPosting = new JobPosting();
+//        String employerId = jobPostingDto.getEmployerID();
+//        Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
+//        if (optionalEmployer.isEmpty()) {
+//            throw new NotFoundException("Employer does not exist!");
+//
+//        }
+//        if (!optionalEmployer.get().isVerified()){
+//            throw new RuntimeException("Employer is not verified. Job posting cannot be created");
+//        }
+//
+//
+//       var subscription = subRepo.findByEmail(optionalEmployer.get().getEmail());
+//
+//
+//        if (subscription.isPresent() && (SubscriptionStatus.INACTIVE.equals( subscription.get().getSubscriptionStatus()))){
+//            throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
+//        }
+//
+//        jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
+//        jobPosting.setJob_description(jobPostingDto.getJob_description());
+//        jobPosting.setJob_title(jobPostingDto.getJob_title());
+//        jobPosting.setJob_type(jobPostingDto.getJob_type());
+//        jobPosting.setJob_location(jobPostingDto.getJob_location());
+//        jobPosting.setJob_description(jobPostingDto.getJob_description());// created new by glory
+//        jobPosting.setSalary(jobPostingDto.getSalary());
+//        jobPosting.setJob_location(jobPostingDto.getJob_location());
+//        jobPosting.setRequirements(jobPostingDto.getRequirements());
+//        jobPosting.setDeadline(jobPostingDto.getDeadline());
+//        jobPosting.setCreated_at(jobPosting.getCreated_at());// created new by glory
+//        jobPosting.setTags(jobPostingDto.getTags());
+//        jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
+//        var savedJobPosting = jobPostingRepository.save(jobPosting);
+//        onJobPosted(Long.valueOf(employerId), savedJobPosting);
+//        return mapper.map(savedJobPosting, JobPostingDto.class);
+//    }
+
     @Override
     public JobPostingDto createJobPosting(JobPostingDto jobPostingDto) throws Exception {
-
 
         JobPosting jobPosting = new JobPosting();
         String employerId = jobPostingDto.getEmployerID();
         Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
         if (optionalEmployer.isEmpty()) {
             throw new NotFoundException("Employer does not exist!");
-
         }
-        if (!optionalEmployer.get().isVerified()){
+
+        Employer employer = optionalEmployer.get();
+
+        if (!employer.isVerified()) {
             throw new RuntimeException("Employer is not verified. Job posting cannot be created");
         }
 
+        // Check if the employer is within their free one-month period
+        LocalDateTime accountCreationDate = employer.getAccountCreationDate(); // assuming getAccountCreationDate() returns account creation date
+        LocalDateTime oneMonthLater = accountCreationDate.plusMonths(1);
 
-       var subscription = subRepo.findByEmail(optionalEmployer.get().getEmail());
-
-
-        if (subscription.isPresent() && (SubscriptionStatus.INACTIVE.equals( subscription.get().getSubscriptionStatus()))){
-            throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
+        if (LocalDateTime.now().isAfter(oneMonthLater)) {
+            var subscription = subRepo.findByEmail(employer.getEmail());
+            if (subscription.isEmpty() || SubscriptionStatus.INACTIVE.equals(subscription.get().getSubscriptionStatus())) {
+                throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
+            }
         }
 
         jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
@@ -103,18 +150,19 @@ public class JobPostingServiceImpl implements JobPostingService {
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
         jobPosting.setJob_location(jobPostingDto.getJob_location());
-        jobPosting.setJob_description(jobPostingDto.getJob_description());// created new by glory
         jobPosting.setSalary(jobPostingDto.getSalary());
         jobPosting.setJob_location(jobPostingDto.getJob_location());
         jobPosting.setRequirements(jobPostingDto.getRequirements());
         jobPosting.setDeadline(jobPostingDto.getDeadline());
-        jobPosting.setCreated_at(jobPosting.getCreated_at());// created new by glory
+        jobPosting.setCreatedAt(jobPosting.getCreatedAt());
         jobPosting.setTags(jobPostingDto.getTags());
         jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
+
         var savedJobPosting = jobPostingRepository.save(jobPosting);
-        onJobPosted(Long.valueOf(employerId), savedJobPosting);
+        onJobPosted(employerId, savedJobPosting);
         return mapper.map(savedJobPosting, JobPostingDto.class);
     }
+
 
     private void notify(User subscriber,JobPosting jobPosting, User sender){
 
@@ -132,7 +180,7 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
 
-    private void onJobPosted(Long employerId, JobPosting jobPosting) throws Exception {
+    private void onJobPosted(String employerId, JobPosting jobPosting) throws Exception {
         Employer poster = employerRepository.findById(String.valueOf(employerId)).
                 orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
@@ -254,6 +302,12 @@ public class JobPostingServiceImpl implements JobPostingService {
         return jobPostings.stream()
                 .filter(job -> nearbyCities.contains(job.getJob_location()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<JobPosting> getRecentJobPostings(int page, int size) {
+        LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+        return jobPostingRepository.findByCreatedAtAfter(twoDaysAgo, PageRequest.of(page, size));
     }
 
 

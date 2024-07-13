@@ -43,7 +43,7 @@ public class TechTalentUser{
 
     private LocalDateTime techTalentDateOfApproval;
 
-
+    private LocalDateTime accountCreationDate;
     private String professionalCert;
     
     private List<String> skills ;

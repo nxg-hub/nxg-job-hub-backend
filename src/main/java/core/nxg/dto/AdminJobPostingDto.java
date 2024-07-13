@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,8 +12,7 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 
-public class JobPostingDto {
-    private String employerID;
+public class AdminJobPostingDto {
     private String job_title;
     private String job_description;
     private String company_bio;

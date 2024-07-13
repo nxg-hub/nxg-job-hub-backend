@@ -92,6 +92,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setEmail(loggedInUser.getEmail());
         techTalentUser.setBio(techTalentDto.getBio());
         techTalentUser.setSkills(techTalentDto.getSkills());
+        techTalentUser.setAccountCreationDate(LocalDateTime.now());
         techTalentUser.setResidentialAddress(techTalentDto.getResidentialAddress());
         techTalentUser.setJobType(techTalentDto.getJobType());
         techTalentUser.setHighestQualification(techTalentDto.getHighestQualification());

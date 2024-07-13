@@ -1,9 +1,8 @@
 package core.nxg.service;
 
-import core.nxg.dto.LoginDTO;
-import core.nxg.dto.UserDTO;
-import core.nxg.dto.UserResponseDto;
+import core.nxg.dto.*;
 import core.nxg.entity.EmployerApprovalHistory;
+import core.nxg.entity.JobPosting;
 import core.nxg.entity.TechTalentApprovalHistory;
 import core.nxg.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +40,9 @@ public interface AdminService  {
      Object createAdmin(UserDTO userDTO, HttpServletRequest request) throws Exception ;
 
 
-     Object login(LoginDTO userDTO, HttpServletRequest request) throws Exception ;
+    JobPosting AdminCreatejobPosting(AdminJobPostingDto jobPostingDto);
+
+    Object login(LoginDTO userDTO, HttpServletRequest request) throws Exception ;
 
     void rejectEmployerVerification(String employerID, String reasonForRejection, HttpServletRequest request) throws RuntimeException;
 

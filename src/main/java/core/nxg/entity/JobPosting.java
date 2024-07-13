@@ -34,7 +34,7 @@ public class JobPosting {
     private LocalDate deadline;
 
     @Setter
-    private LocalDate created_at = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private String job_location;
     private List<String> tags;

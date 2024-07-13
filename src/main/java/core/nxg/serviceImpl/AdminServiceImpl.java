@@ -2,9 +2,7 @@ package core.nxg.serviceImpl;
 
 
 import core.nxg.configs.JwtService;
-import core.nxg.dto.LoginDTO;
-import core.nxg.dto.UserDTO;
-import core.nxg.dto.UserResponseDto;
+import core.nxg.dto.*;
 import core.nxg.entity.*;
 import core.nxg.enums.ApprovalType;
 import core.nxg.enums.Roles;
@@ -303,37 +301,25 @@ public class AdminServiceImpl implements AdminService {
         return INVALID_HEADER_RESPONSE;
     }
 
-//
-//    @Override
-//    public Object login(LoginDTO dto, HttpServletRequest request) {
-//        var userEmail = userRepository.findByEmail(dto.getEmail());
-//
-//        if (validateAdminRequest(request)) {
-//
-//            var user = userRepository.findByEmail(dto.getEmail())
-//                    .orElseThrow(() -> new UserNotFoundException("Invalid email or password"));
-//
-//            if (!helper.encoder.matches(dto.getPassword(), user.getPassword())) {
-//                log.error("Invalid Password!");
-//                throw new RuntimeException("Invalid email or password!");
-//            }
-//
-//            if (isAdmin(user)) {
-////                return user;
-//                // Generate JWT Token
-//                String token = jwt.generateToken(userEmail.get());
-//                return token; // Return the token
-//            } else {
-//                log.error("User is not an admin");
-//                throw new RuntimeException("User is not an admin");
-//            }
-//
-//
-//        }
-//        return INVALID_HEADER_RESPONSE;
-//
-//
-//    }
+    @Override
+    public JobPosting AdminCreatejobPosting(AdminJobPostingDto jobPostingDto) {
+        JobPosting jobPosting = new JobPosting();
+        jobPosting.setEmployerID(String.valueOf(UserType.ADMIN));
+        jobPosting.setJob_description(jobPostingDto.getJob_description());
+        jobPosting.setJob_title(jobPostingDto.getJob_title());
+        jobPosting.setJob_type(jobPostingDto.getJob_type());
+        jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setJob_description(jobPostingDto.getJob_description());
+        jobPosting.setSalary(jobPostingDto.getSalary());
+        jobPosting.setJob_location(jobPostingDto.getJob_location());
+        jobPosting.setRequirements(jobPostingDto.getRequirements());
+        jobPosting.setDeadline(jobPostingDto.getDeadline());
+        jobPosting.setCreatedAt(jobPosting.getCreatedAt());
+        jobPosting.setTags(jobPostingDto.getTags());
+        jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
+        return jobPostingRepository.save(jobPosting);
+
+    }
 
     @Override
     public String login(LoginDTO dto, HttpServletRequest request) {

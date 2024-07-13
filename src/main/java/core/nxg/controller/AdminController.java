@@ -1,8 +1,11 @@
 package core.nxg.controller;
 
+import core.nxg.dto.AdminJobPostingDto;
+import core.nxg.dto.JobPostingDto;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.entity.EmployerApprovalHistory;
+import core.nxg.entity.JobPosting;
 import core.nxg.entity.TechTalentApprovalHistory;
 import core.nxg.service.UserService;
 import core.nxg.serviceImpl.AdminServiceImpl;
@@ -285,6 +288,17 @@ public class AdminController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
+
+    @PostMapping("/post-job")
+    public ResponseEntity<?> createJobPosition(@RequestBody AdminJobPostingDto jobPostingDto) throws Exception {
+        try {
+            JobPosting jobPosting = adminService.AdminCreatejobPosting(jobPostingDto);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
