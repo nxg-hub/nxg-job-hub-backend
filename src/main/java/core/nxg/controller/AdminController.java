@@ -2,6 +2,8 @@ package core.nxg.controller;
 
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
+import core.nxg.entity.EmployerApprovalHistory;
+import core.nxg.entity.TechTalentApprovalHistory;
 import core.nxg.service.UserService;
 import core.nxg.serviceImpl.AdminServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -83,44 +89,74 @@ public class AdminController {
     }
 
     @PostMapping("/jobs/{jobId}/accept")
-    public ResponseEntity<Object> acceptJob(
+    public ResponseEntity<Map<String, String>> acceptJob(
             @PathVariable String jobId, HttpServletRequest request) {
-        adminService.acceptJob(jobId, request);
-        return ResponseEntity.ok().build();
+        try {
+            adminService.acceptJob(jobId, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Job accepted successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     @PostMapping("/jobs/{jobId}/reject")
-    public ResponseEntity<Object> rejectJob(
+    public ResponseEntity<Map<String, String>> rejectJob(
             @PathVariable String jobId,
+            @RequestBody Map<String, String> requestBody,
             HttpServletRequest request) {
-        adminService.rejectJob(jobId, request);
-        return ResponseEntity.ok().build();
+        String disapprovalReason = requestBody.get("disapprovalReason");
+
+        try {
+            adminService.rejectJob(jobId, disapprovalReason, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Job rejected successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     @PostMapping("/jobs/{jobId}/suspend")
     public ResponseEntity<Object> suspendJob(
             @PathVariable String jobId,
+            @RequestBody Map<String, String> requestBody,
             HttpServletRequest request) {
+        String suspensionReason = requestBody.get("suspensionReason");
         try {
-            adminService.suspendJob(jobId, request);
-            return ResponseEntity.ok().build();
-
+            adminService.suspendJob(jobId, suspensionReason, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Job suspended successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
     @PostMapping("/users/{userId}/suspend")
     public ResponseEntity<Object> suspendUser(
-            @PathVariable String userId, HttpServletRequest request) {
+            @PathVariable String userId,
+            @RequestBody Map<String, String> requestBody,
+            HttpServletRequest request) {
+        String suspensionReason = requestBody.get("reasonForProfileSuspension");
         try {
-            adminService.suspendUser((userId),request );
-            return ResponseEntity.ok().build();
+            adminService.suspendUser(userId, suspensionReason, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User suspended successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
-
     @PostMapping("/create-admin")
     public ResponseEntity<?> createAdmin(@NonNull @RequestBody UserDTO dto, HttpServletRequest request) {
 
@@ -174,14 +210,18 @@ public class AdminController {
 //        }
 //    }
 
-    @GetMapping("/techtalent/{ID}/verify")
-    public ResponseEntity<String> verifyTechTalent(@PathVariable String ID) {
-        try {
-            String result = adminService.verifyTechTalent(ID);
-            return ResponseEntity.ok(result);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
+    @GetMapping("/techtalent/{techID}/verify")
+
+        public ResponseEntity<Map<String, String>> verifyTechTalent(@PathVariable String techID) {
+            Map<String, String> response = new HashMap<>();
+            try {
+                adminService.verifyTechTalent(techID);
+                response.put("message", "Tech Talent Verified Successfully");
+                return ResponseEntity.ok(response);
+            } catch (Exception e) {
+                response.put("error", "Failed to verify Tech Talent: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
     }
 
 //    @GetMapping("/employer/{ID}/verify")
@@ -195,13 +235,60 @@ public class AdminController {
 //        }
 //    }
 
-    @GetMapping("/employer/{ID}/verify")
-    public ResponseEntity<String> verifyEmployer(@PathVariable String ID) {
+    @GetMapping("/employer/{employerID}/verify")
+    public ResponseEntity<Map<String, String>> verifyEmployer(@PathVariable String employerID) {
+        Map<String, String> response = new HashMap<>();
         try {
-            String result = adminService.verifyEmployer(ID);
-            return ResponseEntity.ok(result);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            adminService.verifyEmployer(employerID);
+            response.put("message", "Employer Verified Successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("error", "Failed to verify Employer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/approval-history/{userType}")
+    public ResponseEntity<Object> getUserApprovalHistoryByType(
+            @PathVariable String userType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            HttpServletRequest request
+    ) {
+        userType = userType.toLowerCase();
+
+        Object approvalHistory;
+        switch (userType) {
+            case "techtalent":
+                Page<TechTalentApprovalHistory> techTalentApprovalHistoryPage = adminService.getTechTalentApprovalHistory(page, size,request);
+                approvalHistory = techTalentApprovalHistoryPage.getContent();
+                break;
+            case "employer":
+                Page<EmployerApprovalHistory> employerApprovalHistoryPage = adminService.getEmployerApprovalHistory(page, size, request);
+                approvalHistory = employerApprovalHistoryPage.getContent();
+                break;
+            default:
+                return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(approvalHistory);
+    }
+
+    @PostMapping("/{employerId}/reject-verification")
+    public ResponseEntity<Object> rejectEmployerVerification(
+            @PathVariable String employerId,
+            @RequestBody Map<String, String> requestBody,
+            HttpServletRequest request) {
+        String reasonForRejection = requestBody.get("reasonForRejection");
+        try {
+            adminService.rejectEmployerVerification(employerId, reasonForRejection, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Employer verification rejected successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 }

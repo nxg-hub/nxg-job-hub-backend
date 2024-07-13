@@ -27,6 +27,8 @@ public interface EmployerService {
 
 
         void deleteEmployer(String employerId);
+
+    void rejectEmployerVerification(String employerID, String rejectionReason) throws RuntimeException;
 }
 
 

@@ -5,12 +5,12 @@ import core.nxg.configs.JwtService;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
-import core.nxg.entity.User;
+import core.nxg.entity.*;
+import core.nxg.enums.ApprovalType;
 import core.nxg.enums.Roles;
 import core.nxg.enums.UserType;
 import core.nxg.exceptions.UserNotFoundException;
-import core.nxg.repository.JobPostingRepository;
-import core.nxg.repository.UserRepository;
+import core.nxg.repository.*;
 import core.nxg.service.AdminService;
 import core.nxg.subscription.enums.JobStatus;
 import core.nxg.subscription.repository.SubscribeRepository;
@@ -25,8 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 
@@ -55,7 +57,13 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private final UserRepository userRepository;
 
+    private final EmployerRepository employerRepository;
+
     private final JwtService jwt;
+
+    private final EmployerApprovalHistoryRepository employerApprovalHistoryRepository;
+
+    private final TechTalentApprovalHistoryRepository techTalentApprovalHistoryRepository;
 
     private static final String INVALID_HEADER_RESPONSE = "Header is Empty or Invalid. Please retry with a valid one or contact the support ";
 
@@ -93,17 +101,31 @@ public class AdminServiceImpl implements AdminService {
 
 
         if (validateAdminRequest(request)) {
+
+            String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
             var job = jobPostingRepository.findById(String.valueOf(jobId))
                     .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
             job.setJobStatus(JobStatus.ACCEPTED);
             job.setActive(true);
             jobPostingRepository.save(job);
+
+            EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+            employerApprovalHistory.setEmployerId(job.getEmployerID());
+            employerApprovalHistory.setApprovalType(ApprovalType.JOB_POSTING);
+            employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+            employerApprovalHistory.setJobId(job.getJobID());
+            employerApprovalHistory.setJobTitle(job.getJob_title());
+            employerApprovalHistory.setDateOfApproval(LocalDateTime.now());
+            employerApprovalHistory.setUserType(UserType.EMPLOYER);
+            employerApprovalHistoryRepository.save(employerApprovalHistory);
+        }else {
+            throw new SecurityException("Unauthorized request");
         }
     }
 
     @Override
-    public void rejectJob(String jobId, HttpServletRequest request) {
-
+    public void rejectJob(String jobId, String disapprovalReason, HttpServletRequest request) {
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (validateAdminRequest(request)) {
             var job = jobPostingRepository.findById(String.valueOf(jobId))
@@ -112,14 +134,26 @@ public class AdminServiceImpl implements AdminService {
             job.setActive(false);
             jobPostingRepository.save(job);
 
+            EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+            employerApprovalHistory.setEmployerId(job.getEmployerID());
+            employerApprovalHistory.setApprovalType(ApprovalType.JOB_POSTING);
+            employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+            employerApprovalHistory.setJobId(job.getJobID());
+            employerApprovalHistory.setJobTitle(job.getJob_title());
+            employerApprovalHistory.setDateOfDisapproval(LocalDateTime.now());
+            employerApprovalHistory.setDisapprovalReason(employerApprovalHistory.getDisapprovalReason());
+            employerApprovalHistory.setUserType(UserType.EMPLOYER);
+            employerApprovalHistoryRepository.save(employerApprovalHistory);
+        }else {
+            throw new SecurityException("Unauthorized request");
         }
     }
 
 
     @Override
-    public void suspendJob(String jobId, HttpServletRequest request) {
+    public void suspendJob(String jobId,String suspensionReason, HttpServletRequest request) {
 
-
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if (validateAdminRequest(request)) {
             var job = jobPostingRepository.findById(String.valueOf(jobId))
                     .orElseThrow(() -> new NoSuchElementException("Job with ID not found"));
@@ -127,20 +161,66 @@ public class AdminServiceImpl implements AdminService {
             job.setActive(false);
             jobPostingRepository.save(job);
 
+            EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+            employerApprovalHistory.setEmployerId(job.getEmployerID());
+            employerApprovalHistory.setApprovalType(ApprovalType.JOB_SUSPENSION);
+            employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+            employerApprovalHistory.setJobId(job.getJobID());
+            employerApprovalHistory.setJobTitle(job.getJob_title());
+            employerApprovalHistory.setDateOfJobSuspension(LocalDateTime.now());
+            employerApprovalHistory.setReasonForJobSuspension(employerApprovalHistory.getReasonForJobSuspension());
+            employerApprovalHistory.setUserType(UserType.EMPLOYER);
+            employerApprovalHistoryRepository.save(employerApprovalHistory);
+        } else {
+            throw new SecurityException("Unauthorized request");
+
+
         }
     }
 
 
     @Override
-    public void suspendUser(String userId, HttpServletRequest request) {
+    public void suspendUser(String userId, String reasonForProfileSuspension, HttpServletRequest request) {
 
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if (validateAdminRequest(request)) {
-            var user = userRepository.findById(String.valueOf(userId))
+            var user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserNotFoundException("User with ID not found"));
             user.setEnabled(false);
             userRepository.save(user);
 
+            if (user.getUserType() == UserType.TECHTALENT) {
+                TechTalentUser techTalentUser = user.getTechTalent();
+                TechTalentApprovalHistory techTalentApprovalHistory = new TechTalentApprovalHistory();
+                techTalentApprovalHistory.setTechTalentId(techTalentUser.getTechId());
+                techTalentApprovalHistory.setApprovalType(ApprovalType.PROFILE_SUSPENSION);
+                techTalentApprovalHistory.setApprovalOfficerName(loggedInUser);
+                techTalentApprovalHistory.setTechTalentName(techTalentUser.getUser().getName());
+                techTalentApprovalHistory.setDateOfProfileSuspension(LocalDateTime.now());
+                techTalentApprovalHistory.setReasonForProfileSuspension(reasonForProfileSuspension);
+                techTalentApprovalHistory.setUserType(UserType.TECHTALENT);
+                techTalentApprovalHistoryRepository.save(techTalentApprovalHistory);
+                
+            }
+            else {
+                if (user.getUserType() == UserType.EMPLOYER) {
+                    Employer employer = user.getEmployer();
+                    EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+                    employerApprovalHistory.setEmployerId(employer.getEmployerID());
+                    employerApprovalHistory.setApprovalType(ApprovalType.PROFILE_SUSPENSION);
+                    employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+                    employerApprovalHistory.setEmployerName(employer.getUser().getEmployer().getCompanyName());
+                    employerApprovalHistory.setDateOfProfileSuspension(LocalDateTime.now());
+                    employerApprovalHistory.setReasonForProfileSuspension(employerApprovalHistory.getReasonForJobSuspension());
+                    employerApprovalHistory.setUserType(UserType.EMPLOYER);
+                    employerApprovalHistoryRepository.save(employerApprovalHistory);
 
+                }
+            }
+
+
+        }else {
+            throw new SecurityException("Unauthorized request");
         }
     }
 
@@ -311,16 +391,53 @@ public class AdminServiceImpl implements AdminService {
         return INVALID_HEADER_RESPONSE;
     }
     
-    public String verifyTechTalent(String techID){
-        
-        techTalentService.verifyTechTalent(techID);
+    public void verifyTechTalent(String techID){
 
-    return "Tech Talent Verified Successfully";}
+        techTalentService.verifyTechTalent(techID);
+    }
     
-    public String verifyEmployer(String employerID){
+    public void verifyEmployer(String employerID){
         
          employerService.verifyEmployer((employerID));
-        return "Employer Verified Successfully";
+    }
+
+    @Override
+    public void rejectEmployerVerification(String employerID, String reasonForRejection, HttpServletRequest request) throws RuntimeException {
+        String loggedInUser = request.getUserPrincipal().getName(); // Get logged in user from request
+
+        employerRepository.findById(employerID).ifPresent(employer -> {
+            employer.setVerified(false); // Assuming this sets verification status to false
+            employer.setEmployerApprovingOfficer(loggedInUser);
+            employer.setEmployerDateOfDisApproval(LocalDateTime.now());
+            employerRepository.save(employer);
+
+            EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+            employerApprovalHistory.setEmployerId(employer.getEmployerID());
+            employerApprovalHistory.setApprovalType(ApprovalType.PROFILE_REJECTION);
+            employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+            employerApprovalHistory.setEmployerName(employer.getUser().getName());
+            employerApprovalHistory.setDateOfApproval(LocalDateTime.now());
+            employerApprovalHistory.setProfileVerificationRejectionReason(reasonForRejection); // Set rejection reason
+            employerApprovalHistory.setUserType(UserType.EMPLOYER);
+            employerApprovalHistoryRepository.save(employerApprovalHistory);
+        });
+    }
+
+
+    @Override
+    public Page<TechTalentApprovalHistory> getTechTalentApprovalHistory(int page, int size, HttpServletRequest request) {
+        if (validateAdminRequest(request)) {
+            return techTalentApprovalHistoryRepository.findAll(PageRequest.of(page, size));
+        }
+        return Page.empty();
+    }
+
+    @Override
+    public Page<EmployerApprovalHistory> getEmployerApprovalHistory(int page, int size, HttpServletRequest request) {
+        if (validateAdminRequest(request)) {
+            return employerApprovalHistoryRepository.findAll(PageRequest.of(page, size));
+        }
+        return Page.empty();
     }
 
 }

@@ -4,6 +4,7 @@ import core.nxg.dto.EmployerDto;
 import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.*;
 import core.nxg.enums.ApplicationStatus;
+import core.nxg.enums.ApprovalType;
 import core.nxg.enums.UserType;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.exceptions.UserAlreadyExistException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,6 +55,8 @@ public class EmployerServiceImpl implements EmployerService {
     private final TechTalentAgentRepository agentRepository;
     @Autowired
     private final ModelMapper mapper;
+
+    private  final EmployerApprovalHistoryRepository employerApprovalHistoryRepository;
 
 
 
@@ -225,8 +229,39 @@ public class EmployerServiceImpl implements EmployerService {
         employerRepository.findById(employerID).ifPresent(employer -> {
             employer.setVerified(true);
             employer.setEmployerApprovingOfficer(loggedInUser);
-            employer.setEmployerDateOfApproval(LocalDate.now());
-            employerRepository.save(employer);  // Save the updated entity back to the repository
+            employer.setEmployerDateOfApproval(LocalDateTime.now());
+            employerRepository.save(employer);
+
+            EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+            employerApprovalHistory.setEmployerId(employer.getEmployerID());
+            employerApprovalHistory.setApprovalType(ApprovalType.PROFILE);
+            employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+            employerApprovalHistory.setEmployerName(employer.getUser().getName());
+            employerApprovalHistory.setDateOfApproval(LocalDateTime.now());
+            employerApprovalHistory.setUserType(UserType.TECHTALENT);
+            employerApprovalHistoryRepository.save(employerApprovalHistory);
+        });
+    }
+
+    @Override
+    public void rejectEmployerVerification(String employerID, String rejectionReason) throws RuntimeException {
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        employerRepository.findById(employerID).ifPresent(employer -> {
+            employer.setVerified(false); // Assuming this sets verification status to false
+            employer.setEmployerApprovingOfficer(loggedInUser);
+            employer.setEmployerDateOfApproval(LocalDateTime.now());
+            employerRepository.save(employer);
+
+            EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+            employerApprovalHistory.setEmployerId(employer.getEmployerID());
+            employerApprovalHistory.setApprovalType(ApprovalType.PROFILE_REJECTION);
+            employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+            employerApprovalHistory.setEmployerName(employer.getUser().getName());
+            employerApprovalHistory.setProfileVerificationRejectionDate(LocalDateTime.now());
+            employerApprovalHistory.setProfileVerificationRejectionReason(rejectionReason); // Set rejection reason
+            employerApprovalHistory.setUserType(UserType.EMPLOYER);
+            employerApprovalHistoryRepository.save(employerApprovalHistory);
         });
     }
 

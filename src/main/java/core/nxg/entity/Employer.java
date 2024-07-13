@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +67,8 @@ public class Employer {
     private String taxClearanceCertificate;
     private String TIN;
     private String employerApprovingOfficer;
-    private LocalDate employerDateOfApproval;
+    private LocalDateTime employerDateOfApproval;
+    private LocalDateTime employerDateOfDisApproval;
     private List<String> vacancies;
     private List<String> namesOfDirectors;
 

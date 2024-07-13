@@ -2,12 +2,10 @@ package core.nxg.serviceImpl;
 
 import core.nxg.dto.*;
 import core.nxg.entity.*;
+import core.nxg.enums.ApprovalType;
 import core.nxg.enums.UserType;
 import core.nxg.exceptions.ExpiredJWTException;
-import core.nxg.repository.EmployerRepository;
-import core.nxg.repository.TechTalentAgentRepository;
-import core.nxg.repository.TechTalentRepository;
-import core.nxg.repository.UserRepository;
+import core.nxg.repository.*;
 import core.nxg.response.EmployerResponse;
 import core.nxg.service.ApplicationService;
 import core.nxg.service.TechTalentService;
@@ -32,6 +30,7 @@ import core.nxg.utils.Helper;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +63,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
     @Autowired
     ApplicationService appService;
+
+    private  final TechTalentApprovalHistoryRepository techTalentApprovalHistoryRepository;
 
 
 
@@ -251,6 +252,16 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             techTalentUser.setTechTalentApprovingOfficer(loggedInUser);
             techTalentUser.setTechTalentDateOfApproval(LocalDate.now());
             techTalentRepository.save(techTalentUser);
+
+            TechTalentApprovalHistory techTalentApprovalHistory = new TechTalentApprovalHistory();
+            techTalentApprovalHistory.setTechTalentId(techTalentUser.getTechId());
+            techTalentApprovalHistory.setApprovalType(ApprovalType.PROFILE);
+            techTalentApprovalHistory.setApprovalOfficerName(loggedInUser);
+            techTalentApprovalHistory.setTechTalentName(techTalentUser.getUser().getName());
+            techTalentApprovalHistory.setDateOfApproval(LocalDateTime.now());
+            techTalentApprovalHistory.setUserType(UserType.TECHTALENT);
+            techTalentApprovalHistoryRepository.save(techTalentApprovalHistory);
+
         });
     }
 

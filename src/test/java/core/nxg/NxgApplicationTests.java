@@ -4,7 +4,9 @@ import core.nxg.configs.JwtService;
 import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.exceptions.UserNotFoundException;
+import core.nxg.repository.EmployerApprovalHistoryRepository;
 import core.nxg.repository.JobPostingRepository;
+import core.nxg.repository.TechTalentApprovalHistoryRepository;
 import core.nxg.repository.UserRepository;
 import core.nxg.service.AdminService;
 import core.nxg.serviceImpl.AdminServiceImpl;
@@ -71,6 +73,12 @@ class NxgApplicationTests {
 	@Mock
 	private JwtService jwtService;
 
+	@Mock
+	private TechTalentApprovalHistoryRepository techTalentApprovalHistoryRepository;
+
+	@Mock
+	private EmployerApprovalHistoryRepository employerApprovalHistoryRepository;
+
 
 
 	@Mock
@@ -85,7 +93,7 @@ class NxgApplicationTests {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository, jwtService);
+		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository, jwtService, employerApprovalHistoryRepository, techTalentApprovalHistoryRepository);
 
 		request = new MockHttpServletRequest();
 		request.addHeader("nxg-header", "xg...:");
@@ -137,7 +145,7 @@ class NxgApplicationTests {
 		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
 
 		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
-		adminService.rejectJob(job.getJobID(), request);
+		adminService.rejectJob(job.getJobID(), "Incomplete Profile",request);
 
 		verify(jobPostingRepository).save(job);
 		assertEquals(JobStatus.REJECTED, job.getJobStatus());
@@ -152,7 +160,7 @@ class NxgApplicationTests {
 		job.setJobID("1");
 		when(jobPostingRepository.findById( job.getJobID())).thenReturn(Optional.of(job));
 		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-		adminService.suspendJob(job.getJobID(), request);
+		adminService.suspendJob(job.getJobID(), "Job flagged!",request);
 
 		verify(jobPostingRepository).save(job);
 		assertEquals(JobStatus.SUSPENDED, job.getJobStatus());
@@ -165,7 +173,7 @@ class NxgApplicationTests {
 		user.setId("1");
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-		adminService.suspendUser(user.getId(), request);
+		adminService.suspendUser(user.getId(), "Violation of Policy",request);
 
 		verify(userRepository).save(user);
 		assertFalse(user.isEnabled());
@@ -186,7 +194,7 @@ class NxgApplicationTests {
 
 		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
-		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(user.getId(), request));
+		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(user.getId(), "Violation of Policy", request));
 	}
 
 

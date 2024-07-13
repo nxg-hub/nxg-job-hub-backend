@@ -3,6 +3,8 @@ package core.nxg.service;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserDTO;
 import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.EmployerApprovalHistory;
+import core.nxg.entity.TechTalentApprovalHistory;
 import core.nxg.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
@@ -22,11 +24,11 @@ public interface AdminService  {
 
     void acceptJob(String jobId, HttpServletRequest request);
 
-    void rejectJob(String jobId, HttpServletRequest request);
+    void rejectJob(String jobId, String disapprovalReason, HttpServletRequest request);
 
-    void suspendUser(String userId, HttpServletRequest request);
+    void suspendUser(String userId , String reasonForProfileSuspension, HttpServletRequest request);
 
-     void suspendJob(String jobId, HttpServletRequest request);
+     void suspendJob(String jobId,String suspensionReason, HttpServletRequest request);
 
 
     Page<User> getTalentUsers(int page, int size, HttpServletRequest request);
@@ -41,4 +43,9 @@ public interface AdminService  {
 
      Object login(LoginDTO userDTO, HttpServletRequest request) throws Exception ;
 
+    void rejectEmployerVerification(String employerID, String reasonForRejection, HttpServletRequest request) throws RuntimeException;
+
+    Page<TechTalentApprovalHistory> getTechTalentApprovalHistory(int page, int size, HttpServletRequest request);
+
+    Page<EmployerApprovalHistory> getEmployerApprovalHistory(int page, int size, HttpServletRequest request);
 }
