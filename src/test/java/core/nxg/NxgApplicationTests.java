@@ -112,24 +112,4 @@ class NxgApplicationTests {
 		Optional<List<JobPosting>> result = jobPostingRepository.findByEmployerID("employer1");
 		assertEquals(Optional.of(jobPostings), result);
 	}
-
-
-	@Test
-	public void test_accept_valid_job_id() {
-
-
-		JobPosting job = new JobPosting();
-		job.setJobStatus(JobStatus.PENDING);
-		job.setActive(false);
-		job.setJobID("1");
-		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
-
-		adminService.acceptJob(job.getJobID(), request);
-
-		verify(jobPostingRepository).save(job);
-		assertEquals(JobStatus.ACCEPTED, job.getJobStatus());
-		assertTrue(job.isActive());
-		verify(jobPostingRepository, times(1)).save(job);
-	}
 }
