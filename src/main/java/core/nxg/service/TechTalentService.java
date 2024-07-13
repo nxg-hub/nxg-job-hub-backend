@@ -25,6 +25,7 @@ public interface TechTalentService<T> {
     UserResponseDto getMe(HttpServletRequest request) throws Exception;
 
     void addNewSkills(HttpServletRequest request, List<String> skill) throws Exception;
+    Boolean isVerified(long id);
 
         
 }
