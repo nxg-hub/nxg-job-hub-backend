@@ -45,6 +45,8 @@ public interface AdminService  {
 
     void rejectEmployerVerification(String employerID, String reasonForRejection, HttpServletRequest request) throws RuntimeException;
 
+    void rejectTechTalentVerification(String techID, String reasonForRejection, HttpServletRequest request) throws RuntimeException;
+
     Page<TechTalentApprovalHistory> getTechTalentApprovalHistory(int page, int size, HttpServletRequest request);
 
     Page<EmployerApprovalHistory> getEmployerApprovalHistory(int page, int size, HttpServletRequest request);

@@ -5,6 +5,7 @@ import lombok.*;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
@@ -40,7 +41,7 @@ public class TechTalentUser{
 
     private String techTalentApprovingOfficer;
 
-    private LocalDate techTalentDateOfApproval;
+    private LocalDateTime techTalentDateOfApproval;
 
 
     private String professionalCert;

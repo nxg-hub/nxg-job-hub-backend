@@ -199,17 +199,6 @@ public class AdminController {
 
     }
 
-//    @GetMapping("/techtalent/{ID}/verify")
-//    public ResponseEntity<?> verifyTechTalent(@PathVariable String ID) {
-//        try {
-//            adminService.verifyTechTalent(ID);
-//            return ResponseEntity.ok().build();
-//        } catch (Exception ex) {
-//
-//            return ResponseEntity.badRequest().body(ex.getMessage());
-//        }
-//    }
-
     @GetMapping("/techtalent/{techID}/verify")
 
         public ResponseEntity<Map<String, String>> verifyTechTalent(@PathVariable String techID) {
@@ -223,17 +212,6 @@ public class AdminController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
     }
-
-//    @GetMapping("/employer/{ID}/verify")
-//    public ResponseEntity<?> isEmployerVerified(@PathVariable String ID) {
-//
-//        try {
-//            adminService.verifyEmployer(ID);
-//            return ResponseEntity.ok().build();
-//        } catch (Exception ex) {
-//            return ResponseEntity.badRequest().body(ex.getMessage());
-//        }
-//    }
 
     @GetMapping("/employer/{employerID}/verify")
     public ResponseEntity<Map<String, String>> verifyEmployer(@PathVariable String employerID) {
@@ -291,4 +269,23 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+
+    @PostMapping("/{techId}/reject-verification")
+    public ResponseEntity<Object> rejectTechTalentVerification(
+            @PathVariable String techId,
+            @RequestBody Map<String, String> requestBody,
+            HttpServletRequest request) {
+        String reasonForRejection = requestBody.get("reasonForRejection");
+        try {
+            adminService.rejectTechTalentVerification(techId, reasonForRejection, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Tech Talent verification rejected successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
+
 }

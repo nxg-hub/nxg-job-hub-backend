@@ -66,6 +66,8 @@ public class AdminServiceImpl implements AdminService {
     private final TechTalentApprovalHistoryRepository techTalentApprovalHistoryRepository;
 
     private static final String INVALID_HEADER_RESPONSE = "Header is Empty or Invalid. Please retry with a valid one or contact the support ";
+    @Autowired
+    private TechTalentRepository techTalentRepository;
 
     @Override
     public Object getAllTransactions(Pageable pageable, HttpServletRequest request) {
@@ -422,6 +424,29 @@ public class AdminServiceImpl implements AdminService {
             employerApprovalHistoryRepository.save(employerApprovalHistory);
         });
     }
+
+    @Override
+    public void rejectTechTalentVerification(String techID, String reasonForRejection, HttpServletRequest request) throws RuntimeException {
+        String loggedInUser = request.getUserPrincipal().getName(); // Get logged in user from request
+
+        techTalentRepository.findById(techID).ifPresent(techTalent -> {
+            techTalent.setVerified(false);
+            techTalent.setTechTalentApprovingOfficer(loggedInUser);
+            techTalent.setTechTalentDateOfApproval(LocalDateTime.now());
+            techTalentRepository.save(techTalent);
+
+            TechTalentApprovalHistory techTalentApprovalHistory = new TechTalentApprovalHistory();
+            techTalent.setTechId(techTalent.getTechId());
+            techTalentApprovalHistory.setApprovalType(ApprovalType.PROFILE_REJECTION);
+            techTalentApprovalHistory.setApprovalOfficerName(loggedInUser);
+            techTalentApprovalHistory.setTechTalentName(techTalent.getUser().getName());
+            techTalentApprovalHistory.setDateOfApproval(LocalDateTime.now());
+            techTalentApprovalHistory.setProfileVerificationRejectionReason(reasonForRejection); // Set rejection reason
+            techTalentApprovalHistory.setUserType(UserType.TECHTALENT);
+            techTalentApprovalHistoryRepository.save(techTalentApprovalHistory);
+        });
+    }
+
 
 
     @Override

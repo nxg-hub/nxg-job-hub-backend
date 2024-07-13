@@ -32,6 +32,8 @@ public class TechTalentApprovalHistory {
     private String dateOfDisapproval;
     private LocalDateTime dateOfProfileSuspension;
     private String reasonForProfileSuspension;
+    private LocalDateTime profileVerificationRejectionDate;
+    private String profileVerificationRejectionReason;
 
     @JsonIgnore
     @DBRef
