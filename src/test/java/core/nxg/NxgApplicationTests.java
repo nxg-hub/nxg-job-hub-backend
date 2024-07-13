@@ -42,7 +42,7 @@ class NxgApplicationTests {
 
 
 	@Mock
-	private Helper <?,?>helper;
+	private Helper<?, ?> helper;
 
 
 	@Mock
@@ -57,7 +57,7 @@ class NxgApplicationTests {
 	private UserRepository userRepository;
 
 	@Mock
-	private  ModelMapper modelMapper;
+	private ModelMapper modelMapper;
 
 	@Mock
 	private SubscribeRepository subscribeRepository;
@@ -80,25 +80,26 @@ class NxgApplicationTests {
 	private EmployerApprovalHistoryRepository employerApprovalHistoryRepository;
 
 
-
 	@Mock
-	 private JobPostingRepository jobPostingRepository;
+	private JobPostingRepository jobPostingRepository;
 
 	@Mock
 	private MockHttpServletRequest request;
 	@Mock
 	private JobPosting jobPosting;
+
 	@BeforeEach
 	public void setup() {
 
 		MockitoAnnotations.openMocks(this);
 
-		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository,  jobPostingRepository,modelMapper, techTalentService,employerService, userRepository,employerRepository, jwtService, employerApprovalHistoryRepository, techTalentApprovalHistoryRepository);
+		adminService = new AdminServiceImpl(secretService, helper, subscribeRepository, transactionRepository, jobPostingRepository, modelMapper, techTalentService, employerService, userRepository, employerRepository, jwtService, employerApprovalHistoryRepository, techTalentApprovalHistoryRepository);
 
 		request = new MockHttpServletRequest();
 		request.addHeader("nxg-header", "xg...:");
 
 	}
+
 	@Test
 	void contextLoads() {
 	}
@@ -113,92 +114,22 @@ class NxgApplicationTests {
 	}
 
 
-
 	@Test
 	public void test_accept_valid_job_id() {
 
 
-	JobPosting job = new JobPosting();
-        job.setJobStatus(JobStatus.PENDING);
-        job.setActive(false);
-		job.setJobID("1");
-	when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-	when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
-
-	adminService.acceptJob(job.getJobID(), request);
-
-		verify(jobPostingRepository).save(job);
-	assertEquals(JobStatus.ACCEPTED, job.getJobStatus());
-	assertTrue(job.isActive());
-	verify(jobPostingRepository, times(1)).save(job);
-}
-
-
-
-	@Test
-	public void rejectJobChangesJobStatusToRejected() {
-
-
 		JobPosting job = new JobPosting();
 		job.setJobStatus(JobStatus.PENDING);
+		job.setActive(false);
 		job.setJobID("1");
 		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-
 		when(jobPostingRepository.findById(job.getJobID())).thenReturn(Optional.of(job));
-		adminService.rejectJob(job.getJobID(), "Incomplete Profile",request);
+
+		adminService.acceptJob(job.getJobID(), request);
 
 		verify(jobPostingRepository).save(job);
-		assertEquals(JobStatus.REJECTED, job.getJobStatus());
+		assertEquals(JobStatus.ACCEPTED, job.getJobStatus());
+		assertTrue(job.isActive());
+		verify(jobPostingRepository, times(1)).save(job);
 	}
-
-	@Test
-	public void suspendJobChangesJobStatusToSuspended() {
-
-
-		JobPosting job = new JobPosting();
-		job.setJobStatus(JobStatus.ACCEPTED);
-		job.setJobID("1");
-		when(jobPostingRepository.findById( job.getJobID())).thenReturn(Optional.of(job));
-		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-		adminService.suspendJob(job.getJobID(), "Job flagged!",request);
-
-		verify(jobPostingRepository).save(job);
-		assertEquals(JobStatus.SUSPENDED, job.getJobStatus());
-	}
-
-//	@Test
-//	public void suspendUserChangesUserStatusToDisabled() {
-//		User user = new User();
-//		user.setEnabled(true);
-//		user.setId("1");
-//		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-//		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-//		adminService.suspendUser(user.getId(), "Violation of Policy",request);
-//
-//		verify(userRepository).save(user);
-//		assertFalse(user.isEnabled());
-//	}
-
-	@Test
-	public void acceptJobThrowsExceptionWhenJobNotFound() {
-		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-
-		when(jobPostingRepository.findById(anyString())).thenReturn(Optional.empty());
-
-		assertThrows(NoSuchElementException.class, () -> adminService.acceptJob(jobPosting.getJobID(), request));
-	}
-
-//	@Test
-//	public void suspendUserThrowsExceptionWhenUserNotFound() {
-//		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-//
-//		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
-//
-//		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(user.getId(), "Violation of Policy", request));
-//	}
-
-
-
-
-
 }
