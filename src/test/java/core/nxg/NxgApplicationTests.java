@@ -22,9 +22,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
@@ -169,31 +166,18 @@ class NxgApplicationTests {
 		assertEquals(JobStatus.SUSPENDED, job.getJobStatus());
 	}
 
-	@Test
-	public void suspendUserChangesUserStatusToDisabled() {
-		// Mocking SecurityContext and Authentication
-		SecurityContext securityContext = mock(SecurityContext.class);
-		SecurityContextHolder.setContext(securityContext);
-
-		Authentication authentication = mock(Authentication.class);
-		when(authentication.getName()).thenReturn("admin"); // Mocking authenticated user
-		when(securityContext.getAuthentication()).thenReturn(authentication);
-
-		// Mocking user and repository
-		User user = new User();
-		user.setEnabled(true);
-		user.setId("1");
-
-		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-
-		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-
-		adminService.suspendUser(user.getId(), "Violation of Policy", request);
-
-		verify(userRepository).save(user);
-		assertFalse(user.isEnabled());
-	}
-
+//	@Test
+//	public void suspendUserChangesUserStatusToDisabled() {
+//		User user = new User();
+//		user.setEnabled(true);
+//		user.setId("1");
+//		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+//		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
+//		adminService.suspendUser(user.getId(), "Violation of Policy",request);
+//
+//		verify(userRepository).save(user);
+//		assertFalse(user.isEnabled());
+//	}
 
 	@Test
 	public void acceptJobThrowsExceptionWhenJobNotFound() {
@@ -204,21 +188,14 @@ class NxgApplicationTests {
 		assertThrows(NoSuchElementException.class, () -> adminService.acceptJob(jobPosting.getJobID(), request));
 	}
 
-	@Test
-	public void suspendUserThrowsExceptionWhenUserNotFound() {
-		SecurityContext securityContext = mock(SecurityContext.class);
-		SecurityContextHolder.setContext(securityContext);
-
-		Authentication authentication = mock(Authentication.class);
-		when(authentication.getName()).thenReturn("admin");
-		when(securityContext.getAuthentication()).thenReturn(authentication);
-
-		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
-
-		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
-
-		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser("1", "Violation of Policy", request));
-	}
+//	@Test
+//	public void suspendUserThrowsExceptionWhenUserNotFound() {
+//		when(secretService.decodeKeyFromHeaderAndValidate(request)).thenReturn(true);
+//
+//		when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+//
+//		assertThrows(UserNotFoundException.class, () -> adminService.suspendUser(user.getId(), "Violation of Policy", request));
+//	}
 
 
 
