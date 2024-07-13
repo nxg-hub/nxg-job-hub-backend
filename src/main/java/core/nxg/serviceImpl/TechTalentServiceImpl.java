@@ -239,6 +239,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         }
     }
 
+    @Override
+    public Boolean isVerified(long id) {
+        return null;
+    }
+
     public boolean isTechtalentVerified(String techTalentId){
         Optional<TechTalentUser> techTalentUser = techTalentRepository.findById(techTalentId);
         return techTalentUser.map(TechTalentUser::isVerified).orElseThrow(() -> new NotFoundException("TechTalent with ID : "+ techTalentId + "not found"));

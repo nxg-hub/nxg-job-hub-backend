@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface JobPostingRepository extends MongoRepository<JobPosting, String> {
 
     //void deleteJobPostingByJobId(Long jobId);
-//    Optional<JobPosting> findJobPostingByJobID(Long jobID);
+    Optional<JobPosting> findJobPostingByJobID(String jobID);// Added
 
     List<JobPosting> findByDeliveredFalse();
    Optional<List<JobPosting>> findByEmployerID(String employerID);
