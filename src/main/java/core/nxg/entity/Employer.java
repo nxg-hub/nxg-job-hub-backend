@@ -67,7 +67,7 @@ public class Employer {
     private String taxClearanceCertificate;
     private String TIN;
     private String employerApprovingOfficer;
-    private LocalDateTime accountCreationDate;
+    private LocalDateTime accountCreationDate = LocalDateTime.now();;
     private LocalDateTime employerDateOfApproval;
     private LocalDateTime employerDateOfDisApproval;
     private List<String> vacancies;
