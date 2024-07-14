@@ -116,7 +116,7 @@ public class EmailConstant {
             + "</head>"
             + "<body style=\"text-align:justify;\">"
             + "<img src='cid:nxgLogo' alt=\"logo\" style=\"display: block; margin: 0 auto;\">"
-            + "  <h1 style=\"font-weight: bold;\">NXGJOBHUB OAUTH LOGIN DETAILS</h1>"
+            + "  <h1 style=\"font-weight: bold;\">NXG JOB HUB LOGIN DETAILS</h1>"
             + "   <p>Dear [[name]],</p>"
             + "   <p>Please find below your Login Details:</p>"
             + "   <p>Email: [[email]]</p>"

@@ -43,8 +43,8 @@ import static core.nxg.utils.constants.EmailConstant.*;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
-    private static final String GENERAL_FROM_ADDRESS = "josgolf3@gmail.com";
-    private static final String GENERAL_FROM_NAME = "NXG HUB DIGITECH";
+    private static final String GENERAL_FROM_ADDRESS = "nextgenhubdigital@gmail.com";
+    private static final String GENERAL_FROM_NAME = "NXG JOB HUB";
 
     @Value("${server.url}")
     private String DEFAULT_SERVER_URL ;

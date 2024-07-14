@@ -54,8 +54,8 @@ public class JobPostingController {
     @PostMapping("/employer-post-job")
     public ResponseEntity<?> createJobPosition(@Valid @NonNull @RequestBody JobPostingDto jobPostingDto) {
         try {
-            JobPostingDto jobPosting = jobPostingService.createJobPosting(jobPostingDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(jobPosting);
+            jobPostingService.createJobPosting(jobPostingDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Job Posted Successfully");
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());

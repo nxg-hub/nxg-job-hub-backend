@@ -40,11 +40,11 @@ public RatingsDto createRatings(RatingsDto ratingsDto) {
     ratings.setRating(Rating.valueOf(ratingsDto.getRating())); // Assuming Rating is an enum type
 
     Ratings savedRatings = ratingsRepository.save(ratings);
-    notify(Long.valueOf(savedRatings.getId()), employer, employer.getUser());
+    notify(savedRatings.getId(), employer, employer.getUser());
     return mapToDto(savedRatings);
 }
 
-private void notify(Long ratingsID, Employer employer, User sender){
+private void notify(String ratingsID, Employer employer, User sender){
 
     var notification = Notification.builder()
             .notificationType(NotificationType.RATING)

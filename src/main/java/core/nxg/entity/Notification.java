@@ -34,7 +34,7 @@ public class Notification {
 	private LocalDateTime dateTime;
 
 
-	private Long contentId;
+	private String contentId;
 
 
 //	umerated(EnumType.STRING)

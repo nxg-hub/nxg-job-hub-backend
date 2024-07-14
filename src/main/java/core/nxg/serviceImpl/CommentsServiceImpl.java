@@ -64,7 +64,7 @@ public class CommentsServiceImpl implements CommentsService {
                 .message(comment.getComment())
                 .referencedUserID(employer.getUser().getId())
                 .senderID(commenter.getId())
-                .contentId(Long.valueOf(comment.getId()))
+                .contentId(comment.getId())
                 .build();
         notificationRepository.save(notification);
     }

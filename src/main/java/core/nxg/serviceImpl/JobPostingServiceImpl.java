@@ -34,6 +34,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -173,8 +174,8 @@ public class JobPostingServiceImpl implements JobPostingService {
 
         jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
         jobPosting.setJob_description(jobPostingDto.getJob_description());
-        jobPosting.setEmployer_name(jobPostingDto.getEmployer_name());
-        jobPosting.setEmployer_profile_pic(jobPostingDto.getEmployer_profile_pic());
+        jobPosting.setEmployer_name(optionalEmployer.get().getCompanyName());
+        jobPosting.setEmployer_profile_pic(optionalEmployer.get().getUser().getProfilePicture());
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
         jobPosting.setJob_location(jobPostingDto.getJob_location());
@@ -198,7 +199,7 @@ public class JobPostingServiceImpl implements JobPostingService {
                 .notificationType(NotificationType.JOB_POST)
                 .delivered(false)
                 .message(jobPosting.getJob_title())
-                .contentId(Long.valueOf(jobPosting.getJobID()))
+                .contentId(jobPosting.getJobID())
                 .referencedUserID(subscriber.getId())
                 .senderID(sender.getId())
                 .dateTime(LocalDateTime.now())
@@ -208,13 +209,60 @@ public class JobPostingServiceImpl implements JobPostingService {
     }
 
 
+//    private void onJobPosted(String employerId, JobPosting jobPosting) throws Exception {
+//        Employer poster = employerRepository.findById(String.valueOf(employerId)).
+//                orElseThrow(() -> new NotFoundException("Employer was not found!"));
+//
+//        List<TechTalentUser> users = techRepo.findAll();
+//
+//        users.forEach(user -> {
+//            try {
+//                log.info("Preparing to send an email to {}", user.getEmail());
+//
+//                emailService.sendJobRelatedNotifEmail(user.getEmail(), jobPosting);
+//
+//                notify(user.getUser(), jobPosting, poster.getUser());
+//
+//                log.info("Email notification sent to {}", user.getEmail());
+//
+//            } catch (Exception e) {
+//
+//                throw new RuntimeException("Error sending email to {}" + user.getEmail());
+//            }
+//        });
+//        emailService.sendJobRelatedNotifEmail(poster.getEmail(), jobPosting);
+//
+//
+//    }
+
     private void onJobPosted(String employerId, JobPosting jobPosting) throws Exception {
-        Employer poster = employerRepository.findById(String.valueOf(employerId)).
-                orElseThrow(() -> new NotFoundException("Employer was not found!"));
+        Employer poster = employerRepository.findById(employerId)
+                .orElseThrow(() -> new NotFoundException("Employer was not found!"));
 
         List<TechTalentUser> users = techRepo.findAll();
 
-        users.forEach(user -> {
+        // Filter users based on partial or full match of their interest in the job title
+        List<TechTalentUser> interestedUsers = users.stream()
+                .filter(user -> {
+                    if (user.getJobInterest() == null) {
+                        return false;
+                    }
+                    String jobInterest = user.getJobInterest().toLowerCase();
+                    String jobTitle = jobPosting.getJob_title().toLowerCase();
+
+                    // Check if any word from job interest is in the job title
+                    String[] interestWords = jobInterest.split("\\s+");
+                    boolean anyWordMatch = Arrays.stream(interestWords)
+                            .anyMatch(word -> jobTitle.contains(word));
+
+                    // Check if job interest is a substring of the job title
+                    boolean substringMatch = jobTitle.contains(jobInterest);
+
+                    return anyWordMatch || substringMatch;
+                })
+                .collect(Collectors.toList());
+
+        for (TechTalentUser user : interestedUsers) {
             try {
                 log.info("Preparing to send an email to {}", user.getEmail());
 
@@ -225,14 +273,13 @@ public class JobPostingServiceImpl implements JobPostingService {
                 log.info("Email notification sent to {}", user.getEmail());
 
             } catch (Exception e) {
-
-                throw new RuntimeException("Error sending email to {}" + user.getEmail());
+                log.error("Error sending email to {}", user.getEmail(), e);
             }
-        });
+        }
+
         emailService.sendJobRelatedNotifEmail(poster.getEmail(), jobPosting);
-
-
     }
+
 
     @Override
     public JobPostingDto getJobPostingById(Long jobId) {

@@ -252,7 +252,7 @@ public class EmployerServiceImpl implements EmployerService {
             employerApprovalHistory.setApprovalOfficerName(loggedInUser);
             employerApprovalHistory.setEmployerName(employer.getUser().getName());
             employerApprovalHistory.setDateOfApproval(LocalDateTime.now());
-            employerApprovalHistory.setUserType(UserType.TECHTALENT);
+            employerApprovalHistory.setUserType(UserType.EMPLOYER);
             employerApprovalHistoryRepository.save(employerApprovalHistory);
         });
     }

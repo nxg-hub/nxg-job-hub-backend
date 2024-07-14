@@ -83,6 +83,11 @@ public class Employer {
 
     public boolean isVerified() {
 
+        // Check if the verified field is true first
+        if (!verified) {
+            return false;
+        }
+
         if (CACCertificate == null || taxClearanceCertificate == null || TIN == null || namesOfDirectors == null) {
             return false;
         }
@@ -102,7 +107,6 @@ public class Employer {
                 log.atLevel(Level.TRACE).log("Error accessing field: {}", field.getName(),e);
             }
         }
-
 
         double fraction = (double) nonNullFields / totalFields;
 
