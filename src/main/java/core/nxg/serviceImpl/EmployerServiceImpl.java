@@ -90,6 +90,7 @@ public class EmployerServiceImpl implements EmployerService {
 
         Employer employer = new Employer();
 
+        employer.setEmployerID(loggedInUser.getId());
         employer.setCompanyName(employerDto.getCompanyName());
         employer.setEmail(loggedInUser.getEmail());
         employer.setCompanyDescription(employerDto.getCompanyDescription());
