@@ -13,6 +13,10 @@ import core.nxg.repository.*;
 import core.nxg.response.EmployerResponse;
 import core.nxg.response.EngagementForEmployer;
 import core.nxg.service.EmployerService;
+import core.nxg.subscription.entity.Subscriber;
+import core.nxg.subscription.enums.PlanType;
+import core.nxg.subscription.enums.SubscriptionStatus;
+import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.utils.Helper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +61,8 @@ public class EmployerServiceImpl implements EmployerService {
     private final ModelMapper mapper;
 
     private final EmployerApprovalHistoryRepository employerApprovalHistoryRepository;
+
+    private final SubscribeRepository subscribeRepository;
 
 
     @Override
@@ -114,6 +120,16 @@ public class EmployerServiceImpl implements EmployerService {
         employerRepository.save(employer);
         loggedInUser.setEmployer(employer);
         userRepository.save(loggedInUser);
+
+        // Create a default subscription
+        Subscriber defaultSubscription = new Subscriber();
+        defaultSubscription.setEmail(loggedInUser.getEmail());
+        defaultSubscription.setPlanType(PlanType.FREE); // or any default plan type
+        defaultSubscription.setSubscriptionStarts(LocalDate.now());
+        defaultSubscription.setSubscriptionDues(LocalDate.now().plusMonths(1)); // 1 month free period
+        defaultSubscription.setSubscriptionStatus(SubscriptionStatus.ACTIVE); // initial status
+        defaultSubscription.setUser(loggedInUser.getEmployer().getUser());
+        subscribeRepository.save(defaultSubscription);
         return "Employer created successfully!";
     }
 

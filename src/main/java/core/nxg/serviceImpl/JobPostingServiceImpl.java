@@ -13,6 +13,8 @@ import core.nxg.repository.TechTalentRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.JobPostingService;
 import core.nxg.service.UserService;
+import core.nxg.subscription.entity.Subscriber;
+import core.nxg.subscription.enums.PlanType;
 import core.nxg.subscription.enums.SubscriptionStatus;
 import core.nxg.subscription.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -138,12 +141,35 @@ public class JobPostingServiceImpl implements JobPostingService {
         LocalDateTime accountCreationDate = employer.getAccountCreationDate(); // assuming getAccountCreationDate() returns account creation date
         LocalDateTime oneMonthLater = accountCreationDate.plusMonths(1);
 
+//        if (LocalDateTime.now().isAfter(oneMonthLater)) {
+//            var subscription = subRepo.findByEmail(employer.getEmail());
+//            if (subscription.isEmpty() || SubscriptionStatus.INACTIVE.equals(subscription.get().getSubscriptionStatus())) {
+//                throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
+//            }
+//        }
+
         if (LocalDateTime.now().isAfter(oneMonthLater)) {
-            var subscription = subRepo.findByEmail(employer.getEmail());
-            if (subscription.isEmpty() || SubscriptionStatus.INACTIVE.equals(subscription.get().getSubscriptionStatus())) {
+            Optional<Subscriber> optionalSubscription = subRepo.findByEmail(employer.getEmail());
+            Subscriber subscription;
+            if (optionalSubscription.isEmpty()) {
+                // Create a default subscription if not exists
+                subscription = new Subscriber();
+                subscription.setEmail(employer.getEmail());
+                subscription.setPlanType(PlanType.FREE); // or any default plan type
+                subscription.setSubscriptionStarts(LocalDate.now());
+                subscription.setSubscriptionDues(LocalDate.now().plusMonths(1)); // 1 month free period
+                subscription.setSubscriptionStatus(SubscriptionStatus.ACTIVE); // initial status
+                subscription.setUser(employer.getUser());
+                subscription = subRepo.save(subscription);
+            } else {
+                subscription = optionalSubscription.get();
+            }
+
+            if (SubscriptionStatus.INACTIVE.equals(subscription.getSubscriptionStatus())) {
                 throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
             }
         }
+
 
         jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
         jobPosting.setJob_description(jobPostingDto.getJob_description());

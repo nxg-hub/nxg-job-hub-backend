@@ -12,7 +12,8 @@ public enum PlanType {
     PLATINUM("annually"),
 
     GOLD("biannually"),
-    SILVER("quarterly");
+    SILVER("quarterly"),
+    FREE("one month");
 
     private final String interval;
 

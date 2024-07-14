@@ -286,6 +286,7 @@ public class SubscriptionService {
             case SILVER -> startDate.plus(Period.ofMonths(3));
             case  GOLD -> startDate.plus(Period.ofMonths(6));
             case PLATINUM -> startDate.plus(Period.ofMonths(12));
+            case FREE -> startDate.plusMonths(1);
         };
     }
 }
