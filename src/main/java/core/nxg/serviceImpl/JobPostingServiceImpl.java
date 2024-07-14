@@ -81,46 +81,6 @@ public class JobPostingServiceImpl implements JobPostingService {
         // replicate this methode.
     }
 
-//    @Override
-//    public JobPostingDto createJobPosting(JobPostingDto jobPostingDto) throws Exception {
-//
-//
-//        JobPosting jobPosting = new JobPosting();
-//        String employerId = jobPostingDto.getEmployerID();
-//        Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
-//        if (optionalEmployer.isEmpty()) {
-//            throw new NotFoundException("Employer does not exist!");
-//
-//        }
-//        if (!optionalEmployer.get().isVerified()){
-//            throw new RuntimeException("Employer is not verified. Job posting cannot be created");
-//        }
-//
-//
-//       var subscription = subRepo.findByEmail(optionalEmployer.get().getEmail());
-//
-//
-//        if (subscription.isPresent() && (SubscriptionStatus.INACTIVE.equals( subscription.get().getSubscriptionStatus()))){
-//            throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
-//        }
-//
-//        jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
-//        jobPosting.setJob_description(jobPostingDto.getJob_description());
-//        jobPosting.setJob_title(jobPostingDto.getJob_title());
-//        jobPosting.setJob_type(jobPostingDto.getJob_type());
-//        jobPosting.setJob_location(jobPostingDto.getJob_location());
-//        jobPosting.setJob_description(jobPostingDto.getJob_description());// created new by glory
-//        jobPosting.setSalary(jobPostingDto.getSalary());
-//        jobPosting.setJob_location(jobPostingDto.getJob_location());
-//        jobPosting.setRequirements(jobPostingDto.getRequirements());
-//        jobPosting.setDeadline(jobPostingDto.getDeadline());
-//        jobPosting.setCreated_at(jobPosting.getCreated_at());// created new by glory
-//        jobPosting.setTags(jobPostingDto.getTags());
-//        jobPosting.setCompany_bio(jobPostingDto.getCompany_bio());
-//        var savedJobPosting = jobPostingRepository.save(jobPosting);
-//        onJobPosted(Long.valueOf(employerId), savedJobPosting);
-//        return mapper.map(savedJobPosting, JobPostingDto.class);
-//    }
 
     @Override
     public JobPostingDto createJobPosting(JobPostingDto jobPostingDto) throws Exception {
@@ -141,13 +101,6 @@ public class JobPostingServiceImpl implements JobPostingService {
         // Check if the employer is within their free one-month period
         LocalDateTime accountCreationDate = employer.getAccountCreationDate(); // assuming getAccountCreationDate() returns account creation date
         LocalDateTime oneMonthLater = accountCreationDate.plusMonths(1);
-
-//        if (LocalDateTime.now().isAfter(oneMonthLater)) {
-//            var subscription = subRepo.findByEmail(employer.getEmail());
-//            if (subscription.isEmpty() || SubscriptionStatus.INACTIVE.equals(subscription.get().getSubscriptionStatus())) {
-//                throw new RuntimeException("Employer subscription is inactive. Job posting cannot be created");
-//            }
-//        }
 
         if (LocalDateTime.now().isAfter(oneMonthLater)) {
             Optional<Subscriber> optionalSubscription = subRepo.findByEmail(employer.getEmail());
@@ -208,32 +161,6 @@ public class JobPostingServiceImpl implements JobPostingService {
 
     }
 
-
-//    private void onJobPosted(String employerId, JobPosting jobPosting) throws Exception {
-//        Employer poster = employerRepository.findById(String.valueOf(employerId)).
-//                orElseThrow(() -> new NotFoundException("Employer was not found!"));
-//
-//        List<TechTalentUser> users = techRepo.findAll();
-//
-//        users.forEach(user -> {
-//            try {
-//                log.info("Preparing to send an email to {}", user.getEmail());
-//
-//                emailService.sendJobRelatedNotifEmail(user.getEmail(), jobPosting);
-//
-//                notify(user.getUser(), jobPosting, poster.getUser());
-//
-//                log.info("Email notification sent to {}", user.getEmail());
-//
-//            } catch (Exception e) {
-//
-//                throw new RuntimeException("Error sending email to {}" + user.getEmail());
-//            }
-//        });
-//        emailService.sendJobRelatedNotifEmail(poster.getEmail(), jobPosting);
-//
-//
-//    }
 
     private void onJobPosted(String employerId, JobPosting jobPosting) throws Exception {
         Employer poster = employerRepository.findById(employerId)

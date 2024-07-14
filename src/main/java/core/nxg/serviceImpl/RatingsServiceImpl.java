@@ -31,7 +31,7 @@ public class RatingsServiceImpl implements RatingsService {
 
 @Override
 public RatingsDto createRatings(RatingsDto ratingsDto) {
-    Employer employer = employerRepository.findById(String.valueOf(ratingsDto.getEmployerID()))
+    Employer employer = employerRepository.findById(ratingsDto.getEmployerID())
             .orElseThrow(() -> new NotFoundException("Employer with id " + ratingsDto.getEmployerID()+ " not found"));
 
     Ratings ratings = new Ratings();
@@ -62,8 +62,8 @@ private void notify(String ratingsID, Employer employer, User sender){
 
 
     @Override
-    public List<RatingsDto> getRatingsForEmployer(Long Id) {
-        Employer employer = employerRepository.findById(String.valueOf(Id))
+    public List<RatingsDto> getRatingsForEmployer(String Id) {
+        Employer employer = employerRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Employer with id " + Id + " not found"));
 
         List<Ratings> ratingsForEmployer = ratingsRepository.findAllByEmployer(employer);
@@ -79,7 +79,7 @@ private void notify(String ratingsID, Employer employer, User sender){
 
 
     @Override
-    public RatingsDto getRatingsById(Long Id) {
+    public RatingsDto getRatingsById(String Id) {
         Ratings ratings = ratingsRepository.findById(String.valueOf(Id))
                 .orElseThrow(() -> new NotFoundException("Ratings with ID " + Id + " not found"));
         return mapToDto(ratings);
@@ -95,8 +95,8 @@ private void notify(String ratingsID, Employer employer, User sender){
 //    }
 
     @Override
-    public void deleteRatings(Long ratingsId) {
-        ratingsRepository.findById(String.valueOf(ratingsId)).ifPresent(ratingsRepository::delete);
+    public void deleteRatings(String ratingsId) {
+        ratingsRepository.findById(ratingsId).ifPresent(ratingsRepository::delete);
     }
 
     private RatingsDto mapToDto(Ratings ratings) {

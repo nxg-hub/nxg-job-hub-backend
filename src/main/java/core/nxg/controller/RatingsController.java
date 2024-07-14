@@ -35,7 +35,7 @@ public ResponseEntity<RatingsDto> createRatings( @RequestBody RatingsDto ratings
 
 
     @GetMapping("/all-{Id}")
-    public ResponseEntity<List<RatingsDto>> getAllRatings(@PathVariable Long Id) {
+    public ResponseEntity<List<RatingsDto>> getAllRatings(@PathVariable String Id) {
         List<RatingsDto> ratings = ratingsService.getRatingsForEmployer(Id);
         return ResponseEntity.ok(ratings);
     }
@@ -44,7 +44,7 @@ public ResponseEntity<RatingsDto> createRatings( @RequestBody RatingsDto ratings
 
 
     @DeleteMapping("/{ratingsId}")
-    public ResponseEntity<Void> deleteRatings(@PathVariable Long ratingsId) {
+    public ResponseEntity<Void> deleteRatings(@PathVariable String ratingsId) {
         ratingsService.deleteRatings(ratingsId);
         return ResponseEntity.noContent().build();
     }

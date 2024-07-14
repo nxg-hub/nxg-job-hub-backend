@@ -8,11 +8,11 @@ import java.util.List;
 public interface RatingsService {
     RatingsDto createRatings(RatingsDto ratingsDto);
 
-    List<RatingsDto> getRatingsForEmployer(Long employerId);
+    List<RatingsDto> getRatingsForEmployer(String employerId);
 
-    RatingsDto getRatingsById(Long Id);
+    RatingsDto getRatingsById(String Id);
 
-    void deleteRatings(Long ratingsId);
+    void deleteRatings(String ratingsId);
 
 //    List<RatingsDto> getRatingsForEmployer(Long employerId);
 //
