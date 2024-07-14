@@ -1,5 +1,6 @@
 package core.nxg.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.subscription.enums.JobStatus;
 
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -30,8 +32,14 @@ public class JobPosting {
     private String company_bio;
     private String requirements;
     private String job_type;
+    private String employer_name;
+    private String employer_profile_pic;
 
     private LocalDate deadline;
+
+    @JsonIgnore
+    @DBRef
+    private Employer employer;
 
     @Setter
     private LocalDateTime createdAt = LocalDateTime.now();

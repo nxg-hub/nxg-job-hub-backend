@@ -173,6 +173,8 @@ public class JobPostingServiceImpl implements JobPostingService {
 
         jobPosting.setEmployerID(String.valueOf(optionalEmployer.get().getEmployerID()));
         jobPosting.setJob_description(jobPostingDto.getJob_description());
+        jobPosting.setEmployer_name(jobPosting.getEmployer().getCompanyName());
+        jobPosting.setEmployer_profile_pic(jobPosting.getEmployer().getUser().getProfilePicture());
         jobPosting.setJob_title(jobPostingDto.getJob_title());
         jobPosting.setJob_type(jobPostingDto.getJob_type());
         jobPosting.setJob_location(jobPostingDto.getJob_location());

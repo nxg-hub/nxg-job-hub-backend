@@ -23,6 +23,8 @@ public class JobPostingDto {
     private LocalDate deadline;
     private LocalDateTime createdAt;
     private String requirements;
+    private String employer_name;
+    private String employer_profile_pic;
     private String job_location;
     private List<String> tags;
 
