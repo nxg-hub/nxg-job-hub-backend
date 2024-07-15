@@ -287,15 +287,18 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-    public void sendEmailAfterApplied(String employerEmail, String applicantEmail) throws MessagingException, UnsupportedEncodingException {
+    public void sendEmailAfterApplied(String employerEmail, String applicantEmail, JobPosting jobPosting) throws MessagingException, UnsupportedEncodingException {
 
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         String firstNameEmpl = userRepository.findByEmail(employerEmail).get().getFirstName();
         String firstNameAppl = userRepository.findByEmail(applicantEmail).get().getFirstName();
-
+        // Fetch the job description directly from the provided JobPosting object
+        String jobDescription = jobPosting.getJob_description();
+        System.out.println(jobDescription);
         String content = JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameEmpl);
+        content = content.replace("[[job_description]]","<strong>" + jobDescription + "</strong>");
 
 
 

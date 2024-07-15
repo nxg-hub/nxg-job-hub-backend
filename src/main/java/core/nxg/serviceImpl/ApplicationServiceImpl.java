@@ -50,6 +50,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
     private PushNotifications notificationService;
     @Autowired
     private EmployerRepository employerRepository;
@@ -99,6 +100,11 @@ public class ApplicationServiceImpl implements ApplicationService  {
         if (job.isEmpty()){
              throw new NotFoundException("Job posting with jobID cannot be found");
         }
+
+
+        if (!techTalentUser.get().isVerified()) {
+            throw new RuntimeException("Tech Talent is not verified. Please contact admin.");
+        }
      
             
         
@@ -130,7 +136,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
             notificationService.pushNotification(notificationDTO, SenderType.SYSTEM_PROCESS);
 
-            emailService.sendEmailAfterApplied(employeR.get().getEmail(), user.getEmail() );
+            emailService.sendEmailAfterApplied(employeR.get().getEmail(), user.getEmail(), job.get() );
 
             appRepo.save(newApplication);
         }
