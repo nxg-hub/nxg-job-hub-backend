@@ -4,6 +4,8 @@ package core.nxg.controller;
 import core.nxg.dto.inAppPasswordResetDTO;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.passwordResetDTO;
+import core.nxg.entity.User;
+import core.nxg.repository.UserRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.PasswordReset;
 import core.nxg.service.UserService;
@@ -33,6 +35,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import java.util.Optional;
 
 
 @Controller
@@ -54,6 +57,9 @@ public class AuthController {
 
     @Autowired
     private final UserService userService;
+
+    @Autowired
+    private final UserRepository userRepository;
 
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
@@ -97,6 +103,12 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) throws Exception{
         try {
             String token = userService.login(loginDTO);
+
+            // Retrieve user information after successful login
+            Optional<User> userOptional = userRepository.findByEmail(loginDTO.getEmail()); // Example method to find user
+
+            // Track login activity
+            userService.trackLoginActivity(userOptional.get()); // Assuming trackLoginActivity method is in the service layer
            return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer "
             + token)
             .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,
@@ -106,6 +118,25 @@ public class AuthController {
         } catch (Exception e) {
             logger.error("Error while logging in: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());}
+    }
+
+    @Operation(summary = "Logout a user with user id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully logged out user"
+                    ,
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid user id",
+                    content = @Content)})
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestParam String userId) {
+        userService.logout(userId);
+
+        // Retrieve user information after successful login
+        Optional<User> userOptional = userRepository.findById(userId); // Example method to
+        // Track login activity
+        userService.trackLogoutActivity(userOptional.get());
+        return ResponseEntity.ok("User loggedout successfully");
     }
 
 

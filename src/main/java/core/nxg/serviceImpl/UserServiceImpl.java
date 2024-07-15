@@ -3,8 +3,10 @@ package core.nxg.serviceImpl;
 import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.dto.LoginDTO;
 import core.nxg.dto.UserResponseDto;
+import core.nxg.entity.Session;
 import core.nxg.entity.VerificationCode;
 import core.nxg.exceptions.*;
+import core.nxg.repository.SessionRepository;
 import core.nxg.repository.VerificationCodeRepository;
 import core.nxg.service.EmailService;
 import core.nxg.service.UserService;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,8 @@ import core.nxg.entity.User;
 import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 
@@ -32,6 +37,9 @@ import org.modelmapper.ModelMapper;
 public class UserServiceImpl implements UserService {
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private final SessionRepository sessionRepository;
 
     @Autowired
     private final JwtService jwt;
@@ -49,8 +57,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final VerificationCodeRepository verificationRepo;
 
-
-
+    @Override
     public void uploadPhoto(String link, HttpServletRequest request) throws ExpiredJWTException {
 
         var loggedInUser = helper.extractLoggedInUser(request);
@@ -81,6 +88,7 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setDateOfBirth(userDTO.getDateOfBirth());
         user.setNationality(userDTO.getNationality());
+        user.setRegistrationDate(LocalDateTime.now());
         user.setProvider(OAuth2Provider.LOCAL);
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
@@ -172,10 +180,51 @@ public class UserServiceImpl implements UserService {
         if (!user.get().isEnabled()) {
             throw new UsernameNotFoundException( "Account is yet to be verified. Kindly confirm your email!");}
 
-         else {
-            return jwt.generateToken(user.get());
+        // Create or update session
+        String userId = user.get().getId();
+        var existingSession = sessionRepository.findByUserId(userId);
 
-         }
+        Session session;
+        if (existingSession.isPresent()) {
+            session = existingSession.get();
+            session.setActive(true);
+            session.setLoginTime(LocalDateTime.now());
+        } else {
+            session = new Session(null, userId);
+        }
+        sessionRepository.save(session);
+
+        return jwt.generateToken(user.get());
+    }
+
+    @Override
+    public void logout(String userId) {
+            Optional<Session> optionalSession = sessionRepository.findByUserId(userId);
+            if (optionalSession.isPresent()) {
+                Session session = optionalSession.get();
+                session.setActive(false); // Set isActive to false for logout
+                sessionRepository.save(session);
+            }else {
+                throw new UserNotFoundException("User not found or logged in!");
+            }
+    }
+
+    @Override
+    public void trackLoginActivity(User user) {
+        user.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    @Override
+    public void trackLogoutActivity(User user) {
+        if (user.getLastLoginTime() != null) {
+            LocalDateTime logoutTime = LocalDateTime.now();
+            Duration sessionDuration = Duration.between(user.getLastLoginTime(), logoutTime);
+
+            // Update timeOnPlatform with the duration of this session
+            user.setTimeOnPlatform(user.getTimeOnPlatform() + sessionDuration.toSeconds());
+            userRepository.save(user);
+        }
     }
 
     @Override

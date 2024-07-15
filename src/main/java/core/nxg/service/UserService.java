@@ -14,13 +14,18 @@ import java.util.Optional;
 @Service
 public interface UserService {
 
-    public void uploadPhoto(String link, HttpServletRequest request) throws ExpiredJWTException;
+    void uploadPhoto(String link, HttpServletRequest request) throws ExpiredJWTException;
     String createUser(UserDTO userDto, String siteURL) throws Exception;
     User saveUser(User user);
 
     String generateOAuthPassword();
 
 
+    void logout(String userId);
+
+    void trackLoginActivity(User user);
+
+    void trackLogoutActivity(User user);
 
     UserResponseDto getUserById(String id) throws Exception;
     String login(LoginDTO loginDTO) throws Exception;

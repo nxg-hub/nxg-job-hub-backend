@@ -3,7 +3,6 @@ package core.nxg.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.nxg.configs.oauth2.OAuth2Provider;
 import core.nxg.enums.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import org.springframework.data.annotation.Id;
@@ -15,8 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -62,6 +61,13 @@ public class User implements UserDetails, OAuth2User {
     private UserType userType;
 
 
+    private LocalDateTime registrationDate;
+
+    private LocalDateTime lastLoginTime;
+
+    private double timeOnPlatform;
+
+
     @JsonIgnore
     @DBRef
     private TechTalentAgent techTalentAgent;
@@ -76,10 +82,6 @@ public class User implements UserDetails, OAuth2User {
     @JsonIgnore
     @DBRef
     private Employer employer;
-
-
-
-
 
     @Transient
     private Map<String, Object> attributes;
@@ -107,8 +109,6 @@ public class User implements UserDetails, OAuth2User {
     public String getPassword(){
         return password;
     }
-
-
 
     @Override
     public boolean isAccountNonExpired() {
