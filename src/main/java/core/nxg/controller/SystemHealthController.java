@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -49,5 +50,11 @@ public class SystemHealthController {
     @GetMapping("/metrics")
     public ResponseEntity<Map<String, Object>> getSystemHealthMetrics() {
         return ResponseEntity.ok(systemHealthService.getSystemHealthMetrics());
+    }
+
+    @GetMapping("/users/countNewUsersByMonthAndYear")
+    public ResponseEntity<Long> getUserCountByMonth(@RequestParam int year, @RequestParam int month) {
+        long userCount = systemHealthService.countUsersByMonth(year, month);
+        return ResponseEntity.ok(userCount);
     }
 }

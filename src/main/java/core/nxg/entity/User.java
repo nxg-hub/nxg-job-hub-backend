@@ -67,6 +67,8 @@ public class User implements UserDetails, OAuth2User {
 
     private double timeOnPlatform;
 
+    private LocalDate monthJoined;
+
 
     @JsonIgnore
     @DBRef

@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +41,10 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     @Query(value = "{}", fields = "{ 'timeOnPlatform' : 1 }" , count = true)
     List<User> findAllUsersForAverageTimeCalculation();
-}
+
+        @Query(value = "{ 'monthJoined' : { $gte: ?0, $lt: ?1 } }", count = true)
+        long countUsersByMonth(LocalDate startOfMonth, LocalDate startOfNextMonth);
+    }
+
 
 

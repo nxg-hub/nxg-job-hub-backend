@@ -7,6 +7,7 @@ import core.nxg.service.SystemHealthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -84,5 +85,12 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         metrics.put("averageTimeOnPlatform", getAverageTimeOnPlatform() + "Seconds");
         metrics.put("activeNow", getActiveNow());
         return metrics;
+    }
+
+    @Override
+    public long countUsersByMonth(int year, int month) {
+        LocalDate startOfMonth = LocalDate.of(year, month, 1);
+        LocalDate startOfNextMonth = startOfMonth.plusMonths(1);
+        return userRepository.countUsersByMonth(startOfMonth, startOfNextMonth);
     }
 }

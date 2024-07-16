@@ -27,6 +27,7 @@ import core.nxg.repository.UserRepository;
 //import java.util.List;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService {
         user.setDateOfBirth(userDTO.getDateOfBirth());
         user.setNationality(userDTO.getNationality());
         user.setRegistrationDate(LocalDateTime.now());
+        user.setMonthJoined(LocalDate.now());
         user.setProvider(OAuth2Provider.LOCAL);
         user.setPassword(helper.encodePassword(userDTO.getPassword()));
 
