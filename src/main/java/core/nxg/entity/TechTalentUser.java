@@ -48,10 +48,7 @@ public class TechTalentUser{
     
     private List<String> skills ;
 
-//    ToOne(orphanRemoval = true, cascade = CascadeType.REMOVE)
-//    @JoinColumn(name = "user_id")
     @JsonIgnore
-    @DBRef
     private User user;
 
     private String resume;
@@ -69,14 +66,5 @@ public class TechTalentUser{
     private String portfolioLink;
     private String jobInterest;
     private boolean isVerified;
-
-   // private boolean isVerified;
-
-
-//     public void addSkill(Skill<String> skill) {
-//        skills.add(skill);
-//        skill.setTechTalentUser(this);
-//    }
-
     
 }

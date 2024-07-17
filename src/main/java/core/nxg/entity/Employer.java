@@ -34,10 +34,7 @@ public class Employer {
 
     @Id
     private String employerID;
-
-//    @Column(name="email")
     private String email;
-
     private String companyName;
     private String companyDescription;
     private String position;
@@ -50,8 +47,7 @@ public class Employer {
 
     private String jobBoard;
     
-//    ToOne
-//    @JoinColumn(name = "user_id")
+
     @JsonIgnore
     private User user;
 
