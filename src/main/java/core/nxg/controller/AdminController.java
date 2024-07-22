@@ -255,7 +255,7 @@ public class AdminController {
         return ResponseEntity.ok(approvalHistory);
     }
 
-    @PostMapping("/{employerId}/reject-verification")
+    @PostMapping("/{employerId}/reject-employer-verification")
     public ResponseEntity<Object> rejectEmployerVerification(
             @PathVariable String employerId,
             @RequestBody Map<String, String> requestBody,
@@ -273,7 +273,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/{techId}/reject-verification")
+    @PostMapping("/{techId}/reject-techTalent-verification")
     public ResponseEntity<Object> rejectTechTalentVerification(
             @PathVariable String techId,
             @RequestBody Map<String, String> requestBody,
