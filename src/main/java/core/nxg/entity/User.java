@@ -40,7 +40,7 @@ public class User implements UserDetails, OAuth2User {
 
     private OAuth2Provider provider;
 
-    private String providerId;
+    private long providerId;
 
     private String phoneNumber;
 

@@ -7,6 +7,7 @@ public enum NotificationType {
     SHARE,
     JOB_POST,
     JOB_APPLICATION,
+    APPLICATION_ACCEPTED,
     FOLLOW,
     REACTION,
 

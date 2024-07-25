@@ -185,28 +185,28 @@ public class SubscriptionService {
 
     private Map<String, Object> setPlan(PlanType planType) throws Exception{
         double amount;  /* * * *  AMOUNT IS BEING HARDCODED AT THE BACKEND * * *
-                           *** #9K for PLATINUM ***
-                           *** #7K for GOLD ***
-                           *** #2.5K for SILVER *** * * * */
+                           *** #90K for PLATINUM ***
+                           *** #70K for GOLD ***
+                           *** #25K for SILVER *** * * * */
         String name;
         String interval;
         String description;
 
         switch (planType) {
             case PLATINUM:
-                amount = 900000;
+                amount = 9000000;
                 name = "Platinum";
                 interval = planType.getInterval();
                 description = "Platinum Subscription Plan";
                 break;
             case GOLD:
-                amount = 700000;
+                amount = 7000000;
                 name = planType.getInterval();
                 interval =
                 description = "Gold Subscription Plan";
                 break;
             case SILVER:
-                amount = 250000;
+                amount = 2500000;
                 name = "Silver";
                 interval = planType.getInterval();
                 description = "Silver Subscription Plan";

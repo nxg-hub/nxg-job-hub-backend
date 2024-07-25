@@ -1,12 +1,8 @@
 package core.nxg.controller;
 
-import core.nxg.dto.AdminJobPostingDto;
-import core.nxg.dto.JobPostingDto;
-import core.nxg.dto.LoginDTO;
-import core.nxg.dto.UserDTO;
-import core.nxg.entity.EmployerApprovalHistory;
-import core.nxg.entity.JobPosting;
-import core.nxg.entity.TechTalentApprovalHistory;
+import core.nxg.dto.*;
+import core.nxg.entity.*;
+import core.nxg.service.ApplicationService;
 import core.nxg.service.UserService;
 import core.nxg.serviceImpl.AdminServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +22,7 @@ import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,6 +37,8 @@ public class AdminController {
 
     @Autowired
     private final UserService userService;
+
+    private final ApplicationService applicationService;
 
     @GetMapping("/{userType}")
     public ResponseEntity<Object> getUsersByType(
@@ -301,5 +301,46 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/job-postings/{jobPostingId}/get-all-applicants-for-a-job")
+    public ResponseEntity<List<Application>> getApplicantsForJob(@PathVariable String jobPostingId, Pageable pageable) throws Exception {
+        List<Application> applicants = adminService.getAllApplicantsForJob(jobPostingId, pageable);
+        return ResponseEntity.ok(applicants);
+    }
+
+    @PostMapping("/{applicationId}/review-applicant/accept")
+    public ResponseEntity<String> acceptApplication(
+            @PathVariable String applicationId,
+            HttpServletRequest request) {
+        try {
+            applicationService.acceptApplication(applicationId, request);
+            return ResponseEntity.ok("Application accepted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{applicationId}/review-applicant/reject")
+    public ResponseEntity<String> rejectApplication(
+            @PathVariable String applicationId,
+            HttpServletRequest request) {
+        try {
+            applicationService.rejectApplication(applicationId, request);
+            return ResponseEntity.ok("Application rejected successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/job-application-approval-history/all")
+    public ResponseEntity<Page<JobApplicationHistory>> getAllApprovalHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<JobApplicationHistory> history = adminService.getAllApprovalHistory(pageable);
+        return ResponseEntity.ok(history);
+    }
+
 
 }

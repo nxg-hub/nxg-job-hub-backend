@@ -27,7 +27,5 @@ public class Application {
 
     private User applicant;
 
-
-
     private JobPosting jobPosting;
 }

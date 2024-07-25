@@ -13,6 +13,10 @@ public interface ApplicationService {
 
     void saveJob(HttpServletRequest request, String jobPostingId) throws Exception;
 
+    void acceptApplication(String applicationId, HttpServletRequest request) throws Exception;
+
+    void rejectApplication(String applicationId, HttpServletRequest request) throws Exception;
+
     Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws Exception;
 
     Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception;

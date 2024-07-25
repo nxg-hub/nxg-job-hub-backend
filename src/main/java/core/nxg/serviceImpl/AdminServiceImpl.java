@@ -7,9 +7,11 @@ import core.nxg.entity.*;
 import core.nxg.enums.ApprovalType;
 import core.nxg.enums.Roles;
 import core.nxg.enums.UserType;
+import core.nxg.exceptions.NotFoundException;
 import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.repository.*;
 import core.nxg.service.AdminService;
+import core.nxg.service.ApplicationService;
 import core.nxg.subscription.enums.JobStatus;
 import core.nxg.subscription.repository.SubscribeRepository;
 import core.nxg.subscription.repository.TransactionRepository;
@@ -27,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 
@@ -52,8 +55,13 @@ public class AdminServiceImpl implements AdminService {
     private final TechTalentServiceImpl<?> techTalentService;
     @Autowired
     private final EmployerServiceImpl employerService;
+
+    private final ApplicationService applicationService;
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper mapper;
 
     private final EmployerRepository employerRepository;
 
@@ -66,6 +74,10 @@ public class AdminServiceImpl implements AdminService {
     private static final String INVALID_HEADER_RESPONSE = "Header is Empty or Invalid. Please retry with a valid one or contact the support ";
     @Autowired
     private TechTalentRepository techTalentRepository;
+    @Autowired
+    private ApplicationRepository applicationRepository;
+    @Autowired
+    private JobApplicationHistoryRepository jobApplicationHistoryRepository;
 
     @Override
     public Object getAllTransactions(Pageable pageable, HttpServletRequest request) {
@@ -450,6 +462,23 @@ public class AdminServiceImpl implements AdminService {
         }
         return Page.empty();
     }
+
+    @Override
+    public List<Application> getAllApplicantsForJob(String jobPostingId, Pageable pageable) throws Exception {
+        JobPosting jobPosting = jobPostingRepository.findById(jobPostingId)
+                .orElseThrow(() -> new NotFoundException("Job posting not found!"));
+
+        return applicationRepository.findByJobPosting(jobPosting, pageable)
+                .orElseThrow(() -> new NotFoundException("Applications were not found!"));
+    }
+
+    @Override
+    public Page<JobApplicationHistory> getAllApprovalHistory(Pageable pageable) {
+        return jobApplicationHistoryRepository.findAll(pageable);
+    }
+
+
+
 
 }
 

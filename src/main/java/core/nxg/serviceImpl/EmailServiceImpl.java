@@ -18,23 +18,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import java.time.LocalTime;
-import java.util.Date;
-
+import java.util.List;
 import java.util.Optional;
 
 import static core.nxg.utils.constants.EmailConstant.*;
@@ -296,7 +289,6 @@ public class EmailServiceImpl implements EmailService {
         String firstNameAppl = userRepository.findByEmail(applicantEmail).get().getFirstName();
         // Fetch the job description directly from the provided JobPosting object
         String jobDescription = jobPosting.getJob_description();
-        System.out.println(jobDescription);
         String content = JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameEmpl);
         content = content.replace("[[job_description]]","<strong>" + jobDescription + "</strong>");
 
@@ -314,6 +306,102 @@ public class EmailServiceImpl implements EmailService {
 
 
 }
+
+
+//    public void sendAcceptanceEmail(String employerEmail, String applicantEmail, List<String> adminEmails, JobPosting jobPosting) throws MessagingException, UnsupportedEncodingException {
+//
+//        MimeMessage message = mailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+//        String firstNameEmpl = userRepository.findByEmail(employerEmail).get().getFirstName();
+//        String firstNameAppl = userRepository.findByEmail(applicantEmail).get().getFirstName();
+//        // Fetch the job description directly from the provided JobPosting object
+//        String jobDescription = jobPosting.getJob_description();
+//        String content = EMPLOYER_ACCEPT_JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameEmpl);
+//        content = content.replace("[[job_description]]", "<strong>" + jobDescription + "</strong>");
+//
+//        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + " Application Notification");
+//        helper.setTo(applicantEmail);
+//        helper.setSubject("You have a new Job application Approval " + firstNameAppl);
+//        helper.setText(content, true);
+//        helper.addInline("nxgLogo", nxgLogo);
+//
+//        // Send email to each admin
+//        for (String adminEmail : adminEmails) {
+//            helper.addBcc(adminEmail);
+//            helper.addBcc(employerEmail);
+//        }
+//
+//        mailSender.send(message);
+//    }
+
+    public void sendAcceptanceEmail(String employerEmail, String applicantEmail, List<String> adminEmails, JobPosting jobPosting) throws MessagingException, UnsupportedEncodingException {
+
+        // Create and send email to the employer
+        MimeMessage employerMessage = mailSender.createMimeMessage();
+        MimeMessageHelper employerHelper = new MimeMessageHelper(employerMessage, true, "UTF-8");
+        String firstNameEmpl = userRepository.findByEmail(employerEmail).get().getFirstName();
+        // Fetch the job description directly from the provided JobPosting object
+        String employerContent = EMPLOYER_ACCEPT_JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameEmpl);
+        employerContent = employerContent.replace("[[job_description]]", "<strong>" + jobPosting.getJob_description() + "</strong>");
+
+        employerHelper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + " Application Notification");
+        employerHelper.setTo(employerEmail);
+        employerHelper.setSubject("A tech talent has been approved for your job posting");
+        employerHelper.setText(employerContent, true);
+        employerHelper.addInline("nxgLogo", nxgLogo);
+
+        // Add BCC to all admins for employer's email
+        for (String adminEmail : adminEmails) {
+            employerHelper.addBcc(adminEmail);
+        }
+
+        mailSender.send(employerMessage);
+
+        // Create and send email to the tech talent
+        MimeMessage techTalentMessage = mailSender.createMimeMessage();
+        MimeMessageHelper techTalentHelper = new MimeMessageHelper(techTalentMessage, true, "UTF-8");
+        String firstNameAppl = userRepository.findByEmail(applicantEmail).get().getFirstName();
+        String techTalentContent = TALENT_ACCEPT_JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameAppl);
+        techTalentContent = techTalentContent.replace("[[job_description]]", "<strong>" + jobPosting.getJob_description() + "</strong>");
+
+        techTalentHelper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + " Application Notification");
+        techTalentHelper.setTo(applicantEmail);
+        techTalentHelper.setSubject("Congratulations, your application has been viewed and profiled!");
+        techTalentHelper.setText(techTalentContent, true);
+        techTalentHelper.addInline("nxgLogo", nxgLogo);
+
+        mailSender.send(techTalentMessage);
+    }
+
+
+    public void sendRejectionEmail(String applicantEmail, List<String> adminEmails, JobPosting jobPosting) throws MessagingException, UnsupportedEncodingException {
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        String firstNameAppl = userRepository.findByEmail(applicantEmail).get().getFirstName();
+
+        // Fetch the job description directly from the provided JobPosting object
+        String jobDescription = jobPosting.getJob_description();
+        System.out.println(jobDescription);
+
+        String content = REJECT_JOB_APPLICATION_EMAIL_CONTENT.replace("[[name]]", firstNameAppl);
+        content = content.replace("[[job_description]]", "<strong>" + jobDescription + "</strong>");
+
+        helper.setFrom(GENERAL_FROM_ADDRESS, GENERAL_FROM_NAME + " Application Notification");
+        helper.setTo(applicantEmail);
+
+        // Send email to each admin
+        for (String adminEmail : adminEmails) {
+            helper.addBcc(adminEmail);
+        }
+
+        helper.setSubject("Your Job Application Status: Notification");
+
+        helper.setText(content, true);
+        helper.addInline("nxgLogo", nxgLogo);
+
+        mailSender.send(message);
+    }
 
 
 }

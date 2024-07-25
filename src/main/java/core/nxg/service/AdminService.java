@@ -1,13 +1,13 @@
 package core.nxg.service;
 
 import core.nxg.dto.*;
-import core.nxg.entity.EmployerApprovalHistory;
-import core.nxg.entity.JobPosting;
-import core.nxg.entity.TechTalentApprovalHistory;
-import core.nxg.entity.User;
+import core.nxg.entity.*;
+import core.nxg.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface AdminService  {
     Object getTransactionById(String transactionId, HttpServletRequest request);
@@ -51,4 +51,8 @@ public interface AdminService  {
     Page<TechTalentApprovalHistory> getTechTalentApprovalHistory(int page, int size, HttpServletRequest request);
 
     Page<EmployerApprovalHistory> getEmployerApprovalHistory(int page, int size, HttpServletRequest request);
+
+    List<Application> getAllApplicantsForJob(String jobPostingId, Pageable pageable) throws Exception;
+
+    Page<JobApplicationHistory> getAllApprovalHistory(Pageable pageable);
 }

@@ -44,6 +44,8 @@ public interface UserRepository extends MongoRepository<User, String> {
 
         @Query(value = "{ 'monthJoined' : { $gte: ?0, $lt: ?1 } }", count = true)
         long countUsersByMonth(LocalDate startOfMonth, LocalDate startOfNextMonth);
+
+    List<User> findByRolesAuthority(String authority);
     }
 
 

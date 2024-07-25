@@ -91,7 +91,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user1.setProfilePicture(user.getProfilePicture());
             user1.setGender(user.getGender());
             user1.setProvider(user.getProvider());
-//            user1.setProviderId((long) providerPosition);
+            user1.setProviderId( providerPosition);
             user1.setPhoneNumber(user.getPhoneNumber());
             user1.setNationality(user.getNationality());
             user1.setDateOfBirth(user.getDateOfBirth());
