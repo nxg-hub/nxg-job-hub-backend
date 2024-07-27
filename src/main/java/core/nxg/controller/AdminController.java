@@ -160,6 +160,25 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+
+    @PostMapping("/users/{userId}/reactivate/remove-suspension")
+    public ResponseEntity<Object> ReActivateUser(
+            @PathVariable String userId,
+            @RequestBody Map<String, String> requestBody,
+            HttpServletRequest request) {
+        String reaActivationReason = requestBody.get("reasonForProfileReactivation");
+        try {
+            adminService.ReactivateUser(userId, reaActivationReason, request);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User reactivated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
+
     @PostMapping("/create-admin")
     public ResponseEntity<?> createAdmin(@NonNull @RequestBody UserDTO dto, HttpServletRequest request) {
 

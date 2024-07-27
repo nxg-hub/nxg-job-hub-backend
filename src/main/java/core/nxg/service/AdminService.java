@@ -16,6 +16,8 @@ public interface AdminService  {
     Object getAllTransactions(Pageable pageable, HttpServletRequest request);
     Object getSubscriptions(Pageable pageable, HttpServletRequest request);
 
+    void ReactivateUser(String userId, String reasonForProfileSuspension, HttpServletRequest request);
+
     Page<UserResponseDto> getAllUsers(Pageable pageable) ;
 
 

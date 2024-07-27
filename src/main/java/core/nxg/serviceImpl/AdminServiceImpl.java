@@ -237,6 +237,51 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void ReactivateUser(String userId, String reasonForProfileReactivation, HttpServletRequest request) {
+
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (validateAdminRequest(request)) {
+            var user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User with ID not found"));
+            user.setEnabled(true);
+            userRepository.save(user);
+
+            if (user.getUserType() == UserType.TECHTALENT) {
+                TechTalentUser techTalentUser = user.getTechTalent();
+                TechTalentApprovalHistory techTalentApprovalHistory = new TechTalentApprovalHistory();
+                techTalentApprovalHistory.setTechTalentId(techTalentUser.getTechId());
+                techTalentApprovalHistory.setApprovalType(ApprovalType.PROFILE_REACTIVATION);
+                techTalentApprovalHistory.setApprovalOfficerName(loggedInUser);
+                techTalentApprovalHistory.setTechTalentName(techTalentUser.getUser().getName());
+                techTalentApprovalHistory.setDateOfProfileSuspension(LocalDateTime.now());
+                techTalentApprovalHistory.setReasonForProfileSuspension(reasonForProfileReactivation);
+                techTalentApprovalHistory.setUserType(UserType.TECHTALENT);
+                techTalentApprovalHistoryRepository.save(techTalentApprovalHistory);
+
+            }
+            else {
+                if (user.getUserType() == UserType.EMPLOYER) {
+                    Employer employer = user.getEmployer();
+                    EmployerApprovalHistory employerApprovalHistory = new EmployerApprovalHistory();
+                    employerApprovalHistory.setEmployerId(employer.getEmployerID());
+                    employerApprovalHistory.setApprovalType(ApprovalType.PROFILE_REACTIVATION);
+                    employerApprovalHistory.setApprovalOfficerName(loggedInUser);
+                    employerApprovalHistory.setEmployerName(employer.getUser().getEmployer().getCompanyName());
+                    employerApprovalHistory.setDateOfProfileSuspension(LocalDateTime.now());
+                    employerApprovalHistory.setReasonForProfileSuspension(employerApprovalHistory.getReasonForJobSuspension());
+                    employerApprovalHistory.setUserType(UserType.EMPLOYER);
+                    employerApprovalHistoryRepository.save(employerApprovalHistory);
+
+                }
+            }
+
+
+        }else {
+            throw new SecurityException("Unauthorized request");
+        }
+    }
+
+    @Override
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
         Page<User> user = userRepository.findAll(pageable);
         return user.map(u -> modelMapper.map(u, UserResponseDto.class));
