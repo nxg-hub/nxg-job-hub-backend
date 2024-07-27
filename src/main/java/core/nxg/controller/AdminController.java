@@ -361,5 +361,14 @@ public class AdminController {
         return ResponseEntity.ok(history);
     }
 
+    @GetMapping("/job/{jobId}/suggested-applicants")
+    public ResponseEntity<List<Application>> getSuggestedApplicantsForAdmin(
+            @PathVariable String jobId,
+            @RequestParam(defaultValue = "70") int scoreThreshold) {
+        List<Application> applicants = applicationService.getSuggestedApplicants(jobId, scoreThreshold);
+
+        return new ResponseEntity<>(applicants, HttpStatus.OK);
+    }
+
 
 }

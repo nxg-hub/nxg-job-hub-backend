@@ -1,11 +1,14 @@
 package core.nxg.service;
 
+import core.nxg.entity.Application;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import core.nxg.dto.ApplicationDTO;
 import core.nxg.entity.SavedJobs;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 public interface ApplicationService {
 
@@ -22,6 +25,5 @@ public interface ApplicationService {
     Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception;
 
 
-
-
+    List<Application> getSuggestedApplicants(String jobId, int scoreThreshold);
 }

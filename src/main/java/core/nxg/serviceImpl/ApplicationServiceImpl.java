@@ -1,6 +1,7 @@
 package core.nxg.serviceImpl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -116,6 +117,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
         newApplication.setApplicationStatus(ApplicationStatus.PENDING);
         newApplication.setApplicant(user);
         newApplication.setTimestamp(LocalDateTime.now());
+        newApplication.calculateMatchingScore();
 
 
         var employeR = employerRepository.findById(job.get().getEmployerID());
@@ -268,6 +270,22 @@ public class ApplicationServiceImpl implements ApplicationService  {
         User user = helper.extractLoggedInUser(request);
         return savedJobRepo.findByUser(user, pageable);
 
+    }
+
+    @Override
+    public List<Application> getSuggestedApplicants(String jobId, int scoreThreshold) {
+        List<Application> applications = appRepo.findByJobPostingId(jobId);
+
+        List<Application> suggestedApplicants = new ArrayList<>();
+
+        for (Application application : applications) {
+            application.calculateMatchingScore();
+            if (application.getMatchingScore() >= scoreThreshold) {
+                suggestedApplicants.add(application);
+            }
+        }
+
+        return suggestedApplicants;
     }
 
 

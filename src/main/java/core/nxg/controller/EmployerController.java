@@ -1,12 +1,14 @@
 package core.nxg.controller;
 
 import core.nxg.dto.EmployerDto;
+import core.nxg.entity.Application;
 import core.nxg.entity.Employer;
 import core.nxg.exceptions.NotFoundException;
 import core.nxg.response.EmployerResponse;
 import core.nxg.response.EngagementForEmployer;
 import core.nxg.response.JobPostingResponse;
 import core.nxg.service.EmployerService;
+import core.nxg.serviceImpl.ApplicationServiceImpl;
 import core.nxg.serviceImpl.EmployerServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,6 +27,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,6 +38,7 @@ import java.util.Map;
 public class EmployerController {
 
     private final EmployerServiceImpl employerService;
+    private final ApplicationServiceImpl applicationService;
 
 //    @GetMapping("/verify")
 //    public ResponseEntity<String> verifyEmployer(HttpServletRequest request, @RequestParam("email") String email) {
@@ -177,6 +181,15 @@ public class EmployerController {
             log.error("Error while verifying employer: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/job/{jobId}/suggested-applicants")
+    public ResponseEntity<List<Application>> getSuggestedApplicants(
+            @PathVariable String jobId,
+            @RequestParam(defaultValue = "70") int scoreThreshold) {
+        List<Application> applicants = applicationService.getSuggestedApplicants(jobId, scoreThreshold);
+
+        return new ResponseEntity<>(applicants, HttpStatus.OK);
     }
 
 
