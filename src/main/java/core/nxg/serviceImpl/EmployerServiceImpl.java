@@ -112,6 +112,7 @@ public class EmployerServiceImpl implements EmployerService {
         employer.setZipCode(employerDto.getZipCode());
         employer.setCompanyZipCode(employerDto.getCompanyZipCode());
         employer.setVacancies(employerDto.getVacancies());
+        employer.getUser().setProfileVerified(employer.getUser().isProfileVerified());
         loggedInUser.setRoles(Roles.USER);
 
         loggedInUser.setUserType(UserType.EMPLOYER);
@@ -121,6 +122,8 @@ public class EmployerServiceImpl implements EmployerService {
         employerRepository.save(employer);
         loggedInUser.setEmployer(employer);
         userRepository.save(loggedInUser);
+
+
 
         // Create a default subscription
         Subscriber defaultSubscription = new Subscriber();
