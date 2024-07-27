@@ -184,13 +184,17 @@ public class EmployerController {
     }
 
     @GetMapping("/job/{jobId}/suggested-applicants")
-    public ResponseEntity<List<Application>> getSuggestedApplicants(
+    public ResponseEntity<?> getSuggestedApplicants(
             @PathVariable String jobId,
             @RequestParam(defaultValue = "70") int scoreThreshold) {
-        List<Application> applicants = applicationService.getSuggestedApplicants(jobId, scoreThreshold);
-
-        return new ResponseEntity<>(applicants, HttpStatus.OK);
+        try {
+            List<Application> applicants = applicationService.getSuggestedApplicants(jobId, scoreThreshold);
+            return new ResponseEntity<>(applicants, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
+
 
 
 

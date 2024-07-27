@@ -274,6 +274,13 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
     @Override
     public List<Application> getSuggestedApplicants(String jobId, int scoreThreshold) {
+
+        Optional<JobPosting> jobPosting = jobRepo.findById(jobId);
+
+        if (jobPosting.isEmpty()) {
+            throw new IllegalArgumentException("Incorrect Job Id");
+        }
+
         List<Application> applications = appRepo.findByJobPostingJobID(jobId);
 
         List<Application> suggestedApplicants = new ArrayList<>();
