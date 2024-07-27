@@ -242,6 +242,7 @@ public class EmployerServiceImpl implements EmployerService {
         String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         employerRepository.findById(employerID).ifPresent(employer -> {
             employer.setVerified(true);
+            employer.getUser().setProfileVerified(employer.getUser().isProfileVerified());
             employer.setEmployerApprovingOfficer(loggedInUser);
             employer.setEmployerDateOfApproval(LocalDateTime.now());
             employerRepository.save(employer);

@@ -255,6 +255,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentRepository.findById(techTalentID).ifPresent(techTalentUser -> {
             String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
             techTalentUser.setVerified(true);
+            techTalentUser.getUser().setProfileVerified(techTalentUser.getUser().isProfileVerified());
             techTalentUser.setTechTalentApprovingOfficer(loggedInUser);
             techTalentUser.setTechTalentDateOfApproval(LocalDateTime.now());
             techTalentRepository.save(techTalentUser);

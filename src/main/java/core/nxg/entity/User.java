@@ -69,6 +69,8 @@ public class User implements UserDetails, OAuth2User {
 
     private LocalDate monthJoined;
 
+    private boolean isProfileVerified;
+
 
     @JsonIgnore
     @DBRef
@@ -134,9 +136,18 @@ public class User implements UserDetails, OAuth2User {
         return enabled;
     }
 
-    public boolean isPasswordGenerated() {
-        return passwordGenerated;
+    // Method to determine profile verification status
+    public boolean isProfileVerified() {
+        if (techTalent != null) {
+            return techTalent.isVerified();
+        } else if (employer != null) {
+            return employer.isVerified();
+        }
+        return false; // Default to false if neither entity is associated
     }
+
+    public boolean isPasswordGenerated() {
+        return passwordGenerated;}
 
 
 
