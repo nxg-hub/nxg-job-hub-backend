@@ -29,7 +29,6 @@ import core.nxg.exceptions.UserNotFoundException;
 import core.nxg.utils.Helper;
 
 import java.lang.reflect.Field;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     ApplicationService appService;
 
     private  final TechTalentApprovalHistoryRepository techTalentApprovalHistoryRepository;
-
+    @Autowired
+    private NewTalentUsersRepository newTalentUsersRepository;
 
 
     @Override
@@ -82,7 +82,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             throw new UserAlreadyExistException("An Agent account already exists!");
         }
 
-        Optional<TechTalentDTO> existingTechTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
+        Optional<TechTalentUser> existingTechTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
         if (existingTechTalentUser.isPresent())
             throw new UserAlreadyExistException("Techtalent account already exists!");
 
@@ -119,6 +119,14 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentRepository.save(techTalentUser);
         userRepo.save(loggedInUser);
 
+        NewTalentUsers newTalentUsers = new NewTalentUsers();
+        newTalentUsers.setEmail(loggedInUser.getEmail());
+        newTalentUsers.setTalentName(techTalentUser.getUser().getFirstName()+techTalentUser.getUser().getLastName());
+        newTalentUsers.setDateJoined(LocalDateTime.now());
+        newTalentUsers.setJobInterest(techTalentUser.getJobInterest());
+        newTalentUsers.setId(techTalentUser.getUser().getId());
+        newTalentUsersRepository.save(newTalentUsers);
+
         return "TechTalent User created successfully";
     }
 
@@ -126,7 +134,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 
     @Override
-    public TechTalentDTO getTechTalent(HttpServletRequest request) throws Exception{
+    public TechTalentUser getTechTalent(HttpServletRequest request) throws Exception{
         User loggedInUser = helper.extractLoggedInUser(request);
 
         return techTalentRepository.findByEmail(loggedInUser.getEmail())
@@ -232,11 +240,11 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     @Override
     public void addNewSkills(HttpServletRequest request, List<String> skills) throws ExpiredJWTException {
         User loggedInUser = helper.extractLoggedInUser(request);
-        Optional<TechTalentDTO> techTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
+        Optional<TechTalentUser> techTalentUser = techTalentRepository.findByEmail(loggedInUser.getEmail());
         if (techTalentUser.isPresent()){
-            techTalentUser.get().setSkills(skills);
-            ;
-            techTalentRepository.save(mapper.map(techTalentUser.get(), TechTalentUser.class));
+            TechTalentUser user = techTalentUser.get();
+            user.setSkills(skills);
+            techTalentRepository.save(user);
         }
     }
 
@@ -270,6 +278,16 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             techTalentApprovalHistoryRepository.save(techTalentApprovalHistory);
 
         });
+    }
+
+    @Override
+    public long countVerifiedTalents() {
+        return techTalentRepository.countByIsVerifiedTrue();
+    }
+
+    @Override
+    public long countNotVerifiedTalents() {
+        return techTalentRepository.countByIsVerifiedFalse();
     }
 
 

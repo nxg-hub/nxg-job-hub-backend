@@ -77,7 +77,7 @@ public class EmployerServiceImpl implements EmployerService {
             throw new UserAlreadyExistException("An Employer account already exists!");
         }
 
-        Optional<TechTalentDTO> talent_account = techTalentRepository.findByEmail(loggedInUserEmail); //confirm
+        Optional<TechTalentUser> talent_account = techTalentRepository.findByEmail(loggedInUserEmail); //confirm
         if (talent_account.isPresent()) {            // a tech talent account does not exist
             throw new UserAlreadyExistException("A TechTalent account already exists!");
         }
@@ -176,6 +176,7 @@ public class EmployerServiceImpl implements EmployerService {
         employerRepository.delete(employer);
     }
 
+
     public EngagementForEmployer getEngagements(String employerId, Pageable pageable) throws Exception {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new NotFoundException("Employer was not found!"));
@@ -257,6 +258,17 @@ public class EmployerServiceImpl implements EmployerService {
             employerApprovalHistoryRepository.save(employerApprovalHistory);
         });
     }
+
+    @Override
+    public long countVerifiedEmployers() {
+        return techTalentRepository.countByIsVerifiedTrue();
+    }
+
+    @Override
+    public long countNotVerifiedEmployers() {
+        return techTalentRepository.countByIsVerifiedFalse();
+    }
+
 
 
 

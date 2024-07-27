@@ -28,6 +28,9 @@ public interface EmployerService {
 
         void deleteEmployer(String employerId);
 
+    long countNotVerifiedEmployers();
+
+    long countVerifiedEmployers();
 }
 
 

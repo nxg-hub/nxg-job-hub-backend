@@ -96,9 +96,9 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
     @Operation(description = "Get logged-in techtalent user",
             summary = "Get logged-in techtalent user using the bearer token")
     @GetMapping("/get-user")
-    public ResponseEntity<TechTalentDTO> getLoggedInTalent(HttpServletRequest request){
+    public ResponseEntity<TechTalentUser> getLoggedInTalent(HttpServletRequest request){
         try {
-            TechTalentDTO response = techTalentService.getTechTalent(request);
+            TechTalentUser response = techTalentService.getTechTalent(request);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);        }

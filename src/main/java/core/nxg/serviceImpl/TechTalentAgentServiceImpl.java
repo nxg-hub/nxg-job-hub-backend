@@ -5,6 +5,7 @@ import core.nxg.dto.TechTalentAgentDto;
 import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.Employer;
 import core.nxg.entity.TechTalentAgent;
+import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.enums.UserType;
 import core.nxg.exceptions.AlreadyExistException;
@@ -62,7 +63,7 @@ public class TechTalentAgentServiceImpl implements TechTalentAgentService {
         }
 
 
-        Optional<TechTalentDTO> techtalent_account = techTalentRepository.findByEmail(loggedInUser.getEmail());
+        Optional<TechTalentUser> techtalent_account = techTalentRepository.findByEmail(loggedInUser.getEmail());
         if (techtalent_account.isPresent()) // techtalent account does not exist
             throw new UserAlreadyExistException("Tech talent account already exists!");
 

@@ -3,8 +3,10 @@ package core.nxg.controller;
 import core.nxg.dto.*;
 import core.nxg.entity.*;
 import core.nxg.service.ApplicationService;
+import core.nxg.service.EmployerService;
+import core.nxg.service.TechTalentService;
 import core.nxg.service.UserService;
-import core.nxg.serviceImpl.AdminServiceImpl;
+import core.nxg.serviceImpl.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +37,16 @@ public class AdminController {
     @Autowired
     private final AdminServiceImpl adminService;
 
-    @Autowired
-    private final UserService userService;
-
     private final ApplicationService applicationService;
+    @Autowired
+    private TalentManagementService talentManagementService;
+
+    @Autowired
+    private final TechTalentService<?> techTalentService;
+    @Autowired
+    private EmployerService employerService;
+    @Autowired
+    private EmployerManagementService employerManagementService;
 
     @GetMapping("/{userType}")
     public ResponseEntity<Object> getUsersByType(
@@ -373,6 +381,61 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/new-talents-in-the-one-past-week")
+    public ResponseEntity<Page<NewTalentUsers>> getNewTalents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<NewTalentUsers> newTalents = talentManagementService.getNewTalentsFromLastWeek(page, size);
+        return ResponseEntity.ok(newTalents);
+    }
+
+    @GetMapping("/not-verified-talents")
+    public ResponseEntity<Page<NotVerifiedTalents>> getNotVerifiedTalents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<NotVerifiedTalents> notVerifiedTalents = talentManagementService.getAllNotVerifiedTalents(page, size);
+        return ResponseEntity.ok(notVerifiedTalents);
+    }
+
+    @GetMapping("/new-employers-in-the-one-past-week")
+    public ResponseEntity<Page<NewEmployerUsers>> getNewEmployers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<NewEmployerUsers> newTalents = employerManagementService.getNewEmployersFromLastWeek(page, size);
+        return ResponseEntity.ok(newTalents);
+    }
+
+    @GetMapping("/not-verified-employers")
+    public ResponseEntity<Page<NotVerifiedEmployers>> getNotVerifiedEmployers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<NotVerifiedEmployers> notVerifiedTalents = employerManagementService.getAllNotVerifiedEmployers(page, size);
+        return ResponseEntity.ok(notVerifiedTalents);
+    }
+
+    @GetMapping("/count/verifiedTechTalent")
+    public ResponseEntity<Long> getVerifiedTalentsCount() {
+        long verifiedCount = techTalentService.countVerifiedTalents();
+        return ResponseEntity.ok(verifiedCount);
+    }
+
+    @GetMapping("/count/not-verifiedTechTalent")
+    public ResponseEntity<Long> getNotVerifiedTalentsCount() {
+        long notVerifiedCount = techTalentService.countNotVerifiedTalents();
+        return ResponseEntity.ok(notVerifiedCount);
+    }
+
+    @GetMapping("/count/verifiedEmployers")
+    public ResponseEntity<Long> getVerifiedEmployersCount() {
+        long verifiedCount = employerService.countVerifiedEmployers();
+        return ResponseEntity.ok(verifiedCount);
+    }
+
+    @GetMapping("/count/not-verifiedEmployers")
+    public ResponseEntity<Long> getNotVerifiedEmployersCount() {
+        long notVerifiedCount = employerService.countNotVerifiedEmployers();
+        return ResponseEntity.ok(notVerifiedCount);
+    }
 
 
 }
