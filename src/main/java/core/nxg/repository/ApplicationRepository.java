@@ -19,9 +19,9 @@ import org.springframework.stereotype.Repository;
 public interface ApplicationRepository extends MongoRepository<Application, String> {
     Page<Application> findByApplicant(User applicant, Pageable pageable) throws Exception;
     Optional<List<Application> >findByJobPosting(JobPosting jobPosting, Pageable pageable) throws Exception;
-    List<Application> findByJobPostingId(String jobPostingId);
+    List<Application> findByJobPostingJobID(String jobPostingId);
     Optional<List<Application>>findByApplicationStatus(ApplicationStatus applicationStatus, Pageable pageable);
-    Application findByApplicationId(Long applicationId);
+//    Application findByApplicationId(Long applicationId);
     // In your ApplicationRepository interface
 //    Page<Application> findByJob(JobPosting jobPosting, Pageable pageable);
 

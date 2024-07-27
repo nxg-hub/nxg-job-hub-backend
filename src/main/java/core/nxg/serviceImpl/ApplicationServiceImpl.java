@@ -274,7 +274,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
     @Override
     public List<Application> getSuggestedApplicants(String jobId, int scoreThreshold) {
-        List<Application> applications = appRepo.findByJobPostingId(jobId);
+        List<Application> applications = appRepo.findByJobPostingJobID(jobId);
 
         List<Application> suggestedApplicants = new ArrayList<>();
 
