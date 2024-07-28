@@ -71,6 +71,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
     @Override
     public String createTechTalent(TechTalentDTO techTalentDto, HttpServletRequest request) throws Exception {
         User loggedInUser = helper.extractLoggedInUser(request);
+        System.out.println(loggedInUser);
 
         Optional<EmployerResponse> employer_account= employerRepository.findByEmail(loggedInUser.getEmail());
         if (employer_account.isPresent()){            // an employer account does not exist
@@ -89,6 +90,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         TechTalentUser techTalentUser = new TechTalentUser();
 
 
+        techTalentUser.setTechId(loggedInUser.getId());
         techTalentUser.setEmail(loggedInUser.getEmail());
         techTalentUser.setBio(techTalentDto.getBio());
         techTalentUser.setSkills(techTalentDto.getSkills());
@@ -113,7 +115,9 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentUser.setBio(techTalentDto.getBio());
         techTalentUser.setPortfolioLink(techTalentDto.getPortfolioLink());
         techTalentUser.setJobInterest(techTalentDto.getJobInterest());
+
         loggedInUser.setUserType(UserType.TECHTALENT);
+        loggedInUser.setProfileVerified(loggedInUser.isProfileVerified());
         loggedInUser.setTechTalent(techTalentUser);
         techTalentUser.setUser(loggedInUser);
         techTalentRepository.save(techTalentUser);
@@ -263,7 +267,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         techTalentRepository.findById(techTalentID).ifPresent(techTalentUser -> {
             String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
             techTalentUser.setVerified(true);
-            techTalentUser.getUser().setProfileVerified(techTalentUser.getUser().isProfileVerified());
+            techTalentUser.getUser().setProfileVerified(true);
+            userRepo.save(techTalentUser.getUser());
             techTalentUser.setTechTalentApprovingOfficer(loggedInUser);
             techTalentUser.setTechTalentDateOfApproval(LocalDateTime.now());
             techTalentRepository.save(techTalentUser);

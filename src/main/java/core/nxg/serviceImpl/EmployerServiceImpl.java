@@ -63,6 +63,8 @@ public class EmployerServiceImpl implements EmployerService {
     private final EmployerApprovalHistoryRepository employerApprovalHistoryRepository;
 
     private final SubscribeRepository subscribeRepository;
+    @Autowired
+    private NewEmployerUsersRepository newEmployerUsersRepository;
 
 
     @Override
@@ -112,7 +114,7 @@ public class EmployerServiceImpl implements EmployerService {
         employer.setZipCode(employerDto.getZipCode());
         employer.setCompanyZipCode(employerDto.getCompanyZipCode());
         employer.setVacancies(employerDto.getVacancies());
-        employer.getUser().setProfileVerified(employer.getUser().isProfileVerified());
+        loggedInUser.setProfileVerified(loggedInUser.isProfileVerified());
         loggedInUser.setRoles(Roles.USER);
 
         loggedInUser.setUserType(UserType.EMPLOYER);
@@ -134,6 +136,14 @@ public class EmployerServiceImpl implements EmployerService {
         defaultSubscription.setSubscriptionStatus(SubscriptionStatus.ACTIVE); // initial status
         defaultSubscription.setUser(loggedInUser.getEmployer().getUser());
         subscribeRepository.save(defaultSubscription);
+
+        NewEmployerUsers newEmployerUsers = new NewEmployerUsers();
+        newEmployerUsers.setEmail(loggedInUser.getEmail());
+        newEmployerUsers.setEmployerName(employer.getUser().getFirstName()+employer.getUser().getLastName());
+        newEmployerUsers.setDateJoined(LocalDateTime.now());
+        newEmployerUsers.setIndustryType(employer.getIndustryType());
+        newEmployerUsers.setId(employer.getUser().getId());
+        newEmployerUsersRepository.save(newEmployerUsers);
         return "Employer created successfully!";
     }
 
@@ -246,7 +256,8 @@ public class EmployerServiceImpl implements EmployerService {
         String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
         employerRepository.findById(employerID).ifPresent(employer -> {
             employer.setVerified(true);
-            employer.getUser().setProfileVerified(employer.getUser().isProfileVerified());
+            employer.getUser().setProfileVerified(true);
+            userRepository.save(employer.getUser());
             employer.setEmployerApprovingOfficer(loggedInUser);
             employer.setEmployerDateOfApproval(LocalDateTime.now());
             employerRepository.save(employer);

@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @Slf4j
 @RequestMapping("/api/v1/tech-talent")
 
@@ -85,7 +85,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(techTalentService.createTechTalent( techTalentDTO,request));
         } catch (Exception e) {
-//            logger.error("Error creating TechTalentUser : {}", e.getMessage());
+            logger.error("Error creating TechTalentUser : {}", e.getMessage());
             logger.debug("Found error is", e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
