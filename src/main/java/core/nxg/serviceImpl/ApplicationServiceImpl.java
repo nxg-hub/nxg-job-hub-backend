@@ -241,13 +241,6 @@ public class ApplicationServiceImpl implements ApplicationService  {
         emailService.sendRejectionEmail(techTalentEmail,adminEmails, jobPosting);
     }
 
-
-
-
-
-
-
-
     @Override
     public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws NullPointerException{
         try{

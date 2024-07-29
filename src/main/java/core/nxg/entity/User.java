@@ -138,13 +138,7 @@ public class User implements UserDetails, OAuth2User {
 
     // Method to determine profile verification status
     public boolean isProfileVerified() {
-        if (techTalent != null) {
-            return techTalent.isVerified();
-        } else if (employer != null) {
-            return employer.isVerified();
-        }
-        return false; // Default to false if neither entity is associated
-    }
+    return isProfileVerified;}
 
     public boolean isPasswordGenerated() {
         return passwordGenerated;}
