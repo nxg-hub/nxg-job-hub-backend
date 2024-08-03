@@ -16,4 +16,6 @@ public interface EmployerRepository extends MongoRepository<Employer, String> {
     Optional<EmployerResponse> findByEmail(String email);
     Optional<EmployerDto> findByUser(User user);
     List<Employer> findByAccountCreationDateAfter(LocalDateTime date);
+    long countByVerifiedTrue();
+    long countByVerifiedFalse();
 }

@@ -153,8 +153,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
             throw new IllegalArgumentException("Tech ID is required");
         }
 
-        Long techTalentId = Long.valueOf(techId);
-        Optional<TechTalentUser> techTalentOptional = techTalentRepository.findById(String.valueOf(techTalentId));
+//        Long techTalentId = Long.valueOf(techId);
+        Optional<TechTalentUser> techTalentOptional = techTalentRepository.findById(techId);
 
         if (techTalentOptional.isEmpty()) {
             throw new NotFoundException("Tech Talent not found with ID: " + techId);
@@ -181,8 +181,8 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
 
     @Override
-    public void deleteTechTalentUser(Long ID){
-        TechTalentUser user = techTalentRepository.findById(String.valueOf(ID))
+    public void deleteTechTalentUser(String ID){
+        TechTalentUser user = techTalentRepository.findById(ID)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
         techTalentRepository.delete(user);
     }
@@ -287,12 +287,12 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
 
     @Override
     public long countVerifiedTalents() {
-        return techTalentRepository.countByIsVerifiedTrue();
+        return techTalentRepository.countByVerifiedTrue();
     }
 
     @Override
     public long countNotVerifiedTalents() {
-        return techTalentRepository.countByIsVerifiedFalse();
+        return techTalentRepository.countByVerifiedFalse();
     }
 
 

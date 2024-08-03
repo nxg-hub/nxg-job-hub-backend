@@ -21,6 +21,9 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class TechTalentDTO implements Serializable {
     private String techId;
     private List<String> skills;

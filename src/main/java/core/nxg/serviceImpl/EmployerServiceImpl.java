@@ -1,7 +1,6 @@
 package core.nxg.serviceImpl;
 
 import core.nxg.dto.EmployerDto;
-import core.nxg.dto.TechTalentDTO;
 import core.nxg.entity.*;
 import core.nxg.enums.ApplicationStatus;
 import core.nxg.enums.ApprovalType;
@@ -275,12 +274,12 @@ public class EmployerServiceImpl implements EmployerService {
 
     @Override
     public long countVerifiedEmployers() {
-        return techTalentRepository.countByIsVerifiedTrue();
+        return employerRepository.countByVerifiedTrue();
     }
 
     @Override
     public long countNotVerifiedEmployers() {
-        return techTalentRepository.countByIsVerifiedFalse();
+        return employerRepository.countByVerifiedFalse();
     }
 
 

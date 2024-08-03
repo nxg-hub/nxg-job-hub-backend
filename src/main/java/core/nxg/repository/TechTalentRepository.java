@@ -1,6 +1,5 @@
 package core.nxg.repository;
 import core.nxg.dto.TechTalentDTO;
-import core.nxg.dto.UserResponseDto;
 import core.nxg.entity.User;
 
 import java.time.LocalDateTime;
@@ -18,8 +17,8 @@ public interface TechTalentRepository extends MongoRepository<TechTalentUser, St
 Optional<TechTalentUser>findByEmail(String email);
  List<TechTalentUser> findByAccountCreationDateAfter(LocalDateTime date);
  Optional<TechTalentDTO> findByUser(User user);
- long countByIsVerifiedTrue();
- long countByIsVerifiedFalse();
+ long countByVerifiedTrue();
+ long countByVerifiedFalse();
 
 
 

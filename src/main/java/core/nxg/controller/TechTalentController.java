@@ -119,15 +119,15 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Tech Talent not found")
     })
-    @RequestMapping("/{techID}")
+    @PutMapping("/{techID}")
     public ResponseEntity<?> updateTechTalent (@PathVariable String techID, @RequestBody Map<Object,Object> fields) throws Exception {
         try {
             TechTalentUser techtalent = techTalentService.updateTechTalent(techID, fields);
 
             return ResponseEntity.ok(techtalent);
         }catch(Exception e){
-            log.error("Error updating:{}", e.getMessage());
-            return ResponseEntity.badRequest().body("You have made an invalid request!");
+            log.error("Error updating:{}", e.getMessage(),e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

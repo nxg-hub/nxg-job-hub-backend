@@ -16,7 +16,7 @@ public interface TechTalentService<T> {
 
     String createTechTalent(TechTalentDTO techTalentDto,HttpServletRequest request) throws Exception;
 
-    void  deleteTechTalentUser(Long techId) throws Exception;
+    void  deleteTechTalentUser(String techId) throws Exception;
     TechTalentUser getTechTalent(HttpServletRequest request)  throws Exception;
     TechTalentUser updateTechTalent(String techId, Map<Object, Object> fields) throws Exception;
     DashboardDTO getTechTalentDashboard(HttpServletRequest request, Pageable pageable) throws Exception;
