@@ -32,11 +32,11 @@ public interface AdminService  {
      void suspendJob(String jobId,String suspensionReason, HttpServletRequest request);
 
 
-    Page<User> getTalentUsers(int page, int size, HttpServletRequest request);
+    Page<TechTalentUserDTO> getTalentUsers(int page, int size, HttpServletRequest request);
 
     Page<User> getAgentUsers(int page, int size, HttpServletRequest request);
 
-    Page<User> getEmployerUsers(int page, int size, HttpServletRequest request);
+    Page<EmployerUserDTO> getEmployerUsers(int page, int size, HttpServletRequest request);
 
 
      Object createAdmin(UserDTO userDTO, HttpServletRequest request) throws Exception ;

@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +32,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -294,9 +297,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<User> getTalentUsers(int page, int size, HttpServletRequest request) {
+    public Page<TechTalentUserDTO> getTalentUsers(int page, int size, HttpServletRequest request) {
         if (validateAdminRequest(request)) {
-            return getUsersByType(UserType.TECHTALENT, page, size);
+            Page<User> users = getUsersByType(UserType.TECHTALENT, page, size);
+
+            // Create DTOs by mapping User and TechTalentUser
+            List<TechTalentUserDTO> techTalentUserDTOs = users.stream()
+                    .map(user -> new TechTalentUserDTO(user.getTechTalent(), user))
+                    .filter(dto -> dto.getTechTalentUser() != null) // Ensure TechTalentUser is not null
+                    .collect(Collectors.toList());
+
+            return new PageImpl<>(techTalentUserDTOs, PageRequest.of(page, size), users.getTotalElements());
         }
         return Page.empty();
     }
@@ -311,9 +322,17 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public Page<User> getEmployerUsers(int page, int size, HttpServletRequest request) {
+    public Page<EmployerUserDTO> getEmployerUsers(int page, int size, HttpServletRequest request) {
         if (validateAdminRequest(request)) {
-            return getUsersByType(UserType.EMPLOYER, page, size);
+            Page<User> users = getUsersByType(UserType.EMPLOYER, page, size);
+
+            // Create DTOs by mapping User and TechTalentUser
+            List<EmployerUserDTO> employerUserDTOS = users.stream()
+                    .map(user -> new EmployerUserDTO(user.getEmployer(), user))
+                    .filter(dto -> dto.getEmployer() != null) // Ensure TechTalentUser is not null
+                    .collect(Collectors.toList());
+
+            return new PageImpl<>(employerUserDTOS, PageRequest.of(page, size), users.getTotalElements());
         }
         return Page.empty();
     }
