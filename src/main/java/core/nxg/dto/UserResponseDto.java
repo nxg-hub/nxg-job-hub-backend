@@ -1,4 +1,5 @@
 package core.nxg.dto;
+import core.nxg.entity.TechTalentUser;
 import core.nxg.entity.User;
 import core.nxg.enums.Gender;
 import core.nxg.enums.UserType;
@@ -23,6 +24,7 @@ public class UserResponseDto {
         private String nationality;
         private LocalDate dateOfBirth;
         private UserType userType;
+        private TechTalentUser techTalentUser;
 
 
 }

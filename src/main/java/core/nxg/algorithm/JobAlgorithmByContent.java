@@ -4,6 +4,7 @@ import core.nxg.entity.JobPosting;
 import core.nxg.entity.User;
 import core.nxg.repository.JobPostingRepository;
 import core.nxg.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class JobAlgorithmByContent implements JobAlgorithm{
 
+    @Autowired
     private JobPostingRepository jobRepository;
 
 
