@@ -15,7 +15,7 @@ public interface JobPostingService {
 
     JobPostingDto createJobPosting(JobPostingDto jobPostingDto) throws Exception;
 
-    JobPostingDto getJobPostingById(Long jobId);
+    JobPostingDto getJobPostingById(String jobId);
 
     JobPostingDto updateJobPosting(Long jobId, JobPostingDto jobPostingDto);
 

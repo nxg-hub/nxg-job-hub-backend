@@ -208,8 +208,8 @@ public class JobPostingServiceImpl implements JobPostingService {
 
 
     @Override
-    public JobPostingDto getJobPostingById(Long jobId) {
-        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(String.valueOf(jobId));
+    public JobPostingDto getJobPostingById(String jobId) {
+        Optional<JobPosting> optionalJobPosting = jobPostingRepository.findById(jobId);
         if (optionalJobPosting.isPresent()) {
             return mapToDto(optionalJobPosting.get());
         } else {

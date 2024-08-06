@@ -15,6 +15,7 @@ import java.util.List;
 
 public class JobPostingDto {
     private String employerID;
+    private String jobID;
     private String job_title;
     private String job_description;
     private String company_bio;

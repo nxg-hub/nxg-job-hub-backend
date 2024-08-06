@@ -85,7 +85,7 @@ public class JobPostingController {
                             schema = @Schema(implementation = JobPostingDto.class)),}),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied")})
     @GetMapping("/get-{jobID}")
-    public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable Long jobID) {
+    public ResponseEntity<JobPostingDto> getAJobPosting(@PathVariable String jobID) {
         JobPostingDto jobPosting = jobPostingService.getJobPostingById(jobID);
         return ResponseEntity.ok(jobPosting);
     }
