@@ -122,30 +122,30 @@ public class JobPostingController {
     }
 
     @GetMapping("/recommend-nearby-jobs")
-    public ResponseEntity<List<JobPostingDto>> getNearbyJobPostings(@RequestParam String userCity) {
+    public ResponseEntity<List<JobPosting>> getNearbyJobPostings(@RequestParam String userCity) {
         List<JobPosting> nearbyJobPostings = jobPostingService.getNearbyJobPostings(userCity);
 
-        // Convert entities to DTOs
-        List<JobPostingDto> nearbyJobPostingDtos = nearbyJobPostings.stream().map(this::convertToDto).collect(Collectors.toList());
+//        // Convert entities to DTOs
+//        List<JobPosting> nearbyJobPostingDtos = nearbyJobPostings.stream().map(this::convertToDto).collect(Collectors.toList());
 
-        return ResponseEntity.ok(nearbyJobPostingDtos);
+        return ResponseEntity.ok(nearbyJobPostings);
     }
 
-    private JobPostingDto convertToDto(JobPosting jobPosting) {
-        JobPostingDto dto = new JobPostingDto();
-        dto.setEmployerID(jobPosting.getEmployerID());
-        dto.setJob_title(jobPosting.getJob_title());
-        dto.setJob_description(jobPosting.getJob_description());
-        dto.setCompany_bio(jobPosting.getCompany_bio());
-        dto.setSalary(jobPosting.getSalary());
-        dto.setJob_type(jobPosting.getJob_type());
-        dto.setDeadline(jobPosting.getDeadline());
-        dto.setCreatedAt(jobPosting.getCreatedAt());
-        dto.setRequirements(jobPosting.getRequirements());
-        dto.setJob_location(jobPosting.getJob_location());
-        dto.setTags(jobPosting.getTags());
-        return dto;
-    }
+//    private JobPostingDto convertToDto(JobPosting jobPosting) {
+//        JobPostingDto dto = new JobPostingDto();
+//        dto.setEmployerID(jobPosting.getEmployerID());
+//        dto.setJob_title(jobPosting.getJob_title());
+//        dto.setJob_description(jobPosting.getJob_description());
+//        dto.setCompany_bio(jobPosting.getCompany_bio());
+//        dto.setSalary(jobPosting.getSalary());
+//        dto.setJob_type(jobPosting.getJob_type());
+//        dto.setDeadline(jobPosting.getDeadline());
+//        dto.setCreatedAt(jobPosting.getCreatedAt());
+//        dto.setRequirements(jobPosting.getRequirements());
+//        dto.setJob_location(jobPosting.getJob_location());
+//        dto.setTags(jobPosting.getTags());
+//        return dto;
+//    }
 
     @PostMapping("/{jobID}/apply")
     public ResponseEntity<?> apply(@Valid HttpServletRequest request, @RequestBody ApplicationDTO dto) throws Exception {
