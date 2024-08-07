@@ -47,7 +47,7 @@ public class TechTalentDTO implements Serializable {
     private String profilePicture;
     private String portfolioLink;
     private String jobInterest;
-    private boolean isVerified;
+    private boolean verified;
 
 
 

@@ -90,11 +90,22 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
 
         User user = helper.extractLoggedInUser(request);
-        
-        
-        Optional<TechTalentDTO> techTalentUser = techRepo.findByUser(user);
-        if (techTalentUser.isEmpty()){
-            throw new UserNotFoundException("Type of user cannot apply to jobs!");
+
+        System.out.println("Extracted User ID: " + user.getId());
+
+
+//        Optional<TechTalentDTO> techTalentUser = techRepo.findByUser(user);
+//        System.out.println("Tech Talent User Present: " + techTalentUser.isPresent());
+//        if (techTalentUser.isEmpty()){
+//            throw new UserNotFoundException("Type of user cannot apply to jobs!");
+//        }
+
+        // Find the tech talent user using the email
+        Optional<TechTalentUser> techTalentUser = techRepo.findByEmail(user.getEmail());
+//        System.out.println("Tech Talent User Present: " + techTalentUser.isPresent());
+        // Check if the tech talent user exists
+        if (techTalentUser.isEmpty()) {
+            throw new UserNotFoundException("Applicant must be of type TECHTALENT. Tech talent user cannot be found! Hence application cannot proceed. Thank you.");
         }
 
         Optional<JobPosting> job = jobRepo.findById(applicationDTO.getJobPostingId());
@@ -108,9 +119,9 @@ public class ApplicationServiceImpl implements ApplicationService  {
         if (!techTalentUser.get().isVerified()) {
             throw new RuntimeException("Tech Talent is not verified. Please contact admin.");
         }
-     
-            
-        
+
+
+
         Application newApplication = new Application();
 
         newApplication.setJobPosting(job.get());
@@ -144,7 +155,7 @@ public class ApplicationServiceImpl implements ApplicationService  {
 
             appRepo.save(newApplication);
         }
-            
+
 
     }
 
