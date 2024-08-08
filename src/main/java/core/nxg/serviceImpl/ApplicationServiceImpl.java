@@ -252,22 +252,121 @@ public class ApplicationServiceImpl implements ApplicationService  {
         emailService.sendRejectionEmail(techTalentEmail,adminEmails, jobPosting);
     }
 
+//    @Override
+//    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws NullPointerException{
+//        try{
+//            User user = helper.extractLoggedInUser(request);
+//
+//            Page<Application> applications = appRepo.findByApplicant(user, pageable);
+//            if(applications == null){
+//                throw new NotFoundException("You do not have any applications at the moment");
+//            }
+//
+//            return applications.map(a -> mapper.map(a ,ApplicationDTO.class));
+//
+//        }
+//        catch(Exception e){
+//            return null;}
+//    }
+
+//    @Override
+//    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) {
+//        try {
+//            User user = helper.extractLoggedInUser(request);
+//
+//            Page<Application> applications = appRepo.findByApplicant(user, pageable);
+//            if (applications == null || applications.isEmpty()) {
+//                throw new NotFoundException("You do not have any applications at the moment");
+//            }
+//
+//            return applications.map(a -> mapper.map(a, ApplicationDTO.class));
+//
+//        } catch (NotFoundException e) {
+//            // Handle specific exceptions separately if needed
+//            // Log or rethrow the exception
+//            throw e;
+//        } catch (Exception e) {
+//            // Log the exception and provide more meaningful feedback
+//            e.printStackTrace();
+//            throw new RuntimeException("An error occurred while retrieving applications");
+//        }
+//    }
+
+//    @Override
+//    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) {
+//        try {
+//            User user = helper.extractLoggedInUser(request);
+//
+//            // Log the retrieved user
+//            System.out.println("Logged-in User: " + user.getId());
+//
+//            Page<Application> applications = appRepo.findByApplicant(user, pageable);
+//
+//            // Log the number of applications found
+//            System.out.println("Number of applications found: " + applications.getTotalElements());
+//
+//            if (applications == null || applications.isEmpty()) {
+//                throw new NotFoundException("You do not have any applications at the moment");
+//            }
+//
+//            return applications.map(a -> {
+//                // Log each application before mapping
+//                System.out.println("Mapping Application ID: " + a.getApplicationId());
+//
+//                ApplicationDTO dto = new ApplicationDTO();
+//                dto.setApplicationId(a.getApplicationId());
+//                dto.setJobPostingId(a.getJobPostingId());
+//                dto.setApplicationStatus(a.getApplicationStatus().toString());
+//                dto.setTimestamp(a.getTimestamp().toString()); // Ensure proper conversion
+//
+//                return dto;
+//            });
+//
+//        } catch (NotFoundException e) {
+//            // Handle specific exceptions separately if needed
+//            System.err.println("NotFoundException: " + e.getMessage());
+//            throw e;
+//        } catch (Exception e) {
+//            // Log the exception and provide more meaningful feedback
+//            e.printStackTrace();
+//            throw new RuntimeException("An error occurred while retrieving applications");
+//        }
+//    }
+
     @Override
-    public Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws NullPointerException{
-        try{
-            User user = helper.extractLoggedInUser(request);   
-        
+    public Page<Application> getMyApplications(HttpServletRequest request, Pageable pageable) {
+        try {
+            // Extract the logged-in user from the request
+            User user = helper.extractLoggedInUser(request);
+
+            // Log the retrieved user
+            System.out.println("Logged-in User: " + user.getId());
+
+            // Find applications by applicant using the repository
             Page<Application> applications = appRepo.findByApplicant(user, pageable);
-            if(applications == null){
+
+            // Log the number of applications found
+            System.out.println("Number of applications found: " + applications.getTotalElements());
+
+            // Check if applications is null or empty, and throw an exception if so
+            if (applications == null || applications.isEmpty()) {
                 throw new NotFoundException("You do not have any applications at the moment");
             }
 
-            return applications.map(a -> mapper.map(a ,ApplicationDTO.class));
+            // Return the applications directly without mapping
+            return applications;
 
+        } catch (NotFoundException e) {
+            // Handle specific exceptions separately if needed
+            System.err.println("NotFoundException: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            // Log the exception and provide more meaningful feedback
+            e.printStackTrace();
+            throw new RuntimeException("An error occurred while retrieving applications");
         }
-        catch(Exception e){
-            return null;}
     }
+
 
     @Override
     public Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception{

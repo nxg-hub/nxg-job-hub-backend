@@ -1,5 +1,6 @@
 package core.nxg.dto;
 
+import core.nxg.entity.Application;
 import core.nxg.entity.SavedJobs;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class DashboardDTO extends RepresentationModel<DashboardDTO> {
 
     private UserResponseDto profile;
     private TechTalentDTO other_profile;
-    private List<ApplicationDTO> my_applications;
+    private List<Application> my_applications;
     private List<SavedJobs> saved_jobs;
 
 

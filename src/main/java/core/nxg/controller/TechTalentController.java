@@ -141,7 +141,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         try{
         return ResponseEntity.ok(applicationService.getMyApplications(request, pageable));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Oops! Something went wrong. Try again later.");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -155,7 +155,7 @@ public class TechTalentController<T extends TechTalentDTO, S extends Pageable> {
         try {
             return ResponseEntity.ok(applicationService.getMySavedJobs(request, pageable));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid!");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }

@@ -204,7 +204,7 @@ public class TechTalentServiceImpl<T extends TechTalentDTO> implements TechTalen
         UserResponseDto my_profile = userRepo.findByEmailAndEnabledTrue(loggedInUser.getEmail());
 
 
-        List<ApplicationDTO> my_applications = appService.getMyApplications(request, pageable).getContent() ;
+        List<Application> my_applications = appService.getMyApplications(request, pageable).getContent() ;
 
 
         List<SavedJobs> my_saved_jobs = appService.getMySavedJobs(request, pageable).getContent();

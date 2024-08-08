@@ -20,12 +20,12 @@ public class SavedJobs {
     @Id
     private String id;
 
-//    yToOne
+
     @JsonIgnore
     @DBRef
     private User user;
 
     @DBRef
-    @JsonIgnore
+//    @JsonIgnore
     private JobPosting jobPosting;
 }

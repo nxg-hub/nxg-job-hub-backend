@@ -20,7 +20,7 @@ public interface ApplicationService {
 
     void rejectApplication(String applicationId, HttpServletRequest request) throws Exception;
 
-    Page<ApplicationDTO> getMyApplications(HttpServletRequest request, Pageable pageable) throws Exception;
+    Page<Application> getMyApplications(HttpServletRequest request, Pageable pageable) throws Exception;
 
     Page<SavedJobs> getMySavedJobs(HttpServletRequest request, Pageable pageable) throws Exception;
 

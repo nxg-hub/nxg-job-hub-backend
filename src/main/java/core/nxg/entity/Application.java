@@ -2,6 +2,7 @@ package core.nxg.entity;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import core.nxg.enums.ApplicationStatus;
 import org.springframework.data.annotation.Id;
@@ -25,7 +26,7 @@ public class Application {
 
     private ApplicationStatus applicationStatus;
 
-
+    @JsonIgnore
     private User applicant;
 
     private int matchingScore;
