@@ -168,10 +168,10 @@ public class JobPostingController {
         try {
 
             applicationService.saveJob(request, jobID);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Job with ID" + " " + jobID +  " " + "Saved Successfully for User: " + request.getRemoteUser() );
 
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
