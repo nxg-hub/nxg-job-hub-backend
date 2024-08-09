@@ -37,7 +37,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 determineTargetUrl(request, response, authentication) : redirectUri;
 
         String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
-        targetUrl = UriComponentsBuilder.fromUriString(targetUrl).queryParam("authKey", "Bearer " + token).build().toUriString();
+        targetUrl = UriComponentsBuilder.fromUriString(targetUrl).queryParam("authKey", token).build().toUriString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
