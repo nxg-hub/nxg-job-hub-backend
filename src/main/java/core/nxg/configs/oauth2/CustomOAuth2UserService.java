@@ -108,15 +108,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user1 = userOptional.get();
 
             // If password hasn't been generated before, generate and save it
-            if (!user1.isPasswordGenerated()) {
-                String randomPassword = userService.generateOAuthPassword();
-                user1.setPassword(helper.encodePassword(randomPassword));
-                user1.setPasswordGenerated(true);
-                userService.saveUser(user1);
-
-                // Send login details email
-                emailService.sendOAuthUserLoginDetails(user1.getFirstName(), user1.getEmail(), randomPassword);
-            }
+//            if (!user1.isPasswordGenerated()) {
+//                String randomPassword = userService.generateOAuthPassword();
+//                user1.setPassword(helper.encodePassword(randomPassword));
+//                user1.setPasswordGenerated(true);
+//                userService.saveUser(user1);
+//
+//                // Send login details email
+//                emailService.sendOAuthUserLoginDetails(user1.getFirstName(), user1.getEmail(), randomPassword);
+//            }
         }
 
         return user1;
