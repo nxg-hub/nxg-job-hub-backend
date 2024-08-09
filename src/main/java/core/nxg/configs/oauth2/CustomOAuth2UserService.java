@@ -46,14 +46,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user;
         try {
             user = upsertUser(customUser);
-        } catch (MessagingException | ExpiredJWTException | UnsupportedEncodingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        customUser.setId(user.getId());
+//        customUser.setId(user.getId());
         return customUser;
     }
 
-    private User upsertUser(User user) throws MessagingException, ExpiredJWTException, UnsupportedEncodingException {
+    private User upsertUser(User user) throws MessagingException, UnsupportedEncodingException {
         Optional<User> userOptional = userService.getUserByUsername(user.getUsername());
         User user1;
 
