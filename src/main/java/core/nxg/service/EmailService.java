@@ -26,5 +26,5 @@ public interface EmailService {
     public void confirmVerification(String verificationCode) throws Exception;
     public void sendJobRelatedNotifEmail(String to, JobPosting job) throws MailException, UnsupportedEncodingException ,MessagingException;
 
-    void sendOAuthUserLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException;
+    void sendOAuthUserLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException;
 }

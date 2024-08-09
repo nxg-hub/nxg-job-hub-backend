@@ -245,7 +245,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendOAuthUserLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException, ExpiredJWTException {
+    public void sendOAuthUserLoginDetails(String name, String email, String generatedPassword) throws MessagingException, UnsupportedEncodingException, MailException {
 
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
